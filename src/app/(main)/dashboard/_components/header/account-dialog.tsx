@@ -46,12 +46,12 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl gap-0 overflow-hidden p-0">
+      <DialogContent className="max-h-[85vh] max-w-4xl gap-0 overflow-hidden p-0">
         <DialogHeader className="sr-only">
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
-        <div className="flex min-h-[500px]">
-          <nav className="w-52 shrink-0 border-r bg-muted/30 p-3">
+        <div className="flex overflow-hidden">
+          <nav className="w-52 shrink-0 overflow-y-auto border-r bg-muted/30 p-3">
             {navGroups.map((group) => (
               <div key={group.label} className="mb-4">
                 <div className="mb-1 px-2 font-medium text-muted-foreground text-xs">{group.label}</div>
@@ -83,7 +83,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
               <div className="px-2 text-muted-foreground text-xs">v1.0.0</div>
             </div>
           </nav>
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="min-h-0 flex-1 overflow-y-auto p-6">
             {activeSection === "general" && <GeneralSettings />}
             {activeSection === "shortcuts" && <ShortcutsSettings />}
             {activeSection === "servers" && <ServersSettings />}
