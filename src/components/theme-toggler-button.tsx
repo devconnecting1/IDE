@@ -3,9 +3,9 @@
 import type * as React from "react";
 
 import { Monitor, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
 type ThemeTogglerButtonProps = React.ComponentProps<"button"> & {

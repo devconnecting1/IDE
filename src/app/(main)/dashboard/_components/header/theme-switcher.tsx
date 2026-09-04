@@ -1,9 +1,9 @@
 "use client";
 
 import { Monitor, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/hooks/use-theme";
 
 const THEME_CYCLE = ["light", "dark", "system"] as const;
 

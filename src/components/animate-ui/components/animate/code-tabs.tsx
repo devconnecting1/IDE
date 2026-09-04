@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { useTheme } from "next-themes";
+import { useTheme } from "@/hooks/use-theme";
 
 import { CopyButton } from "@/components/animate-ui/components/buttons/copy";
 import {

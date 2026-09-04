@@ -4,7 +4,6 @@ import type * as React from "react";
 
 import type { VariantProps } from "class-variance-authority";
 import { Monitor, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 
 import { buttonVariants } from "@/components/animate-ui/components/buttons/icon";
 import {
@@ -13,6 +12,7 @@ import {
   ThemeToggler as ThemeTogglerPrimitive,
   type ThemeTogglerProps as ThemeTogglerPrimitiveProps,
 } from "@/components/animate-ui/primitives/effects/theme-toggler";
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
 const getIcon = (effective: ThemeSelection, resolved: Resolved, modes: ThemeSelection[]) => {
