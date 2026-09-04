@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { cookies } from "next/headers";
+import Script from "next/script";
 
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
@@ -45,7 +46,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <head>
         {/* Applies theme and layout preferences on load to avoid flicker and unnecessary server rerenders. */}
         <ThemeBootScript />
-        <script async crossOrigin="anonymous" src="https://tweakcn.com/live-preview.min.js" />
       </head>
       <body className={`${fontVars} min-h-screen antialiased`}>
         <Providers>
@@ -56,6 +56,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <Toaster />
           </TooltipProvider>
         </Providers>
+        <Script async crossOrigin="anonymous" src="https://tweakcn.com/live-preview.min.js" />
         {/* Used for this project's hosted demo. Feel free to remove it; it is not required for template functionality. */}
         <Analytics />
       </body>
