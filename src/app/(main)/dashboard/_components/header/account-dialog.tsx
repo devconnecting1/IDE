@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 
-import { Cpu, Keyboard, MoreHorizontal, Plus, Server, Settings2, Sparkles } from "lucide-react";
+import { ChevronDown, Cpu, Keyboard, MoreHorizontal, Plus, Server, Settings2, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +48,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] h-[80vh] w-[95vw] max-w-[480px] gap-0 overflow-hidden p-0 sm:max-w-[640px] md:max-w-[800px] lg:max-w-[960px]">
+      <DialogContent className="h-[80vh] max-h-[90vh] w-[95vw] max-w-[480px] gap-0 overflow-hidden p-0 sm:max-w-[640px] md:max-w-[800px] lg:max-w-[960px]">
         <DialogHeader className="sr-only">
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
@@ -407,23 +408,142 @@ function ServersSettings() {
   );
 }
 
+const providers = [
+  {
+    name: "OpenCode Zen",
+    badge: "Recomendado",
+    description: "Modelos selecionados incluindo Claude, GPT, Gemini e mais",
+    icon: "Z",
+  },
+  {
+    name: "OpenCode Go",
+    badge: "Recomendado",
+    description: "Assinatura de baixo custo para todos",
+    icon: "G",
+  },
+  {
+    name: "Anthropic",
+    description: "Acesso direto aos modelos Claude, incluindo Pro e Max",
+    icon: "A",
+  },
+  {
+    name: "GitHub Copilot",
+    description: "Modelos de IA para auxílio à programação pelo GitHub Copilot",
+    icon: "GH",
+  },
+  {
+    name: "OpenAI",
+    description: "Modelos GPT rápidos e avançados para tarefas gerais de IA",
+    icon: "O",
+  },
+  {
+    name: "Google",
+    description: "Modelos Gemini para respostas rápidas e estruturadas",
+    icon: "✦",
+  },
+  {
+    name: "OpenRouter",
+    description: "Acesse todos os modelos suportados de um único provedor",
+    icon: "OR",
+  },
+  {
+    name: "Vercel AI Gateway",
+    description: "Acesso unificado a modelos de IA com roteamento inteligente",
+    icon: "▲",
+  },
+  {
+    name: "Provedor personalizado",
+    badge: "Personalizado",
+    description: "Adicionar um provedor compatível com OpenAI por meio da URL base.",
+    icon: "✿",
+  },
+];
+
 function ProvidersSettings() {
   return (
-    <div>
-      <h2 className="mb-4 font-semibold text-lg">Provedores</h2>
-      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
-        Configuração de provedores em breve.
+    <div className="space-y-6">
+      <h2 className="font-semibold text-lg">Provedores</h2>
+
+      <div>
+        <h3 className="mb-2 font-medium text-sm">Provedores conectados</h3>
+        <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">Nenhum provedor conectado</div>
+      </div>
+
+      <div>
+        <h3 className="mb-2 font-medium text-sm">Provedores populares</h3>
+        <div className="rounded-lg border bg-card">
+          {providers.map((provider, index) => (
+            <div key={provider.name}>
+              {index > 0 && <Separator />}
+              <div className="flex items-center justify-between gap-4 px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                    {provider.icon}
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{provider.name}</span>
+                      {provider.badge && (
+                        <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
+                          {provider.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-muted-foreground text-xs">{provider.description}</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" className="shrink-0">
+                  <Plus className="mr-1 size-3" />
+                  Conectar
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3">
+          <button type="button" className="text-blue-400 text-sm hover:underline">
+            Ver mais provedores
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
+const models = [
+  { name: "Big Pickle", enabled: false },
+  { name: "Ling 3.0 Flash Fin Free", enabled: true },
+  { name: "MiMo V2.5 Free", enabled: true },
+  { name: "Muse Spark 1.2 Free", enabled: false },
+  { name: "Muse Spark 1.3 Free", enabled: true },
+  { name: "Nemotron 3 Ultra Free", enabled: false },
+  { name: "Nemotron 3.5 Lightning Free", enabled: true },
+];
+
 function ModelsSettings() {
   return (
-    <div>
-      <h2 className="mb-4 font-semibold text-lg">Modelos</h2>
-      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
-        Configuração de modelos em breve.
+    <div className="space-y-6">
+      <h2 className="font-semibold text-lg">Modelos</h2>
+
+      <Input placeholder="Buscar modelos" />
+
+      <div>
+        <div className="mb-2 flex items-center gap-2">
+          <ChevronDown className="size-4 text-muted-foreground" />
+          <span className="flex size-6 items-center justify-center rounded-md bg-muted font-medium text-xs">Z</span>
+          <span className="font-medium text-sm">OpenCode Zen</span>
+        </div>
+        <div className="rounded-lg border bg-card">
+          {models.map((model, index) => (
+            <div key={model.name}>
+              {index > 0 && <Separator />}
+              <div className="flex items-center justify-between px-4 py-3">
+                <span className="text-sm">{model.name}</span>
+                <Switch defaultChecked={model.enabled} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
