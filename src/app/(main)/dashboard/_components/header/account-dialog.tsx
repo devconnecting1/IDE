@@ -46,7 +46,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] max-w-4xl gap-0 overflow-hidden p-0">
+      <DialogContent className="max-h-[85vh] max-w-5xl gap-0 overflow-hidden p-0">
         <DialogHeader className="sr-only">
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
