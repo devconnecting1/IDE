@@ -3,7 +3,7 @@
 import { Ellipsis, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { ThemeTogglerButton } from "@/components/animate-ui/components/buttons/theme-toggler";
+import { ThemeTogglerButton } from "@/components/theme-toggler-button";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";

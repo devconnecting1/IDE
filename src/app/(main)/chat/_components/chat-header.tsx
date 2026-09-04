@@ -1,7 +1,7 @@
 import { Bell, MessageSquarePlus, Search, Settings } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
-import { ThemeTogglerButton } from "@/components/animate-ui/components/buttons/theme-toggler";
+import { ThemeTogglerButton } from "@/components/theme-toggler-button";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 

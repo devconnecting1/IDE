@@ -14,7 +14,7 @@ export function SetupHeader() {
         <Command className="size-5 text-primary" />
         <span className="text-sm">{APP_CONFIG.name}</span>
       </Link>
-      <ThemeTogglerButton modes={["light", "dark"]} direction="ltr" />
+      <ThemeTogglerButton modes={["light", "dark"]} />
     </header>
   );
 }
