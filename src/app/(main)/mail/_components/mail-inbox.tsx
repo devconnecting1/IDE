@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import type { Mail } from "./data";
 import { MailList } from "./mail-list";
@@ -25,8 +24,6 @@ export function MailInbox({ mails, onSelectMail }: MailInboxProps) {
     <div className="flex h-full min-h-0 flex-col gap-3 pt-3">
       <div className="flex items-center justify-between gap-4 px-2">
         <div className="flex items-center">
-          <SidebarTrigger />
-          <Separator orientation="vertical" className="mr-2 ml-1 h-4 data-vertical:self-center" />
           <h1 className="font-medium text-xl leading-none">{t("mail.inbox")}</h1>
         </div>
         <div className="flex items-center gap-2">

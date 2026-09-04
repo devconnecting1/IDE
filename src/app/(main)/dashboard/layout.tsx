@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 import { ShellSidebar } from "@/app/(main)/dashboard/_components/sidebar/shell-sidebar";
 import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { users } from "@/data/users";
 import { cn } from "@/lib/utils";
 import { getPreference } from "@/server/server-actions";
@@ -13,6 +13,7 @@ import { AccountSwitcher } from "./_components/header/account-switcher";
 import { GitHubRepositoriesMenu } from "./_components/header/github-repositories-menu";
 import { LayoutControls } from "./_components/header/layout-controls";
 import { SearchDialog } from "./_components/header/search-dialog";
+import { SidebarToggleButton } from "./_components/header/sidebar-toggle-button";
 import { ThemeSwitcher } from "./_components/header/theme-switcher";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
@@ -52,7 +53,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         >
           <div className="flex w-full items-center justify-between px-4 lg:px-6">
             <div className="flex items-center gap-1 lg:gap-2">
-              <SidebarTrigger className="-ml-1" />
+              <SidebarToggleButton />
               <Separator
                 orientation="vertical"
                 className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"

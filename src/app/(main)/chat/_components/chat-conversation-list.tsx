@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Filter, PanelRightClose, PanelRightOpen, Pin } from "lucide-react";
+import { ChevronDown, Filter, Pin } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { useSidebar } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, getInitials } from "@/lib/utils";
 
@@ -32,8 +31,6 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
   const t = useTranslations();
   const locale = useLocale();
   const [chat, setChat] = useChat();
-  const { state, toggleSidebar } = useSidebar();
-  const isCollapsed = state === "collapsed";
 
   const conversationGroups = conversations.reduce<
     Array<{ group: Conversation["group"]; conversations: Conversation[] }>
@@ -51,15 +48,6 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
     <div className={cn("flex h-full flex-col gap-3 pt-3", className)}>
       <div className="flex items-center justify-between gap-4 px-2 py-0.5">
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={toggleSidebar}
-            className="[&_svg]:transition-transform [&_svg]:duration-300"
-          >
-            {isCollapsed ? <PanelRightClose /> : <PanelRightOpen />}
-          </Button>
-          <Separator orientation="vertical" className="mr-1.5 h-4 data-vertical:self-center" />
           <h1 className="font-medium text-xl leading-none">{t("chat.inbox")}</h1>
         </div>
         <div className="flex items-center gap-2">
