@@ -83,7 +83,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
               <div className="px-2 text-muted-foreground text-xs">v1.0.0</div>
             </div>
           </nav>
-          <div className="min-h-0 flex-1 overflow-y-auto p-6">
+          <div className="min-h-0 flex-1 overflow-y-auto bg-background p-6">
             {activeSection === "general" && <GeneralSettings />}
             {activeSection === "shortcuts" && <ShortcutsSettings />}
             {activeSection === "servers" && <ServersSettings />}
