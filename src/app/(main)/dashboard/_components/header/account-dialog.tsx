@@ -51,7 +51,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
         <div className="flex overflow-hidden">
-          <nav className="hidden w-56 shrink-0 overflow-y-auto border-r bg-muted/30 p-3 md:block">
+          <nav className="hidden w-56 shrink-0 overflow-y-auto border-r bg-sidebar p-3 md:block">
             {navGroups.map((group) => (
               <div key={group.label} className="mb-4">
                 <div className="mb-1 px-2 font-medium text-muted-foreground text-xs">{group.label}</div>
