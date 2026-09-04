@@ -1,12 +1,10 @@
-import { getLocale } from "next-intl/server";
+import { Chat } from "@/app/(main)/chat/_components/chat";
+import { conversations } from "@/app/(main)/chat/_components/data";
 
-export default async function Page() {
+export default function Page() {
   return (
-    <iframe
-      key={await getLocale()}
-      src="/chat"
-      title="Chat"
-      className="mx-auto h-full w-full max-w-5xl rounded-lg border bg-background shadow-sm"
-    />
+    <div className="mx-auto h-full w-full max-w-5xl overflow-hidden rounded-lg border bg-background shadow-sm">
+      <Chat conversations={conversations} />
+    </div>
   );
 }
