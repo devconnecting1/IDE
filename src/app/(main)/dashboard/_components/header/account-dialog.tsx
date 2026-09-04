@@ -46,12 +46,12 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] max-w-5xl gap-0 overflow-hidden p-0">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-[480px] gap-0 overflow-hidden p-0 sm:max-w-[640px] md:max-w-[800px] lg:max-w-[960px]">
         <DialogHeader className="sr-only">
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
         <div className="flex overflow-hidden">
-          <nav className="w-52 shrink-0 overflow-y-auto border-r bg-muted/30 p-3">
+          <nav className="hidden w-56 shrink-0 overflow-y-auto border-r bg-muted/30 p-3 md:block">
             {navGroups.map((group) => (
               <div key={group.label} className="mb-4">
                 <div className="mb-1 px-2 font-medium text-muted-foreground text-xs">{group.label}</div>
@@ -106,8 +106,8 @@ function SettingRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-4">
-      <div className="space-y-0.5">
+    <div className="flex items-center justify-between gap-8 py-4">
+      <div className="min-w-0 flex-1 space-y-0.5">
         <Label className="font-medium text-sm">{title}</Label>
         <p className="text-muted-foreground text-xs">{description}</p>
       </div>
