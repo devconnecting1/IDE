@@ -50,7 +50,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
         <DialogHeader className="sr-only">
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
-        <div className="flex overflow-hidden">
+        <div className="flex h-full overflow-hidden">
           <nav className="hidden w-56 shrink-0 overflow-y-auto border-r bg-sidebar p-3 md:block">
             {navGroups.map((group) => (
               <div key={group.label} className="mb-4">
