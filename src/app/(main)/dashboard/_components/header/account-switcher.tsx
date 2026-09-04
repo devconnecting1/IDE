@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import Link from "next/link";
 
-import { Bell, Check, CreditCard, Home, LogOut } from "lucide-react";
+import { Bell, Check, CreditCard, Home, LogOut, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,8 +18,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/auth.client";
 import { cn, getInitials } from "@/lib/utils";
-
-import { AccountDialog } from "./account-dialog";
 
 export function AccountSwitcher({
   users,
@@ -83,7 +81,10 @@ export function AccountSwitcher({
               {t("home")}
             </Link>
           </DropdownMenuItem>
-          <AccountDialog />
+          <DropdownMenuItem>
+            <User />
+            {t("account")}
+          </DropdownMenuItem>
           <DropdownMenuItem>
             <CreditCard />
             {t("billing")}

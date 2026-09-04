@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 import { EllipsisVertical, LogOut, Settings, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { siFacebook, siInstagram, siWhatsapp } from "simple-icons";
@@ -152,11 +150,9 @@ export function ChatSidebar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/account">
-                      <UserRound />
-                      {t("chat.account")}
-                    </Link>
+                  <DropdownMenuItem>
+                    <UserRound />
+                    {t("chat.account")}
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Settings />

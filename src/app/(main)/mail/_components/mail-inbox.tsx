@@ -3,7 +3,6 @@
 import { Ellipsis, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { ThemeTogglerButton } from "@/components/theme-toggler-button";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
@@ -40,7 +39,6 @@ export function MailInbox({ mails, onSelectMail }: MailInboxProps) {
           <Button variant="ghost" size="icon-sm">
             <Ellipsis />
           </Button>
-          <ThemeTogglerButton variant="ghost" size="sm" />
         </div>
       </div>
 

@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
-import { CircleUser, CreditCard, EllipsisVertical, LogOut, MessageSquareDot } from "lucide-react";
+import { CreditCard, EllipsisVertical, LogOut, MessageSquareDot, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,7 +27,7 @@ export function NavUser({
   };
 }) {
   const t = useTranslations("shell");
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarMenu>
@@ -71,11 +69,9 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/account" onClick={() => setOpenMobile(false)}>
-                  <CircleUser />
-                  {t("account")}
-                </Link>
+              <DropdownMenuItem>
+                <User />
+                {t("account")}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
