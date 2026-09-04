@@ -120,7 +120,7 @@ function GeneralSettings() {
   return (
     <div>
       <h2 className="mb-4 font-semibold text-lg">Geral</h2>
-      <div className="rounded-lg border">
+      <div className="rounded-lg border bg-card">
         <div className="px-4">
           <SettingRow title="Idioma" description="Alterar o idioma de exibição do Studio">
             <Select defaultValue="pt-BR">
