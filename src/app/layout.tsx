@@ -45,6 +45,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <head>
         {/* Applies theme and layout preferences on load to avoid flicker and unnecessary server rerenders. */}
         <ThemeBootScript />
+        <script async crossOrigin="anonymous" src="https://tweakcn.com/live-preview.min.js" />
       </head>
       <body className={`${fontVars} min-h-screen antialiased`}>
         <Providers>
