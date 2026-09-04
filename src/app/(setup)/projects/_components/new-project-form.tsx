@@ -241,7 +241,7 @@ export function NewProjectForm({ t }: { t: ProjectTranslations }) {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     toast.success(t.createdSuccess.replace("{name}", data.name));
-    router.push("/dashboard/default");
+    router.push("/dashboard/chat");
   }
 
   return (

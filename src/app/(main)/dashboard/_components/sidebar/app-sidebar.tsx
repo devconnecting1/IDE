@@ -45,7 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu className="flex-1">
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link prefetch={false} href="/dashboard/default" onClick={() => setOpenMobile(false)}>
+                <Link prefetch={false} href="/dashboard/chat" onClick={() => setOpenMobile(false)}>
                   <Command />
                   <span className="font-semibold text-base">{APP_CONFIG.name}</span>
                 </Link>

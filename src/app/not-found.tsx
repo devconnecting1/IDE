@@ -13,7 +13,7 @@ export default function NotFound() {
     <div className="flex h-dvh flex-col items-center justify-center space-y-2 text-center">
       <h1 className="font-semibold text-2xl">{t("notFoundTitle")}</h1>
       <p className="text-muted-foreground">{t("notFoundDescription")}</p>
-      <Link prefetch={false} replace href="/dashboard/default">
+      <Link prefetch={false} replace href="/dashboard/chat">
         <Button variant="outline">{t("goBackHome")}</Button>
       </Link>
     </div>

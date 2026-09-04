@@ -78,7 +78,7 @@ export function AccountSwitcher({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/default">
+            <Link href="/dashboard/chat">
               <Home />
               {t("home")}
             </Link>

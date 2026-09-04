@@ -20,9 +20,9 @@ interface DashboardAction {
 }
 
 const initialActions: DashboardAction[] = [
-  { id: "1", label: "Início", route: "/dashboard/default", newTab: false, hidden: false },
-  { id: "2", label: "CRM", route: "/dashboard/crm", newTab: false, hidden: false },
-  { id: "3", label: "Finance", route: "/dashboard/finance", newTab: false, hidden: true },
+  { id: "1", label: "Chat", route: "/dashboard/chat", newTab: false, hidden: false },
+  { id: "2", label: "Email", route: "/dashboard/mail", newTab: false, hidden: false },
+  { id: "3", label: "Calendar", route: "/dashboard/calendar", newTab: false, hidden: true },
   { id: "4", label: "Separador", route: "", newTab: false, hidden: false },
 ];
 

@@ -14,7 +14,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (isPublic && isAuthenticated && pathname.startsWith("/auth")) {
-    return NextResponse.redirect(new URL("/dashboard/default", request.url));
+    return NextResponse.redirect(new URL("/dashboard/chat", request.url));
   }
 
   return NextResponse.next();
