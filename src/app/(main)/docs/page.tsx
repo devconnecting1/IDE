@@ -306,11 +306,11 @@ export default async function DocsPage() {
               <tbody>
                 <tr className="border-b">
                   <td className="px-4 py-3 font-medium">Email</td>
-                  <td className="px-4 py-3 font-mono text-muted-foreground">matheusmoraesdj2025@gmail.com</td>
+                  <td className="px-4 py-3 font-mono text-muted-foreground">any@email.com</td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3 font-medium">Password</td>
-                  <td className="px-4 py-3 font-mono text-muted-foreground">10092004@Matheus</td>
+                  <td className="px-4 py-3 font-mono text-muted-foreground">any password (6+ chars)</td>
                 </tr>
               </tbody>
             </table>
