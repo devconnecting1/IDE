@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function RootPage() {
-  redirect("/auth/v2/login");
+  redirect("/dashboard/chat");
 }

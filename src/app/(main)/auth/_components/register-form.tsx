@@ -57,7 +57,7 @@ export function RegisterForm() {
   function onSubmit(_data: z.infer<typeof formSchema>) {
     setClientCookie("demo-auth", "1", 1);
     toast.success(t("form.registerSuccess"));
-    router.push("/organization");
+    router.push("/dashboard/chat");
   }
 
   return (

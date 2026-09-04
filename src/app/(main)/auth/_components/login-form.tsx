@@ -1,13 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -16,15 +15,9 @@ import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/compo
 import { Input } from "@/components/ui/input";
 import { setClientCookie } from "@/lib/cookie.client";
 
-import { OtpVerification } from "./otp-verification";
-
-const DEMO_EMAIL = "matheusmoraesdj2025@gmail.com";
-const DEMO_PASSWORD = "10092004@Matheus";
-
 export function LoginForm() {
   const t = useTranslations("auth.form");
   const router = useRouter();
-  const [otpEmail, setOtpEmail] = useState<string | null>(null);
 
   const formSchema = useMemo(
     () =>
@@ -45,21 +38,9 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    if (data.email === DEMO_EMAIL && data.password === DEMO_PASSWORD) {
-      setOtpEmail(data.email);
-      return;
-    }
-    toast.error(t("invalidCredentials"));
-  }
-
-  function handleOtpSuccess() {
+  function onSubmit(_data: z.infer<typeof formSchema>) {
     setClientCookie("demo-auth", "1", 1);
-    router.push("/organization");
-  }
-
-  if (otpEmail) {
-    return <OtpVerification email={otpEmail} onSuccess={handleOtpSuccess} onBack={() => setOtpEmail(null)} />;
+    router.push("/dashboard/chat");
   }
 
   return (
