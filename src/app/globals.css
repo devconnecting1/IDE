@@ -6,135 +6,6 @@
 @import "../styles/presets/supabase.css";
 @import "../styles/presets/vercel.css";
 
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 6rem;
-}
-
-@property --beam-gradient-degree {
-  syntax: "<angle>";
-  inherits: true;
-  initial-value: 142deg;
-}
-
-.huly-glow {
-  --beam-gradient-degree: 142deg;
-  --beam-gradient-color-1: var(--color-indigo-500);
-  --beam-gradient-color-2: var(--color-rose-500);
-  --beam-border-width: 4px;
-  --huly-card-surface: var(--background);
-
-  position: relative;
-  display: grid;
-  isolation: isolate;
-  border-radius: 16px;
-  animation: huly-gradient-rotate 16s cubic-bezier(0.87, 0, 0.13, 1) infinite both;
-}
-
-@keyframes huly-gradient-rotate {
-  50% {
-    --beam-gradient-degree: 322deg;
-  }
-  100% {
-    --beam-gradient-degree: 502deg;
-  }
-}
-
-.huly-glow > * {
-  grid-area: 1 / 1;
-  border-radius: inherit;
-}
-
-.huly-glow__back {
-  --beam-gradient-color-highlight-lightness: 90%;
-  background: conic-gradient(
-    from var(--beam-gradient-degree),
-    hsl(from var(--beam-gradient-color-1) h s var(--beam-gradient-color-highlight-lightness)),
-    rgba(0, 0, 0, 0) 18% 29%,
-    hsl(from var(--beam-gradient-color-2) h s var(--beam-gradient-color-highlight-lightness)),
-    rgba(0, 0, 0, 0) 64% 80%,
-    hsl(from var(--beam-gradient-color-1) h s var(--beam-gradient-color-highlight-lightness))
-  );
-}
-
-.huly-glow__back::before,
-.huly-glow__back::after,
-.huly-glow__back__layer {
-  position: absolute;
-  border-radius: inherit;
-}
-
-.huly-glow__back::before,
-.huly-glow__back::after {
-  content: "";
-}
-
-.huly-glow__back::before {
-  --beam-gradient-color-highlight-lightness: 50%;
-  background: conic-gradient(
-    from var(--beam-gradient-degree),
-    hsl(from var(--beam-gradient-color-1) h s var(--beam-gradient-color-highlight-lightness)),
-    rgba(0, 0, 0, 0) 18% 29%,
-    hsl(from var(--beam-gradient-color-2) h s var(--beam-gradient-color-highlight-lightness)),
-    rgba(0, 0, 0, 0) 64% 80%,
-    hsl(from var(--beam-gradient-color-1) h s var(--beam-gradient-color-highlight-lightness))
-  );
-  inset: calc(var(--beam-border-width) * -5);
-  filter: blur(35px);
-  z-index: -3;
-}
-
-.huly-glow__back::after {
-  background: conic-gradient(
-    from var(--beam-gradient-degree),
-    var(--beam-gradient-color-1),
-    rgba(0, 0, 0, 0) 18% 29%,
-    var(--beam-gradient-color-2),
-    rgba(0, 0, 0, 0) 64% 80%,
-    var(--beam-gradient-color-1)
-  );
-  inset: calc(var(--beam-border-width) * -1.4);
-  filter: blur(2.5px);
-  z-index: -2;
-}
-
-.huly-glow__back__layer {
-  --beam-gradient-color-chroma: 70%;
-  --beam-gradient-color-lightness: 100%;
-  background: conic-gradient(
-    from var(--beam-gradient-degree),
-    oklch(from var(--beam-gradient-color-1) var(--beam-gradient-color-lightness) var(--beam-gradient-color-chroma) h),
-    rgba(0, 0, 0, 0) 18% 29%,
-    oklch(from var(--beam-gradient-color-2) var(--beam-gradient-color-lightness) var(--beam-gradient-color-chroma) h),
-    rgba(0, 0, 0, 0) 64% 80%,
-    oklch(from var(--beam-gradient-color-1) var(--beam-gradient-color-lightness) var(--beam-gradient-color-chroma) h)
-  );
-  inset: calc(var(--beam-border-width) * -0.6);
-  filter: blur(1.5px);
-  z-index: -1;
-}
-
-.huly-glow__front {
-  background: linear-gradient(var(--huly-card-surface), var(--huly-card-surface)) padding-box;
-  aspect-ratio: 1.73 / 1;
-  border: var(--beam-border-width) solid rgb(255 255 255 / 0.2);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.huly-glow__front::before {
-  --_background-size: 3px;
-  content: "";
-  position: absolute;
-  width: 200%;
-  aspect-ratio: inherit;
-  background-image: radial-gradient(circle at 0.5px 0.5px, var(--glow-dot-color) 0.5px, transparent 0);
-  background-size: var(--_background-size) var(--_background-size);
-  z-index: -1;
-  mix-blend-mode: var(--glow-dot-blend);
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -177,42 +48,13 @@ html {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-heading: var(--font-sans);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --radius: 0.625rem;
-  --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
-  --tracking-tight: calc(var(--tracking-normal) - 0.025em);
-  --tracking-wide: calc(var(--tracking-normal) + 0.025em);
-  --tracking-wider: calc(var(--tracking-normal) + 0.05em);
-  --tracking-widest: calc(var(--tracking-normal) + 0.1em);
-  --tracking-normal: var(--tracking-normal);
-  --shadow-2xl: var(--shadow-2xl);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-md: var(--shadow-md);
-  --shadow: var(--shadow);
-  --shadow-sm: var(--shadow-sm);
-  --shadow-xs: var(--shadow-xs);
-  --shadow-2xs: var(--shadow-2xs);
-  --spacing: var(--spacing);
-  --letter-spacing: var(--letter-spacing);
-  --shadow-offset-y: var(--shadow-offset-y);
-  --shadow-offset-x: var(--shadow-offset-x);
-  --shadow-spread: var(--shadow-spread);
-  --shadow-blur: var(--shadow-blur);
-  --shadow-opacity: var(--shadow-opacity);
-  --color-shadow-color: var(--shadow-color);
-  --color-destructive-foreground: var(--destructive-foreground);
+  --font-sans: var(--font-sans);
 }
 
 /* Default theme styles (used when no data-theme-preset is set or when 'default' is selected).
 These serve as the fallback; there is no separate default.css file. */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -226,7 +68,6 @@ These serve as the fallback; there is no separate default.css file. */
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -243,31 +84,12 @@ These serve as the fallback; there is no separate default.css file. */
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --shadow-x: 0;
-  --shadow-y: 1px;
-  --shadow-blur: 3px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 0.1;
-  --shadow-color: oklch(0 0 0);
-  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-  --tracking-normal: 0em;
-  --spacing: 0.25rem;
-  --glow-dot-color: var(--background);
-  --glow-dot-blend: screen;
-  --shadow-offset-x: 0;
-  --shadow-offset-y: 1px;
-  --letter-spacing: 0em;
+
+  /* fonts */
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
 }
 
 .dark {
@@ -286,7 +108,6 @@ These serve as the fallback; there is no separate default.css file. */
   --accent: oklch(0.371 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.275 0 0);
   --input: oklch(0.325 0 0);
   --ring: oklch(0.556 0 0);
@@ -303,35 +124,9 @@ These serve as the fallback; there is no separate default.css file. */
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.275 0 0);
   --sidebar-ring: oklch(0.439 0 0);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --radius: 0.625rem;
-  --shadow-x: 0;
-  --shadow-y: 1px;
-  --shadow-blur: 3px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 0.1;
-  --shadow-color: oklch(0 0 0);
-  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-  --glow-dot-color: oklch(0 0 0);
-  --glow-dot-blend: multiply;
-  --letter-spacing: 0em;
-  --spacing: 0.25rem;
-  --shadow-offset-x: 0;
-  --shadow-offset-y: 1px;
 }
 
 @layer base {
-  /* biome-ignore lint/style/noDescendingSpecificity: intentional universal base reset before component rules. */
   * {
     @apply border-border outline-ring/50;
   }
@@ -339,7 +134,6 @@ These serve as the fallback; there is no separate default.css file. */
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans), system-ui, sans-serif;
-    letter-spacing: var(--tracking-normal);
   }
   html {
     @apply font-sans;
