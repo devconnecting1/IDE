@@ -1,5 +1,5 @@
 /* Supabase preset */
-[data-theme-preset="supabase"] {
+:root[data-theme-preset="supabase"] {
   --background: oklch(0.9911 0 0);
   --foreground: oklch(0.2046 0 0);
   --card: oklch(0.9911 0 0);
@@ -35,7 +35,7 @@
   --radius: 0.5rem;
 }
 
-.dark [data-theme-preset="supabase"] {
+.dark:root[data-theme-preset="supabase"] {
   --background: oklch(0.1822 0 0);
   --foreground: oklch(0.9288 0.0126 255.5078);
   --card: oklch(0.2046 0 0);
