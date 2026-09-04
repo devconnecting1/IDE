@@ -48,12 +48,12 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[80vh] max-h-[90vh] w-[95vw] max-w-[480px] gap-0 overflow-hidden p-0 sm:max-w-[640px] md:max-w-[800px] lg:max-w-[960px]">
+      <DialogContent className="h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] gap-0 overflow-hidden p-0 sm:max-w-[640px] md:h-[80vh] md:max-w-[800px] lg:max-w-[960px]">
         <DialogHeader className="sr-only">
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
         <div className="flex h-full overflow-hidden">
-          <nav className="hidden w-56 shrink-0 overflow-y-auto border-r bg-sidebar p-3 md:block">
+          <nav className="w-44 shrink-0 overflow-y-auto border-r bg-sidebar p-3 sm:w-56">
             {navGroups.map((group) => (
               <div key={group.label} className="mb-4">
                 <div className="mb-1 px-2 font-medium text-muted-foreground text-xs">{group.label}</div>
