@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 
-import { Cpu, Keyboard, Server, Settings2, Sparkles } from "lucide-react";
+import { Cpu, Keyboard, MoreHorizontal, Plus, Server, Settings2, Sparkles } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -381,9 +382,26 @@ function ShortcutsSettings() {
 function ServersSettings() {
   return (
     <div>
-      <h2 className="mb-4 font-semibold text-lg">Servidores</h2>
-      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
-        Configuração de servidores em breve.
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="font-semibold text-lg">Servidores</h2>
+        <Button variant="ghost" size="sm">
+          <Plus className="mr-1 size-4" />
+          Adicionar servidor
+        </Button>
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between rounded-lg border bg-card p-4">
+          <div className="flex items-center gap-3">
+            <span className="size-2 rounded-full bg-green-500" />
+            <div>
+              <p className="font-medium text-sm">8081-cs-88875918477-default.cs-us-east1-pkhd.cloudshell.dev</p>
+              <p className="text-muted-foreground text-xs">sem nome de usuário</p>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon-sm">
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
