@@ -118,63 +118,249 @@ function SettingRow({
 
 function GeneralSettings() {
   return (
-    <div>
-      <h2 className="mb-4 font-semibold text-lg">Geral</h2>
-      <div className="rounded-lg border bg-card">
-        <div className="px-4">
-          <SettingRow title="Idioma" description="Alterar o idioma de exibição do Studio">
-            <Select defaultValue="pt-BR">
-              <SelectTrigger className="w-44">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                <SelectItem value="en">English</SelectItem>
-              </SelectContent>
-            </Select>
-          </SettingRow>
-          <Separator />
-          <SettingRow
-            title="Aceitar permissões automaticamente"
-            description="Solicitações de permissão serão aprovadas automaticamente"
-          >
-            <Switch />
-          </SettingRow>
-          <Separator />
-          <SettingRow title="Shell do terminal" description="Escolha o shell usado no terminal">
-            <Select defaultValue="auto">
-              <SelectTrigger className="w-44">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="auto">Automático (padrão)</SelectItem>
-                <SelectItem value="bash">Bash</SelectItem>
-                <SelectItem value="zsh">Zsh</SelectItem>
-                <SelectItem value="fish">Fish</SelectItem>
-              </SelectContent>
-            </Select>
-          </SettingRow>
-          <Separator />
-          <SettingRow
-            title="Mostrar resumos de raciocínio"
-            description="Exibir resumos de raciocínio do modelo na linha do tempo"
-          >
-            <Switch defaultChecked />
-          </SettingRow>
-          <Separator />
-          <SettingRow
-            title="Expandir partes da ferramenta shell"
-            description="Mostrar partes da ferramenta shell expandidas por padrão na linha do tempo"
-          >
-            <Switch defaultChecked />
-          </SettingRow>
-          <Separator />
-          <SettingRow
-            title="Expandir partes da ferramenta de edição"
-            description="Mostrar partes das ferramentas de edição, escrita e patch expandidas por padrão"
-          >
-            <Switch defaultChecked />
-          </SettingRow>
+    <div className="space-y-8">
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Geral</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow title="Idioma" description="Alterar o idioma de exibição do OpenCode">
+              <Select defaultValue="pt-BR">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Aceitar permissões automaticamente"
+              description="Solicitações de permissão serão aprovadas automaticamente"
+            >
+              <Switch />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Shell do terminal"
+              description="Escolha o shell usado no terminal. Os shells compatíveis também são usados nas chamadas de ferramentas do agente."
+            >
+              <Select defaultValue="auto">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">Automático (padrão)</SelectItem>
+                  <SelectItem value="bash">Bash</SelectItem>
+                  <SelectItem value="zsh">Zsh</SelectItem>
+                  <SelectItem value="fish">Fish</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Mostrar resumos de raciocínio"
+              description="Exibir resumos de raciocínio do modelo na linha do tempo"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Expandir partes da ferramenta shell"
+              description="Mostrar partes da ferramenta shell expandidas por padrão na linha do tempo"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Expandir partes da ferramenta de edição"
+              description="Mostrar partes das ferramentas de edição, escrita e patch expandidas por padrão na linha do tempo"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Aparência</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow
+              title="Esquema de cores"
+              description="Escolha se o OpenCode segue o tema do sistema, claro ou escuro"
+            >
+              <Select defaultValue="system">
+                <SelectTrigger className="w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="system">Sistema</SelectItem>
+                  <SelectItem value="light">Claro</SelectItem>
+                  <SelectItem value="dark">Escuro</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Tema" description="Personalize como o OpenCode é tematizado.">
+              <Select defaultValue="oc-2">
+                <SelectTrigger className="w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="oc-2">OC-2</SelectItem>
+                  <SelectItem value="oc-1">OC-1</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Fonte da interface" description="Personalize a fonte usada em toda a interface">
+              <Select defaultValue="system-sans">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="system-sans">System Sans</SelectItem>
+                  <SelectItem value="inter">Inter</SelectItem>
+                  <SelectItem value="geist">Geist</SelectItem>
+                  <SelectItem value="roboto">Roboto</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Fonte de código" description="Personalize a fonte usada em blocos de código">
+              <Select defaultValue="system-mono">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="system-mono">System Mono</SelectItem>
+                  <SelectItem value="geist-mono">Geist Mono</SelectItem>
+                  <SelectItem value="jetbrains-mono">JetBrains Mono</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Fonte do terminal" description="Personalize a fonte usada no terminal">
+              <Select defaultValue="jetbrains-mono-nerd">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="jetbrains-mono-nerd">JetBrainsMono Nerd Font</SelectItem>
+                  <SelectItem value="geist-mono">Geist Mono</SelectItem>
+                  <SelectItem value="fira-code">Fira Code</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Notificações do sistema</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow
+              title="Agente"
+              description="Mostrar notificação do sistema quando o agente concluir o trabalho ou precisar de atenção"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Permissões"
+              description="Mostrar notificação do sistema quando uma permissão for necessária"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Erros" description="Mostrar notificação do sistema quando ocorrer um erro">
+              <Switch defaultChecked />
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Efeitos sonoros</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow
+              title="Agente"
+              description="Reproduzir som quando o agente concluir o trabalho ou precisar de atenção"
+            >
+              <Select defaultValue="staplebops-01">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="staplebops-01">Staplebops 01</SelectItem>
+                  <SelectItem value="staplebops-02">Staplebops 02</SelectItem>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Permissões" description="Reproduzir som quando uma permissão for necessária">
+              <Select defaultValue="staplebops-02">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="staplebops-01">Staplebops 01</SelectItem>
+                  <SelectItem value="staplebops-02">Staplebops 02</SelectItem>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Erros" description="Reproduzir som quando ocorrer um erro">
+              <Select defaultValue="nao-03">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nao-03">Não 03</SelectItem>
+                  <SelectItem value="staplebops-01">Staplebops 01</SelectItem>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                </SelectContent>
+              </Select>
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Avançado</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow title="Árvore de arquivos" description="Mostrar o painel da árvore de arquivos nas sessões">
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Paleta de comandos"
+              description="Mostrar o botão de busca e paleta de comandos na barra de título"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Status do servidor"
+              description="Mostrar o botão de status do servidor na barra de título"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Mostrar agente"
+              description="Alternar entre agentes na área de composição. Quando oculto, usa o agente Build como padrão."
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+          </div>
         </div>
       </div>
     </div>
@@ -185,7 +371,7 @@ function ShortcutsSettings() {
   return (
     <div>
       <h2 className="mb-4 font-semibold text-lg">Atalhos</h2>
-      <div className="rounded-lg border p-4 text-muted-foreground text-sm">
+      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
         Configuração de atalhos de teclado em breve.
       </div>
     </div>
@@ -196,7 +382,9 @@ function ServersSettings() {
   return (
     <div>
       <h2 className="mb-4 font-semibold text-lg">Servidores</h2>
-      <div className="rounded-lg border p-4 text-muted-foreground text-sm">Configuração de servidores em breve.</div>
+      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
+        Configuração de servidores em breve.
+      </div>
     </div>
   );
 }
@@ -205,7 +393,9 @@ function ProvidersSettings() {
   return (
     <div>
       <h2 className="mb-4 font-semibold text-lg">Provedores</h2>
-      <div className="rounded-lg border p-4 text-muted-foreground text-sm">Configuração de provedores em breve.</div>
+      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
+        Configuração de provedores em breve.
+      </div>
     </div>
   );
 }
@@ -214,7 +404,9 @@ function ModelsSettings() {
   return (
     <div>
       <h2 className="mb-4 font-semibold text-lg">Modelos</h2>
-      <div className="rounded-lg border p-4 text-muted-foreground text-sm">Configuração de modelos em breve.</div>
+      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
+        Configuração de modelos em breve.
+      </div>
     </div>
   );
 }
