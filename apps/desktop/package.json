@@ -3,6 +3,7 @@
   "version": "2.2.0",
   "private": true,
   "main": "electron/dist/main.js",
+  "homepage": "https://github.com/devconnecting1/Workspaacing",
   "scripts": {
     "dev": "npm run electron:build:ts && electron .",
     "build": "npm run electron:build:ts",
