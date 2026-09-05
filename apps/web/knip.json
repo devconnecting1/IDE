@@ -17,6 +17,7 @@
     "@floating-ui/react",
     "@workspaacing/ui",
     "@workspaacing/theme",
+    "@biomejs/biome",
     "d3-geo",
     "@types/d3-geo",
     "topojson-client",
