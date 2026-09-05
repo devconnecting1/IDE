@@ -2,6 +2,7 @@
   "name": "@workspaacing/desktop",
   "version": "2.2.0",
   "private": true,
+  "description": "Workspaacing - AI agent IDE",
   "main": "electron/dist/main.js",
   "homepage": "https://github.com/devconnecting1/Workspaacing",
   "author": {
