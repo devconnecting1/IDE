@@ -1,4 +1,5 @@
-/* Supabase preset */
+/* label: Supabase */
+/* value: supabase */
 :root[data-theme-preset="supabase"] {
   --background: oklch(0.9911 0 0);
   --foreground: oklch(0.2046 0 0);

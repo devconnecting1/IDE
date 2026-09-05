@@ -41,8 +41,8 @@ const presets = files.map((file) => {
   const filePath = path.join(presetDir, file);
   const content = fs.readFileSync(filePath, "utf8");
 
-  const labelMatch = content.match(/label:\s*(.+)/);
-  const valueMatch = content.match(/value:\s*(.+)/);
+  const labelMatch = content.match(/label:\s*(.+?)(?:\s*\*\/)?$/m);
+  const valueMatch = content.match(/value:\s*(.+?)(?:\s*\*\/)?$/m);
 
   if (!labelMatch) {
     console.warn(`⚠️ No 'label:' found in ${file}, using filename as fallback.`);

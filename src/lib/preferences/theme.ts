@@ -15,12 +15,20 @@ export const THEME_PRESET_OPTIONS = [
     label: "Default",
     value: "default",
     primary: {
+      light: "oklch(0.922 0 0)",
+      dark: "oklch(0.922 0 0)",
+    },
+  },
+  {
+    label: "Normal",
+    value: "normal",
+    primary: {
       light: "oklch(0.205 0 0)",
       dark: "oklch(0.922 0 0)",
     },
   },
   {
-    label: "supabase",
+    label: "Supabase",
     value: "supabase",
     primary: {
       light: "oklch(0.8348 0.1302 160.908)",
@@ -28,7 +36,7 @@ export const THEME_PRESET_OPTIONS = [
     },
   },
   {
-    label: "vercel",
+    label: "Vercel",
     value: "vercel",
     primary: {
       light: "oklch(0 0 0)",

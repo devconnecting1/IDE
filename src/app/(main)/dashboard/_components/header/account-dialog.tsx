@@ -188,14 +188,15 @@ function GeneralSettings() {
             </SettingRow>
             <Separator />
             <SettingRow title="Tema" description="Tema visual da interface do TUI">
-              <Select defaultValue="opencode">
+              <Select defaultValue="default">
                 <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="opencode">OpenCode</SelectItem>
-                  <SelectItem value="oc-1">OC-1</SelectItem>
-                  <SelectItem value="oc-2">OC-2</SelectItem>
+                  <SelectItem value="default">Default</SelectItem>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="supabase">Supabase</SelectItem>
+                  <SelectItem value="vercel">Vercel</SelectItem>
                 </SelectContent>
               </Select>
             </SettingRow>
