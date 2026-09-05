@@ -791,30 +791,30 @@ function ServersSettings() {
 
 const providers = [
   {
-    name: "OpenCode Zen",
+    name: "OpenCode",
     badge: "Recomendado",
-    description: "Modelos selecionados incluindo Claude, GPT, Gemini e mais",
-    icon: "Z",
+    description: "Plataforma gratuita com modelos selecionados",
+    icon: "OC",
   },
   {
     name: "OpenCode Go",
     badge: "Recomendado",
-    description: "Assinatura de baixo custo para todos",
+    description: "Assinatura de baixo custo para todos os modelos",
     icon: "G",
   },
   {
     name: "Anthropic",
-    description: "Acesso direto aos modelos Claude, incluindo Pro e Max",
+    description: "Acesso direto aos modelos Claude, incluindo Opus, Sonnet e Haiku",
     icon: "A",
   },
   {
     name: "GitHub Copilot",
-    description: "Modelos de IA para auxílio à programação pelo GitHub Copilot",
+    description: "Modelos de IA para auxílio à programação pelo GitHub",
     icon: "GH",
   },
   {
     name: "OpenAI",
-    description: "Modelos GPT rápidos e avançados para tarefas gerais de IA",
+    description: "Modelos GPT e o系列 para tarefas gerais de IA",
     icon: "O",
   },
   {
@@ -823,19 +823,89 @@ const providers = [
     icon: "✦",
   },
   {
+    name: "Google Vertex",
+    description: "Google Cloud Vertex AI com modelos Gemini e Anthropic",
+    icon: "GV",
+  },
+  {
     name: "OpenRouter",
-    description: "Acesse todos os modelos suportados de um único provedor",
+    description: "Acesse centenas de modelos de múltiplos provedores",
     icon: "OR",
   },
   {
-    name: "Vercel AI Gateway",
+    name: "xAI",
+    description: "Modelos Grok para raciocínio avançado e geração",
+    icon: "X",
+  },
+  {
+    name: "Mistral",
+    description: "Modelos Mistral e Mixtral para código e raciocínio",
+    icon: "M",
+  },
+  {
+    name: "Groq",
+    description: "Infraestrutura de alta velocidade para modelos Llama e Mixtral",
+    icon: "Gr",
+  },
+  {
+    name: "DeepInfra",
+    description: "Modelos open-source hospedados com preços acessíveis",
+    icon: "DI",
+  },
+  {
+    name: "Cerebras",
+    description: "Inferência ultra-rápida com hardware dedicado de wafer",
+    icon: "Ce",
+  },
+  {
+    name: "Cohere",
+    description: "Modelos Command para busca, geração e classificação",
+    icon: "Co",
+  },
+  {
+    name: "Together AI",
+    description: "Centenas de modelos open-source com APIs padronizadas",
+    icon: "TA",
+  },
+  {
+    name: "Perplexity",
+    description: "Modelos Sonar com acesso a informações atualizadas da web",
+    icon: "P",
+  },
+  {
+    name: "Amazon Bedrock",
+    description: "Modelos Claude, Llama, Mistral e Cohere via AWS",
+    icon: "AB",
+  },
+  {
+    name: "Azure",
+    description: "Azure OpenAI Service com modelos GPT e DALL-E",
+    icon: "Az",
+  },
+  {
+    name: "GitLab",
+    description: "Modelos de IA integrados ao GitLab para código e documentação",
+    icon: "GL",
+  },
+  {
+    name: "Vercel",
     description: "Acesso unificado a modelos de IA com roteamento inteligente",
     icon: "▲",
   },
   {
+    name: "Alibaba",
+    description: "Modelos Qwen para código, raciocínio e geração multilíngue",
+    icon: "Al",
+  },
+  {
+    name: "Venice",
+    description: "Modelos open-source com foco em privacidade",
+    icon: "V",
+  },
+  {
     name: "Provedor personalizado",
     badge: "Personalizado",
-    description: "Adicionar um provedor compatível com OpenAI por meio da URL base.",
+    description: "Adicionar um provedor compatível com OpenAI via URL base",
     icon: "✿",
   },
 ];
@@ -891,40 +961,166 @@ function ProvidersSettings() {
   );
 }
 
-const models = [
-  { name: "Big Pickle", enabled: false },
-  { name: "Ling 3.0 Flash Fin Free", enabled: true },
-  { name: "MiMo V2.5 Free", enabled: true },
-  { name: "Muse Spark 1.2 Free", enabled: false },
-  { name: "Muse Spark 1.3 Free", enabled: true },
-  { name: "Nemotron 3 Ultra Free", enabled: false },
-  { name: "Nemotron 3.5 Lightning Free", enabled: true },
+const modelProviders = [
+  {
+    name: "OpenCode",
+    icon: "OC",
+    models: [{ name: "Big Pickle", description: "Modelo forte e rápido da OpenCode", enabled: true }],
+  },
+  {
+    name: "Anthropic",
+    icon: "A",
+    models: [
+      { name: "Claude Opus 5", description: "Modelo mais inteligente para tarefas complexas", enabled: false },
+      { name: "Claude Sonnet 4", description: " equilíbrio ideal entre inteligência e velocidade", enabled: true },
+      { name: "Claude Haiku 4.5", description: "Modelo rápido e eficiente para tarefas leves", enabled: true },
+    ],
+  },
+  {
+    name: "OpenAI",
+    icon: "O",
+    models: [
+      { name: "GPT-5", description: "Modelo mais avançado da OpenAI", enabled: true },
+      { name: "GPT-5 Nano", description: "Modelo leve e rápido para tarefas simples", enabled: false },
+      { name: "GPT-6 Astra", description: "Próxima geração de modelos GPT", enabled: false },
+    ],
+  },
+  {
+    name: "Google",
+    icon: "✦",
+    models: [
+      { name: "Gemini 3 Pro", description: "Modelo avançado com reasoning e multimodal", enabled: true },
+      { name: "Gemini 3.7 Flash", description: "Modelo rápido para respostas ágeis", enabled: true },
+      { name: "Gemini 3.8 Flash", description: "Versão aprimorada do Flash", enabled: false },
+    ],
+  },
+  {
+    name: "xAI",
+    icon: "X",
+    models: [
+      { name: "Grok 4.5", description: "Modelo com raciocínio avançado", enabled: false },
+      { name: "Grok 4.6", description: "Última versão do Grok", enabled: false },
+    ],
+  },
+  {
+    name: "Meta",
+    icon: "M",
+    models: [
+      { name: "Muse Spark 1.3", description: "Modelo open-source da Meta", enabled: true },
+      { name: "Muse Spark 1.2", description: "Versão anterior do Muse Spark", enabled: false },
+    ],
+  },
+  {
+    name: "DeepSeek",
+    icon: "DS",
+    models: [
+      { name: "V4 Pro", description: "Modelo avançado com raciocínio profundo", enabled: false },
+      { name: "V4 Flash", description: "Versão rápida do DeepSeek V4", enabled: false },
+    ],
+  },
+  {
+    name: "Alibaba",
+    icon: "Al",
+    models: [
+      { name: "Qwen3.8 Max", description: "Modelo mais inteligente da série Qwen", enabled: false },
+      { name: "Qwen3.7 Flash", description: "Modelo rápido para código e raciocínio", enabled: false },
+    ],
+  },
+  {
+    name: "Mistral",
+    icon: "Mi",
+    models: [
+      { name: "Mistral Large", description: "Modelo principal da Mistral", enabled: false },
+      { name: "Mixtral 8x22B", description: "Modelo mixture-of-experts de alta performance", enabled: false },
+    ],
+  },
+  {
+    name: "Nvidia",
+    icon: "Nv",
+    models: [
+      { name: "Nemotron 3.5 Lightning", description: "Modelo ultra-rápido da Nvidia", enabled: true },
+      { name: "Nemotron 3 Ultra", description: "Modelo de alta performance da Nvidia", enabled: false },
+    ],
+  },
 ];
 
 function ModelsSettings() {
+  const [search, setSearch] = useState("");
+  const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set(modelProviders.map((p) => p.name)));
+
+  const toggleProvider = (name: string) => {
+    setExpandedProviders((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
+
+  const filteredProviders = modelProviders
+    .map((provider) => ({
+      ...provider,
+      models: provider.models.filter(
+        (m) =>
+          m.name.toLowerCase().includes(search.toLowerCase()) ||
+          m.description.toLowerCase().includes(search.toLowerCase()),
+      ),
+    }))
+    .filter((provider) => provider.models.length > 0);
+
   return (
     <div className="space-y-6">
-      <h2 className="font-semibold text-lg">Modelos</h2>
-
-      <Input placeholder="Buscar modelos" />
-
       <div>
-        <div className="mb-2 flex items-center gap-2">
-          <ChevronDown className="size-4 text-muted-foreground" />
-          <span className="flex size-6 items-center justify-center rounded-md bg-muted font-medium text-xs">Z</span>
-          <span className="font-medium text-sm">OpenCode Zen</span>
-        </div>
-        <div className="rounded-lg border bg-card">
-          {models.map((model, index) => (
-            <div key={model.name}>
-              {index > 0 && <Separator />}
-              <div className="flex items-center justify-between px-4 py-3">
-                <span className="text-sm">{model.name}</span>
-                <Switch defaultChecked={model.enabled} />
-              </div>
+        <h2 className="font-semibold text-lg">Modelos</h2>
+        <p className="text-muted-foreground text-xs">
+          Modelos carregados de models.dev. Ative os modelos que deseja usar.
+        </p>
+      </div>
+
+      <Input placeholder="Buscar modelos" value={search} onChange={(e) => setSearch(e.target.value)} />
+
+      <div className="space-y-4">
+        {filteredProviders.length === 0 ? (
+          <p className="py-8 text-center text-muted-foreground text-sm">Nenhum modelo encontrado</p>
+        ) : (
+          filteredProviders.map((provider) => (
+            <div key={provider.name}>
+              <button
+                type="button"
+                className="mb-1 flex w-full items-center gap-2 py-1 text-muted-foreground text-xs uppercase tracking-wide hover:text-foreground"
+                onClick={() => toggleProvider(provider.name)}
+              >
+                <ChevronDown
+                  className={cn("size-3 transition-transform", !expandedProviders.has(provider.name) && "-rotate-90")}
+                />
+                <span className="flex size-5 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
+                  {provider.icon}
+                </span>
+                <span className="font-medium">{provider.name}</span>
+                <span className="text-muted-foreground">({provider.models.length})</span>
+              </button>
+              {expandedProviders.has(provider.name) && (
+                <div className="rounded-lg border bg-card">
+                  {provider.models.map((model, index) => (
+                    <div key={model.name}>
+                      {index > 0 && <Separator />}
+                      <div className="flex items-center justify-between px-4 py-3">
+                        <div>
+                          <span className="text-sm">{model.name}</span>
+                          <p className="text-muted-foreground text-xs">{model.description}</p>
+                        </div>
+                        <Switch defaultChecked={model.enabled} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
     </div>
   );
