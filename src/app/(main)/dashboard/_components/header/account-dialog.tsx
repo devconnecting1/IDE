@@ -976,7 +976,7 @@ function ProvidersSettings() {
       </div>
 
       <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
-        <DialogContent className="flex h-[70vh] w-[90vw] max-w-[900px] flex-col overflow-hidden p-0">
+        <DialogContent className="flex h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] flex-col overflow-hidden p-0 sm:max-w-[640px] md:h-[80vh] md:max-w-[800px] lg:max-w-[960px]">
           <DialogHeader className="border-b p-4">
             <DialogTitle>Conectar provedor</DialogTitle>
           </DialogHeader>
