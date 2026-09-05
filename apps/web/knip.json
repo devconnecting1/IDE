@@ -31,5 +31,6 @@
     "recharts",
     "shiki"
   ],
+  "ignoreBinaries": ["biome"],
   "exclude": ["enumMembers", "namespaceMembers", "types"]
 }
