@@ -5,10 +5,11 @@
   "main": "electron/dist/main.js",
   "scripts": {
     "dev": "npm run electron:build:ts && electron .",
-    "build": "npm run electron:build:ts && electron-builder",
-    "build:win": "npm run electron:build:ts && electron-builder --win",
-    "build:mac": "npm run electron:build:ts && electron-builder --mac",
-    "build:linux": "npm run electron:build:ts && electron-builder --linux",
+    "build": "npm run electron:build:ts",
+    "electron:package": "npm run electron:build:ts && electron-builder",
+    "electron:package:win": "npm run electron:build:ts && electron-builder --win",
+    "electron:package:mac": "npm run electron:build:ts && electron-builder --mac",
+    "electron:package:linux": "npm run electron:build:ts && electron-builder --linux",
     "electron:build:ts": "tsc -p electron/tsconfig.json"
   },
   "build": {
@@ -42,7 +43,7 @@
     }
   },
   "devDependencies": {
-    "electron": "^44.2.0",
+    "electron": "44.2.0",
     "electron-builder": "^26.15.3",
     "typescript": "^7.0.2"
   }

@@ -25,7 +25,7 @@
     "lint:md": "markdownlint-cli2 \"*.md\"",
     "lint:yaml": "yamllint .github/workflows/*.yml .github/dependabot.yml",
     "electron:dev": "turbo run dev --filter=@workspaacing/desktop",
-    "electron:build": "turbo run build --filter=@workspaacing/desktop"
+    "electron:package": "turbo run electron:package --filter=@workspaacing/desktop"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [

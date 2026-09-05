@@ -35,5 +35,5 @@ jobs:
       - name: Build Next.js
         run: npx turbo run build --filter=@workspaacing/web
 
-      - name: Build Electron TypeScript
+      - name: Type check Electron
         run: npx turbo run build --filter=@workspaacing/desktop
