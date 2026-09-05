@@ -19,9 +19,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./apps/web/src/*"],
+      "@workspaacing/ui": ["./packages/ui/src"],
+      "@workspaacing/theme": ["./packages/theme/src"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+  "include": ["apps/web/**/*.ts", "apps/web/**/*.tsx", "packages/**/*.ts"],
   "exclude": ["node_modules"]
 }

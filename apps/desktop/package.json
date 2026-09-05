@@ -1,0 +1,49 @@
+{
+  "name": "@workspaacing/desktop",
+  "version": "2.2.0",
+  "private": true,
+  "main": "electron/dist/main.js",
+  "scripts": {
+    "dev": "npm run electron:build:ts && electron .",
+    "build": "npm run electron:build:ts && electron-builder",
+    "build:win": "npm run electron:build:ts && electron-builder --win",
+    "build:mac": "npm run electron:build:ts && electron-builder --mac",
+    "build:linux": "npm run electron:build:ts && electron-builder --linux",
+    "electron:build:ts": "tsc -p electron/tsconfig.json"
+  },
+  "build": {
+    "appId": "com.workspaacing.app",
+    "productName": "Workspaacing",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "electron/dist/**/*",
+      "electron/interface.d.ts",
+      "out/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "../web/src/app/favicon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "../web/src/app/favicon.ico",
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "../web/src/app/favicon.ico",
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.2.0",
+    "electron-builder": "^26.15.3",
+    "typescript": "^7.0.2"
+  }
+}

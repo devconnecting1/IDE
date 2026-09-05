@@ -10,6 +10,9 @@ jobs:
   ci:
     name: Build & Test
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,13 +27,13 @@ jobs:
         run: npm ci
 
       - name: Biome Check
-        run: npx biome check .
+        run: turbo run check
 
       - name: TypeScript Check
-        run: npx tsc --noEmit
+        run: turbo run typecheck
 
       - name: Build Next.js
-        run: npm run build
+        run: turbo run build --filter=@workspaacing/web
 
       - name: Build Electron TypeScript
-        run: npm run electron:build:ts
+        run: turbo run build --filter=@workspaacing/desktop

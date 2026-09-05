@@ -14,24 +14,26 @@ The goal is to keep the codebase modular, scalable, and easy to extend.
 
 ## Project Layout
 
-We use a **colocation-based file system**. Each feature keeps its own pages, components, and logic.
+We use a **Turborepo monorepo** with colocated features.
 
 ```text
-src
-├── app               # Next.js routes (App Router)
-│   ├── (auth)        # Auth layouts & screens
-│   ├── (main)        # Main dashboard routes
-│   │   └── (dashboard)
-│   │       ├── crm
-│   │       ├── finance
-│   │       ├── default
-│   │       └── ...
-│   └── layout.tsx
-├── components        # Shared UI components
-├── hooks             # Reusable hooks
-├── lib               # Config & utilities
-├── styles            # Tailwind / theme setup
-└── types             # TypeScript definitions
+apps/
+├── web/                  # Next.js app (App Router)
+│   ├── src/
+│   │   ├── app/          # Routes
+│   │   │   ├── (auth)    # Auth layouts & screens
+│   │   │   ├── (main)    # Main dashboard routes
+│   │   │   └── ...
+│   │   ├── components    # App-specific components
+│   │   ├── hooks         # Reusable hooks
+│   │   └── lib           # Config & utilities
+│   ├── messages/         # i18n translations
+│   └── next.config.mjs
+├── desktop/              # Electron app
+│   └── electron/
+packages/
+├── ui/                   # Shared shadcn/ui components
+└── theme/                # Theme presets
 ```
 
 If you’d like a more detailed example of this setup, check out the [Next Colocation Template](https://github.com/arhamkhnz/next-colocation-template), where the full structure is explained with examples.
@@ -55,7 +57,7 @@ If you’d like a more detailed example of this setup, check out the [Next Coloc
 3. Navigate into the Project
 
    ```bash
-   cd next-shadcn-admin-dashboard
+   cd IDE
    ```
 
 4. **Install dependencies**
@@ -67,7 +69,7 @@ If you’d like a more detailed example of this setup, check out the [Next Coloc
 5. **Run the dev server**
 
    ```bash
-   npm run dev
+   turbo run dev
    ```
 
    App will be available at [http://localhost:3000](http://localhost:3000).
@@ -95,12 +97,13 @@ If you’d like a more detailed example of this setup, check out the [Next Coloc
 
 ## Where to Contribute
 
-- **External Pages**: Landing pages or other non-dashboard routes → `src/app/(external)/`  
-- **Auth Screens**: Login, register, and authentication layouts → `src/app/(main)/auth/`  
-- **Dashboard Screens**: Feature dashboards like CRM, Finance, Analytics → `src/app/(main)/dashboard/`
-- **Components**: Reusable UI goes in `src/components/`  
-- **Hooks**: Custom logic goes in `src/hooks/`  
-- **Themes**: New presets under `src/styles/presets/`  
+- **External Pages**: Landing pages or other non-dashboard routes → `apps/web/src/app/(external)/`  
+- **Auth Screens**: Login, register, and authentication layouts → `apps/web/src/app/(main)/auth/`  
+- **Dashboard Screens**: Feature dashboards like CRM, Finance, Analytics → `apps/web/src/app/(main)/dashboard/`
+- **Shared UI Components**: Reusable shadcn/ui components → `packages/ui/src/`
+- **App Components**: App-specific components → `apps/web/src/components/`  
+- **Hooks**: Custom logic goes in `apps/web/src/hooks/`  
+- **Themes**: New presets under `packages/theme/src/presets/`  
 
 ---
 

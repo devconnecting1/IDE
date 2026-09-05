@@ -2,7 +2,18 @@
 
 ## Project overview
 
-Workspaacing is a responsive admin dashboard built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, and shadcn/ui.
+Workspaacing is a responsive admin dashboard built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, and shadcn/ui. It uses Turborepo monorepo with workspaces.
+
+## Project structure
+
+```
+apps/
+  web/          ← Next.js app (src/, messages/, next.config.mjs)
+  desktop/      ← Electron app
+packages/
+  ui/           ← Shared shadcn/ui components
+  theme/        ← Theme presets and generation
+```
 
 ## CRITICAL: never run a local server
 
@@ -30,26 +41,25 @@ npx skills add shadcn/ui
 
 The skill contains the component, styling, composition, accessibility, and CLI rules. Do not duplicate those rules here. Always inspect the local component source before using it.
 
-Do not modify files inside `src/components/ui/` or `src/components/calendar/`. Keep these components intact and apply styling or customization where they are used.
+Do not modify files inside `packages/ui/src/` or `apps/web/src/components/calendar/`. Keep these components intact and apply styling or customization where they are used.
 
 ## Setup
 
-This project uses npm.
+This project uses npm with Turborepo workspaces.
 
 ```bash
 npm install
-npm run dev
+turbo run dev
 ```
 
 Available commands:
 
 ```bash
-npm run build
-npm run lint
-npm run format
-npm run check
-npm run check:fix
-npm run generate:presets
+turbo run build
+turbo run lint
+turbo run check
+turbo run typecheck
+turbo run dev
 ```
 
 There is currently no automated test command. Run build, lint, check, or other validation commands only when the user explicitly requests that validation.
@@ -58,13 +68,13 @@ There is currently no automated test command. Run build, lint, check, or other v
 
 Keep feature code close to the route that owns it.
 
-- Dashboard routes: `src/app/(main)/dashboard/<screen>/page.tsx`
-- Screen-specific components, data, and schemas: `src/app/(main)/dashboard/<screen>/_components/`
-- Shared dashboard components: `src/app/(main)/dashboard/_components/`
-- Shared application components: `src/components/`
-- Local shadcn components: `src/components/ui/`
-- Shared hooks and utilities: `src/hooks/` and `src/lib/`
-- Theme presets: `src/styles/presets/`
+- Dashboard routes: `apps/web/src/app/(main)/dashboard/<screen>/page.tsx`
+- Screen-specific components, data, and schemas: `apps/web/src/app/(main)/dashboard/<screen>/_components/`
+- Shared dashboard components: `apps/web/src/app/(main)/dashboard/_components/`
+- Shared application components: `apps/web/src/components/`
+- Shared UI components (shadcn): `packages/ui/src/`
+- Shared hooks and utilities: `apps/web/src/hooks/` and `apps/web/src/lib/`
+- Theme presets: `packages/theme/src/presets/`
 
 Keep a component inside its route until it is reused by another feature. Do not move screen-specific code into a shared directory preemptively.
 

@@ -1,26 +1,13 @@
-# Workspaacing - Next.js Admin Template with TypeScript & Shadcn UI
+# Workspaacing - AI-Powered Admin Dashboard IDE
 
-**Workspaacing** - An AI-powered admin dashboard IDE built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, and shadcn/ui.
-
-<img src="https://github.com/arhamkhnz/next-shadcn-admin-dashboard/blob/main/media/dashboard.png?version=5" alt="Dashboard Screenshot">
-
-Most admin templates I found, free or paid, felt cluttered, outdated, or too rigid. I built this as a cleaner alternative with features often missing in others, such as theme toggling and layout controls, while keeping the design modern, minimal, and flexible.
-
-> **View demo:** [workspaacing](https://ide-navy.vercel.app)
-
-> [!NOTE]
-> Looking for the Base UI version? Check out [next-shadcn-admin-dashboard-baseui](https://github.com/arhamkhnz/next-shadcn-admin-dashboard-baseui).
->
-> Looking for the React Aria version? Check out [arhamkhnz/next-shadcn-admin-dashboard-aria](https://github.com/arhamkhnz/next-shadcn-admin-dashboard-aria).
->
-> Looking for the TanStack Start version? Check out [tanstack-shadcn-admin-dashboard](https://github.com/arhamkhnz/tanstack-shadcn-admin-dashboard).
-
-> [!TIP]
-> I’m also working on Nuxt.js and Svelte versions of this dashboard. They’ll be live soon.
+**Workspaacing** - An AI-powered admin dashboard IDE built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, and Turborepo.
 
 ## Features
 
 - Built with Next.js 16, TypeScript, Tailwind CSS v4, and Shadcn UI  
+- **Turborepo monorepo** with shared packages (UI, theme)
+- **Remote Caching** via Vercel for faster CI/CD
+- Electron desktop app support
 - Responsive and mobile-friendly  
 - Customizable theme presets (light/dark modes with color schemes like Tangerine, Brutalist, and more)  
 - Flexible layouts (collapsible sidebar, variable content widths)  
@@ -50,10 +37,11 @@ Most admin templates I found, free or paid, felt cluttered, outdated, or too rig
 
 - **Framework**: Next.js 16 (App Router), TypeScript, Tailwind CSS v4  
 - **UI Components**: Shadcn UI  
+- **Monorepo**: Turborepo with workspaces (apps/web, apps/desktop, packages/*)  
 - **Validation**: Zod  
 - **Forms & State Management**: React Hook Form, Zustand  
 - **Tables & Data Handling**: TanStack Table  
-- **Tooling & DX**: Biome, Husky  
+- **Tooling & DX**: Biome, Husky, Turborepo  
 
 ## Screens
 
@@ -108,13 +96,13 @@ _Deploy your own copy with one click._
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/arhamkhnz/next-shadcn-admin-dashboard.git
+   git clone https://github.com/devconnecting1/IDE.git
    ```
 
 2. **Navigate into the project**
 
    ```bash
-   cd next-shadcn-admin-dashboard
+   cd IDE
    ```
 
 3. **Install dependencies**
@@ -126,17 +114,38 @@ _Deploy your own copy with one click._
 4. **Start the development server**
 
    ```bash
-   npm run dev
+   turbo run dev
    ```
 
 Your app will be running at [http://localhost:3000](http://localhost:3000)
+
+### Project Structure
+
+```
+apps/
+  web/          ← Next.js app
+  desktop/      ← Electron app
+packages/
+  ui/           ← Shared shadcn/ui components
+  theme/        ← Theme presets
+```
+
+### Turbo Commands
+
+```bash
+turbo run build       # Build all packages
+turbo run dev         # Start all dev servers
+turbo run lint        # Lint all packages
+turbo run typecheck   # Type check all packages
+turbo run check       # Biome check all packages
+```
 
 ### Formatting and Linting
 
 Format, lint, and organize imports
 
 ```bash
-npx @biomejs/biome check --write
+turbo run check
 ```
 
 > For more information on available rules, fixes, and CLI options, refer to the [Biome documentation](https://biomejs.dev/).

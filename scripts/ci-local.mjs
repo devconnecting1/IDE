@@ -32,7 +32,7 @@ console.log("=== CI local (substitui GitHub Actions: vulnerabilidades, código m
 
 report("Biome (lint + formatação)", run("biome", "npm", ["run", "check"]));
 
-rmSync(join(root, ".next/types"), { recursive: true, force: true });
+rmSync(join(root, "apps/web/.next/types"), { recursive: true, force: true });
 report("TypeScript (tsc --noEmit)", run("tsc", "npx", ["tsc", "--noEmit"]));
 
 report("Código morto (knip)", run("knip", "npm", ["run", "knip"]));
@@ -40,7 +40,7 @@ report("Código morto (knip)", run("knip", "npm", ["run", "knip"]));
 report(
   "Presets do tema (drift)",
   run("presets", "npm", ["run", "generate:presets"]) &&
-    run("presets-diff", "git", ["diff", "--exit-code", "--", "src/lib/preferences/theme.ts"]),
+    run("presets-diff", "git", ["diff", "--exit-code", "--", "apps/web/src/lib/preferences/theme.ts"]),
 );
 
 if (withAudit) {

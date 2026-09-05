@@ -39,9 +39,10 @@
       "!.next",
       "!dist",
       "!out",
-      "!src/components/animate-ui",
-      "!src/components/ui",
-      "!src/components/calendar"
+      "!apps/web/src/components/animate-ui",
+      "!apps/web/src/components/ui",
+      "!apps/web/src/components/calendar",
+      "!packages/ui/src"
     ]
   },
   "formatter": {

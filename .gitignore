@@ -1,5 +1,8 @@
 node_modules/
 .next/
 out/
+dist/
 dist-electron/
-electron/dist/
+.turbo/
+.turbo/cache/
+*.tsbuildinfo
