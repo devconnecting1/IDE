@@ -2,6 +2,7 @@
   "name": "studio-admin",
   "version": "2.2.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -16,7 +17,38 @@
     "ci:local:build": "node scripts/ci-local.mjs --build",
     "knip": "knip",
     "lint:md": "markdownlint-cli2 \"*.md\"",
-    "lint:yaml": "yamllint .github/workflows/*.yml .github/dependabot.yml"
+    "lint:yaml": "yamllint .github/workflows/*.yml .github/dependabot.yml",
+    "electron:dev": "ELECTRON=true next build && electron .",
+    "electron:build": "ELECTRON=true next build && electron-builder",
+    "electron:build:win": "ELECTRON=true next build && electron-builder --win",
+    "electron:build:mac": "ELECTRON=true next build && electron-builder --mac",
+    "electron:build:linux": "ELECTRON=true next build && electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.studioadmin.app",
+    "productName": "Studio Admin",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": ["electron/**/*", "out/**/*"],
+    "win": {
+      "target": "nsis",
+      "icon": "public/favicon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/favicon.ico",
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "public/favicon.ico",
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": ["biome check --write --no-errors-on-unmatched"],
@@ -79,6 +111,8 @@
     "@types/react-dom": "^19.2.7",
     "@types/topojson-client": "^3.1.5",
     "babel-plugin-react-compiler": "^1.0.0",
+    "electron": "^44.2.0",
+    "electron-builder": "^26.15.3",
     "husky": "^9.1.7",
     "knip": "^6.34.0",
     "lint-staged": "^17.4.1",
