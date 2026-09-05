@@ -982,7 +982,7 @@ function ProvidersSettings() {
             <DialogTitle>Conectar provedor</DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 gap-6 p-4">
-            <div className="flex w-64 shrink-0 flex-col gap-4">
+            <div className="flex w-64 shrink-0 flex-col gap-4 bg-background">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -992,9 +992,9 @@ function ProvidersSettings() {
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <div className="min-h-0 flex-1 overflow-auto">
+            <div className="min-h-0 flex-1 overflow-auto bg-background">
                 <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
-                <div className="rounded-lg border bg-background">
+                <div className="rounded-lg border bg-card">
                   {filteredPopular.map((provider, index) => (
                     <div key={provider.name}>
                       {index > 0 && <Separator />}
@@ -1016,9 +1016,9 @@ function ProvidersSettings() {
                 </div>
               </div>
             </div>
-            <div className="min-h-0 flex-1 overflow-auto">
+            <div className="min-h-0 flex-1 overflow-auto bg-background">
               <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Outro</h4>
-              <div className="rounded-lg border bg-background">
+              <div className="rounded-lg border bg-card">
                 <div className="flex items-center gap-3 px-3 py-2.5">
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
                     ✿
