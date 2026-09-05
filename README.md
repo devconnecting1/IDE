@@ -96,7 +96,7 @@ _Deploy your own copy with one click._
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/devconnecting1/IDE.git
+   git clone https://github.com/devconnecting1/Workspaacing.git
    ```
 
 2. **Navigate into the project**
