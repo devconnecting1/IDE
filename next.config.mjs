@@ -1,7 +1,5 @@
 import createNextIntlPlugin from "next-intl/plugin";
 
-const isElectron = process.env.ELECTRON === "true";
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactCompiler: true,
@@ -9,10 +7,7 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-  output: isElectron ? "export" : undefined,
-  images: {
-    unoptimized: isElectron,
-  },
+  output: "standalone",
   async redirects() {
     return [
       {

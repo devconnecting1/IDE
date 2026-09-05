@@ -19,11 +19,11 @@
     "lint:md": "markdownlint-cli2 \"*.md\"",
     "lint:yaml": "yamllint .github/workflows/*.yml .github/dependabot.yml",
     "electron:build:ts": "tsc -p electron/tsconfig.json",
-    "electron:dev": "npm run electron:build:ts && ELECTRON=true next build && electron .",
-    "electron:build": "npm run electron:build:ts && ELECTRON=true next build && electron-builder",
-    "electron:build:win": "npm run electron:build:ts && ELECTRON=true next build && electron-builder --win",
-    "electron:build:mac": "npm run electron:build:ts && ELECTRON=true next build && electron-builder --mac",
-    "electron:build:linux": "npm run electron:build:ts && ELECTRON=true next build && electron-builder --linux"
+    "electron:dev": "npm run electron:build:ts && next build && electron .",
+    "electron:build": "npm run electron:build:ts && next build && electron-builder",
+    "electron:build:win": "npm run electron:build:ts && next build && electron-builder --win",
+    "electron:build:mac": "npm run electron:build:ts && next build && electron-builder --mac",
+    "electron:build:linux": "npm run electron:build:ts && next build && electron-builder --linux"
   },
   "build": {
     "appId": "com.studioadmin.app",
