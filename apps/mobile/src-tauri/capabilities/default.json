@@ -3,7 +3,7 @@
   "identifier": "main-capability",
   "description": "Main window capabilities",
   "windows": ["main"],
-  "platforms": ["android", "ios"],
+  "platforms": ["android", "iOS"],
   "permissions": [
     "core:default",
     "core:window:allow-set-title",
