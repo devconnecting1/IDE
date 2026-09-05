@@ -50,9 +50,6 @@
   },
   "ignoreBinaries": ["yamllint"],
   "ignoreDependencies": ["lint-staged"],
-  "ignoreIssues": {
-    "apps/web/src/app/(main)/dashboard/_components/header/account-dialog.tsx": ["exports"],
-    "apps/web/src/lib/utils.ts": ["exports"]
-  },
+  "ignoreExportsUsedInFile": true,
   "exclude": ["enumMembers", "namespaceMembers", "types"]
 }

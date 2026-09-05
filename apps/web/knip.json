@@ -32,5 +32,6 @@
     "shiki"
   ],
   "ignoreBinaries": ["biome"],
+  "ignoreExportsUsedInFile": true,
   "exclude": ["enumMembers", "namespaceMembers", "types"]
 }
