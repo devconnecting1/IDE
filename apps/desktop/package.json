@@ -4,6 +4,10 @@
   "private": true,
   "main": "electron/dist/main.js",
   "homepage": "https://github.com/devconnecting1/Workspaacing",
+  "author": {
+    "name": "Workspaacing",
+    "email": "dev@workspaacing.app"
+  },
   "scripts": {
     "dev": "npm run electron:build:ts && electron .",
     "build": "npm run electron:build:ts",
