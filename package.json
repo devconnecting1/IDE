@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "turbo run build --filter=@workspaacing/web",
     "lint": "turbo run lint",
     "check": "turbo run check",
     "typecheck": "turbo run typecheck",
