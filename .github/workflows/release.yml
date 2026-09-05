@@ -103,7 +103,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: apps/mobile
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Initialize Tauri Android
         working-directory: apps/mobile
