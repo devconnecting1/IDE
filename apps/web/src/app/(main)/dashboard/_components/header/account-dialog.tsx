@@ -43,12 +43,7 @@ interface AccountDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-/**
- * Account dialog with settings sections.
- *
- * @lintignore - Exported for future use in settings pages
- */
-export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
+function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
   const [activeSection, setActiveSection] = useState<Section>("general");
 
   return (

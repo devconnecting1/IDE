@@ -11,10 +11,8 @@ type FormatCurrencyOptions = Intl.NumberFormatOptions & {
 
 /**
  * Format a number as currency (BRL).
- *
- * @lintignore - Exported for future use in dashboard components
  */
-export function formatCurrency(value: number, options: FormatCurrencyOptions = {}, locale = "pt-BR"): string {
+function formatCurrency(value: number, options: FormatCurrencyOptions = {}, locale = "pt-BR"): string {
   const { noDecimals, ...rest } = options;
   if (noDecimals) {
     rest.maximumFractionDigits = 0;
