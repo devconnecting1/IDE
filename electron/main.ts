@@ -1,11 +1,12 @@
-const { app, BrowserWindow, shell } = require("electron");
-const path = require("node:path");
+import { app, BrowserWindow, shell } from "electron";
+
+import * as path from "node:path";
 
 const isDev = !app.isPackaged;
 
-let mainWindow;
+let mainWindow: BrowserWindow | null = null;
 
-function createWindow() {
+function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -17,6 +18,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       spellcheck: false,
+      preload: path.join(__dirname, "preload.js"),
     },
     titleBarStyle: "hiddenInset",
     trafficLightPosition: { x: 16, y: 16 },
@@ -31,16 +33,16 @@ function createWindow() {
   }
 
   mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
+    mainWindow?.show();
   });
 
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
 
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+  mainWindow.webContents.setWindowOpenHandler(({ url }: { url: string }) => {
     shell.openExternal(url);
-    return { action: "deny" };
+    return { action: "deny" as const };
   });
 }
 
