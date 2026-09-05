@@ -977,8 +977,8 @@ export function ProvidersSettings() {
       </div>
 
       <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
-        <DialogContent className="flex h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] flex-col overflow-hidden rounded-2xl bg-background p-0 sm:max-w-[640px]">
-          <DialogHeader className="border-b bg-sidebar p-4 text-sidebar-foreground">
+        <DialogContent className="flex h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] flex-col overflow-hidden rounded-2xl bg-popover p-0 text-popover-foreground sm:max-w-[640px]">
+          <DialogHeader className="border-b bg-popover p-4">
             <DialogTitle>Conectar provedor</DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 flex-col gap-4 p-4">
@@ -997,7 +997,10 @@ export function ProvidersSettings() {
                 {filteredPopular.map((provider, index) => (
                   <div key={provider.name}>
                     {index > 0 && <Separator />}
-                    <div className="flex items-center gap-3 px-3 py-2.5">
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-accent"
+                    >
                       <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
                         {provider.icon}
                       </span>
@@ -1009,14 +1012,17 @@ export function ProvidersSettings() {
                           </span>
                         )}
                       </div>
-                    </div>
+                    </button>
                   </div>
                 ))}
               </div>
 
               <h4 className="mt-4 mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Outro</h4>
               <div className="rounded-lg border bg-card">
-                <div className="flex items-center gap-3 px-3 py-2.5">
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-accent"
+                >
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
                     ✿
                   </span>
@@ -1026,17 +1032,20 @@ export function ProvidersSettings() {
                       Personalizado
                     </span>
                   </div>
-                </div>
+                </button>
                 <Separator />
                 {filteredAll.map((provider, index) => (
                   <div key={provider.name}>
                     {index > 0 && <Separator />}
-                    <div className="flex items-center gap-3 px-3 py-2.5">
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-accent"
+                    >
                       <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
                         {provider.icon}
                       </span>
                       <span className="text-sm">{provider.name}</span>
-                    </div>
+                    </button>
                   </div>
                 ))}
               </div>
