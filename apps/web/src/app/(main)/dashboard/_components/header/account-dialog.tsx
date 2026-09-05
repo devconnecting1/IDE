@@ -978,7 +978,7 @@ function ProvidersSettings() {
 
       <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
         <DialogContent className="flex h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] flex-col overflow-hidden p-0 sm:max-w-[640px] md:h-[80vh] md:max-w-[800px] lg:max-w-[960px]">
-          <DialogHeader className="border-b p-4">
+          <DialogHeader className="border-b bg-sidebar p-4 text-sidebar-foreground">
             <DialogTitle>Conectar provedor</DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 gap-6 p-4">
@@ -994,7 +994,7 @@ function ProvidersSettings() {
               </div>
               <div className="min-h-0 flex-1 overflow-auto">
                 <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
-                <div className="rounded-lg border bg-card">
+                <div className="rounded-lg border bg-background">
                   {filteredPopular.map((provider, index) => (
                     <div key={provider.name}>
                       {index > 0 && <Separator />}
@@ -1018,7 +1018,7 @@ function ProvidersSettings() {
             </div>
             <div className="min-h-0 flex-1 overflow-auto">
               <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Outro</h4>
-              <div className="rounded-lg border bg-card">
+              <div className="rounded-lg border bg-background">
                 <div className="flex items-center gap-3 px-3 py-2.5">
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
                     ✿
