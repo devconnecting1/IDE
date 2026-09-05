@@ -35,11 +35,7 @@
     "directories": {
       "output": "dist-electron"
     },
-    "files": [
-      "electron/dist/**/*",
-      "electron/interface.d.ts",
-      "out/**/*"
-    ],
+    "files": ["electron/dist/**/*", "electron/interface.d.ts", "out/**/*"],
     "win": {
       "target": "nsis",
       "icon": "src/app/favicon.ico"
@@ -50,10 +46,7 @@
       "category": "public.app-category.developer-tools"
     },
     "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
+      "target": ["AppImage", "deb"],
       "icon": "src/app/favicon.ico",
       "category": "Development"
     },
@@ -63,15 +56,9 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
-      "biome check --write --no-errors-on-unmatched"
-    ],
-    "*.md": [
-      "markdownlint-cli2 --fix"
-    ],
-    "*.yml": [
-      "bash -c 'pip install -q yamllint && yamllint -c .yamllint.yml'"
-    ]
+    "*.{js,ts,jsx,tsx}": ["biome check --write --no-errors-on-unmatched"],
+    "*.md": ["markdownlint-cli2 --fix"],
+    "*.yml": ["bash -c 'pip install -q yamllint && yamllint -c .yamllint.yml'"]
   },
   "allowScripts": {
     "@parcel/watcher": true,
