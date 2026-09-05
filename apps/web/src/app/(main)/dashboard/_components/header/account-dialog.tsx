@@ -977,12 +977,12 @@ function ProvidersSettings() {
       </div>
 
       <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
-        <DialogContent className="flex h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] flex-col overflow-hidden p-0 sm:max-w-[640px] md:h-[80vh] md:max-w-[800px] lg:max-w-[960px]">
+        <DialogContent className="flex h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] flex-col overflow-hidden rounded-2xl bg-background p-0 sm:max-w-[640px] md:h-[80vh] md:max-w-[800px] lg:max-w-[960px]">
           <DialogHeader className="border-b bg-sidebar p-4 text-sidebar-foreground">
             <DialogTitle>Conectar provedor</DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 gap-6 p-4">
-            <div className="flex w-64 shrink-0 flex-col gap-4 bg-background">
+            <div className="flex w-64 shrink-0 flex-col gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -992,7 +992,7 @@ function ProvidersSettings() {
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-            <div className="min-h-0 flex-1 overflow-auto bg-background">
+            <div className="min-h-0 flex-1 overflow-auto">
                 <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
                 <div className="rounded-lg border bg-card">
                   {filteredPopular.map((provider, index) => (
@@ -1016,7 +1016,7 @@ function ProvidersSettings() {
                 </div>
               </div>
             </div>
-            <div className="min-h-0 flex-1 overflow-auto bg-background">
+            <div className="min-h-0 flex-1 overflow-auto">
               <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Outro</h4>
               <div className="rounded-lg border bg-card">
                 <div className="flex items-center gap-3 px-3 py-2.5">
