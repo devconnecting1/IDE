@@ -34,7 +34,7 @@
       "category": "public.app-category.developer-tools"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": ["AppImage"],
       "category": "Development",
       "executableName": "workspaacing"
     },
