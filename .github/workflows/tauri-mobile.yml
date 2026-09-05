@@ -2,16 +2,15 @@ name: Tauri Mobile Build
 
 on:
   workflow_dispatch:
-  # Temporarily disabled - requires Vite frontend setup for mobile
-  # push:
-  #   branches: [master]
-  #   tags: ["v*"]
-  # pull_request:
-  #   branches: [master]
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+    branches: [master]
 
 jobs:
   android:
-    name: Build Android (ubuntu-latest)
+    name: Build Android
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -38,17 +37,13 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: apps/mobile/src-tauri
+          targets: aarch64-linux-android
 
       - name: Install Tauri CLI
-        run: cargo install tauri-cli --version "^2"
+        run: cargo install tauri-cli --version "^2" --locked
 
       - name: Install dependencies
+        working-directory: apps/mobile
         run: npm ci
 
       - name: Initialize Tauri Android
@@ -66,3 +61,4 @@ jobs:
         with:
           name: workspaacing-android
           path: apps/mobile/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: warn
