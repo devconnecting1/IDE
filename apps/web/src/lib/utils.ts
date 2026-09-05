@@ -9,6 +9,11 @@ type FormatCurrencyOptions = Intl.NumberFormatOptions & {
   noDecimals?: boolean;
 };
 
+/**
+ * Format a number as currency (BRL).
+ *
+ * @lintignore - Exported for future use in dashboard components
+ */
 export function formatCurrency(value: number, options: FormatCurrencyOptions = {}, locale = "pt-BR"): string {
   const { noDecimals, ...rest } = options;
   if (noDecimals) {
