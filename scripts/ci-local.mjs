@@ -35,7 +35,7 @@ report("Biome (lint + formatação)", run("biome", "npm", ["run", "check"]));
 rmSync(join(root, "apps/web/.next/types"), { recursive: true, force: true });
 report("TypeScript (tsc --noEmit)", run("tsc", "npx", ["tsc", "--noEmit"]));
 
-report("Código morto (knip)", run("knip", "npm", ["run", "knip"]));
+report("Código morto (knip)", run("knip", "npx", ["knip"]));
 
 report(
   "Presets do tema (drift)",

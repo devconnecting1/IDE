@@ -1,5 +1,20 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignore": ["src/components/animate-ui/**", "src/components/ui/**", "src/hooks/use-controlled-state.tsx"],
-  "ignoreDependencies": ["@base-ui/react", "@floating-ui/react", "embla-carousel-react", "input-otp", "shiki"]
+  "ignoreDependencies": [
+    "@base-ui/react",
+    "@floating-ui/react",
+    "@workspaacing/ui",
+    "@workspaacing/theme",
+    "d3-geo",
+    "embla-carousel-react",
+    "input-otp",
+    "motion",
+    "next-themes",
+    "react-day-picker",
+    "react-markdown",
+    "recharts",
+    "shiki",
+    "topojson-client"
+  ]
 }

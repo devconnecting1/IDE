@@ -22,7 +22,8 @@
     "lint:md": "markdownlint-cli2 \"*.md\"",
     "lint:yaml": "yamllint .github/workflows/*.yml .github/dependabot.yml",
     "electron:dev": "turbo run dev --filter=@workspaacing/desktop",
-    "electron:package": "turbo run electron:package --filter=@workspaacing/desktop"
+    "electron:package": "turbo run electron:package --filter=@workspaacing/desktop",
+    "generate:presets": "npm run generate:presets --workspace=apps/web"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": ["biome check --write --no-errors-on-unmatched"],

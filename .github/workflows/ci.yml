@@ -32,6 +32,14 @@ jobs:
       - name: TypeScript Check
         run: npx turbo run typecheck
 
+      - name: Knip (dead code)
+        run: npx turbo run knip
+
+      - name: Theme presets (drift check)
+        run: |
+          npm run generate:presets
+          git diff --exit-code -- apps/web/src/lib/preferences/theme.ts || (echo "Theme drift detected! Run 'npm run generate:presets' and commit." && exit 1)
+
       - name: Build Next.js
         run: npx turbo run build --filter=@workspaacing/web
 
