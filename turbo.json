@@ -54,6 +54,12 @@
       "outputs": ["src/styles/presets/**"],
       "cache": false
     },
+    "electron:package": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": ["dist-electron/**"],
+      "cache": false
+    },
     "knip": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"],

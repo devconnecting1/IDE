@@ -38,8 +38,9 @@ jobs:
       - name: Build web app
         run: npx turbo run build --filter=@workspaacing/web
 
-      - name: Package Electron (${{ matrix.os }})
-        run: npx turbo run electron:package --filter=@workspaacing/desktop
+      - name: Package Electron
+        working-directory: apps/desktop
+        run: npm run electron:package
 
       - name: Upload artifacts (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
