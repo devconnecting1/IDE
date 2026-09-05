@@ -369,12 +369,167 @@ function GeneralSettings() {
   );
 }
 
+const shortcutsData = {
+  Geral: [
+    { description: "Abrir configurações", keybinding: "Ctrl+," },
+    { description: "Abrir projeto", keybinding: "Ctrl+O" },
+    { description: "Adicionar seleção ao contexto", keybinding: "Ctrl+Shift+L" },
+    { description: "Alternar barra lateral", keybinding: "Ctrl+B" },
+    { description: "Alternar espaços de trabalho", keybinding: "Não atribuído" },
+    { description: "Alternar esquema de cores", keybinding: "Ctrl+Shift+S" },
+    { description: "Alternar idioma", keybinding: "Não atribuído" },
+    { description: "Alternar tema", keybinding: "Ctrl+Shift+T" },
+    { description: "Avançar", keybinding: "Ctrl+]" },
+    { description: "Buscar projetos", keybinding: "Ctrl+Shift+O" },
+    { description: "Buscar sessões em home", keybinding: "Ctrl+F" },
+    { description: "Conectar provedor", keybinding: "Não atribuído" },
+    { description: "Fechar aba", keybinding: "Ctrl+W" },
+    { description: "Focar entrada", keybinding: "Ctrl+L" },
+    { description: "Início", keybinding: "Ctrl+B" },
+    { description: "Nova sessão", keybinding: "Ctrl+T" },
+    { description: "Novo espaço de trabalho", keybinding: "Ctrl+Shift+W" },
+    { description: "Open Project {number}", keybinding: "Ctrl+1 through Ctrl+9" },
+    { description: "Paleta de comandos", keybinding: "Ctrl+K" },
+    { description: "Projeto anterior", keybinding: "Ctrl+Alt+↑" },
+    { description: "Próximo projeto", keybinding: "Ctrl+Alt+↓" },
+    { description: "Reabrir aba fechada", keybinding: "Ctrl+Shift+T" },
+    { description: "Trocar servidor", keybinding: "Não atribuído" },
+    { description: "Usar esquema de cores: Claro/Escuro/Sistema", keybinding: "Não atribuído" },
+    {
+      description:
+        "Usar idioma: Castellano, Deutsch, English, Français, हिन्दी, Bahasa Indonesia, 日本語, 한국어, Português, 中文 (简体)",
+      keybinding: "Não atribuído",
+    },
+    { description: "Usar tema: Azul, Roxo, Padrão, Rosa, Verde", keybinding: "Não atribuído" },
+    { description: "Voltar", keybinding: "Ctrl+[" },
+  ],
+  "Terminal & Navegação": [
+    { description: "Alternar revisão de código", keybinding: "Ctrl+Shift+C" },
+    { description: "Arquivar sessão", keybinding: "Ctrl+Shift+A" },
+    { description: "Compactar sessão", keybinding: "Ctrl+Backspace" },
+    { description: "Compactar sessão para cima", keybinding: "Ctrl+Shift+Backspace" },
+    { description: "Copiar mensagem", keybinding: "Ctrl+Shift+C" },
+    { description: "Criar novo agente", keybinding: "Não atribuído" },
+    { description: "Exportar sessão", keybinding: "Não atribuído" },
+    { description: "Mensagem de Compensação", keybinding: "Ctrl+Z" },
+    { description: "Mensagem Próxima", keybinding: "↓" },
+    { description: "Mensagem Sessão Anterior", keybinding: "Ctrl+↑" },
+    { description: "Navegar para a sessão: Sessão Seguinte", keybinding: "Ctrl+]" },
+    { description: "Navegar para a sessão: Sessão Anterior", keybinding: "Ctrl+[" },
+    { description: "Próxima mensagem", keybinding: "Ctrl+↓" },
+    { description: "Sessão Active Next", keybinding: "Não atribuído" },
+    { description: "Sessão Active Previous", keybinding: "Não atribuído" },
+    { description: "Sessão Arquivada Next", keybinding: "Não atribuído" },
+    { description: "Sessão Arquivada Previous", keybinding: "Não atribuído" },
+    { description: "Sessão Next", keybinding: "Não atribuído" },
+    { description: "Sessão Previous", keybinding: "Não atribuído" },
+    { description: "Sessão Pinned Next", keybinding: "Não atribuído" },
+    { description: "Sessão Pinned Previous", keybinding: "Não atribuído" },
+    { description: "Sessão não lida next", keybinding: "Não atribuído" },
+    { description: "Sessão não lida anterior", keybinding: "Não atribuído" },
+  ],
+  "Arquivos e Sessões": [
+    { description: "Copiar mensagem", keybinding: "Ctrl+Shift+C" },
+    { description: "Criar novo agente", keybinding: "Não atribuído" },
+    { description: "Exportar sessão", keybinding: "Não atribuído" },
+    { description: "Inserir/Inserir Prompt", keybinding: "Não atribuído" },
+    { description: "Inserir/Inserir Shell", keybinding: "Não atribuído" },
+    { description: "Abrir arquivo", keybinding: "Ctrl+O" },
+    { description: "Adicionar arquivo ao contexto", keybinding: "Ctrl+Shift+L" },
+    { description: "Alternar árvore de arquivos", keybinding: "Não atribuído" },
+    { description: "Alternar terminais", keybinding: "Não atribuído" },
+    { description: "Fechar terminal", keybinding: "Não atribuído" },
+    { description: "Mensagem de Compensação", keybinding: "Ctrl+Z" },
+    { description: "Mensagem Próxima", keybinding: "↓" },
+    { description: "Mensagem Sessão Anterior", keybinding: "Ctrl+↑" },
+    { description: "Novo terminal", keybinding: "Não atribuído" },
+    { description: "Navegar para a sessão: Sessão Seguinte", keybinding: "Ctrl+]" },
+    { description: "Navegar para a sessão: Sessão Anterior", keybinding: "Ctrl+[" },
+    { description: "Próxima mensagem", keybinding: "Ctrl+↓" },
+    { description: "Reabrir último terminal fechado", keybinding: "Não atribuído" },
+    { description: "Sessão Active Next", keybinding: "Não atribuído" },
+    { description: "Sessão Active Previous", keybinding: "Não atribuído" },
+    { description: "Sessão Arquivada Next", keybinding: "Não atribuído" },
+    { description: "Sessão Arquivada Previous", keybinding: "Não atribuído" },
+    { description: "Sessão Next", keybinding: "Não atribuído" },
+    { description: "Sessão Previous", keybinding: "Não atribuído" },
+    { description: "Sessão Pinned Next", keybinding: "Não atribuído" },
+    { description: "Sessão Pinned Previous", keybinding: "Não atribuído" },
+    { description: "Sessão não lida next", keybinding: "Não atribuído" },
+    { description: "Sessão não lida anterior", keybinding: "Não atribuído" },
+    { description: "Enviar", keybinding: "Não atribuído" },
+  ],
+};
+
 function ShortcutsSettings() {
+  const [search, setSearch] = useState("");
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["Geral", "Terminal & Navegação", "Arquivos e Sessões"]),
+  );
+
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(section)) {
+        next.delete(section);
+      } else {
+        next.add(section);
+      }
+      return next;
+    });
+  };
+
+  const filteredData = Object.entries(shortcutsData).reduce(
+    (acc, [section, shortcuts]) => {
+      const filtered = shortcuts.filter(
+        (s) =>
+          s.description.toLowerCase().includes(search.toLowerCase()) ||
+          s.keybinding.toLowerCase().includes(search.toLowerCase()),
+      );
+      if (filtered.length > 0) {
+        acc[section] = filtered;
+      }
+      return acc;
+    },
+    {} as Record<string, Array<{ description: string; keybinding: string }>>,
+  );
+
   return (
-    <div>
-      <h2 className="mb-4 font-semibold text-lg">Atalhos</h2>
-      <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">
-        Configuração de atalhos de teclado em breve.
+    <div className="flex flex-col gap-4">
+      <h2 className="font-semibold text-lg">Atalhos</h2>
+      <Input placeholder="Pesquisar atalhos" value={search} onChange={(e) => setSearch(e.target.value)} />
+      <div className="flex flex-col gap-4 overflow-auto pr-1">
+        {Object.keys(filteredData).length === 0 ? (
+          <p className="py-8 text-center text-muted-foreground text-sm">Nenhum atalho encontrado</p>
+        ) : (
+          Object.entries(filteredData).map(([section, shortcuts]) => (
+            <div key={section}>
+              <button
+                type="button"
+                className="flex w-full items-center gap-1 py-1 text-muted-foreground text-xs uppercase tracking-wide hover:text-foreground"
+                onClick={() => toggleSection(section)}
+              >
+                <ChevronDown
+                  className={cn("size-3 transition-transform", !expandedSections.has(section) && "-rotate-90")}
+                />
+                {section}
+              </button>
+              {expandedSections.has(section) && (
+                <div className="mt-1 divide-y divide-border rounded-lg border">
+                  {shortcuts.map((shortcut) => (
+                    <div
+                      key={shortcut.description}
+                      className="flex items-center justify-between bg-card px-3 py-2 text-sm"
+                    >
+                      <span className="text-muted-foreground">{shortcut.description}</span>
+                      <kbd className="font-mono text-xs">{shortcut.keybinding}</kbd>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
