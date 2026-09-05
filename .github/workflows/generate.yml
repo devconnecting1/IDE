@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Run generate
-        run: turbo run generate:presets
+        run: npx turbo run generate:presets
 
       - name: Commit and push
         run: |

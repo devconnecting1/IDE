@@ -27,13 +27,13 @@ jobs:
         run: npm ci
 
       - name: Biome Check
-        run: turbo run check
+        run: npx turbo run check
 
       - name: TypeScript Check
-        run: turbo run typecheck
+        run: npx turbo run typecheck
 
       - name: Build Next.js
-        run: turbo run build --filter=@workspaacing/web
+        run: npx turbo run build --filter=@workspaacing/web
 
       - name: Build Electron TypeScript
-        run: turbo run build --filter=@workspaacing/desktop
+        run: npx turbo run build --filter=@workspaacing/desktop

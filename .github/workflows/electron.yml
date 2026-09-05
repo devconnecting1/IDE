@@ -32,10 +32,10 @@ jobs:
         run: npm ci
 
       - name: Build TypeScript (Electron)
-        run: turbo run build --filter=@workspaacing/desktop
+        run: npx turbo run build --filter=@workspaacing/desktop
 
       - name: Lint
-        run: turbo run lint
+        run: npx turbo run lint
 
       - name: Type check
-        run: turbo run typecheck
+        run: npx turbo run typecheck

@@ -27,4 +27,4 @@ jobs:
         run: npm ci
 
       - name: Biome Check
-        run: turbo run check
+        run: npx turbo run check
