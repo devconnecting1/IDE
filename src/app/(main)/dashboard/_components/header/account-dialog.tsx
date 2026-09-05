@@ -976,66 +976,64 @@ function ProvidersSettings() {
       </div>
 
       <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
-        <DialogContent className="max-h-[80vh] w-[95vw] max-w-[480px] overflow-hidden p-0 sm:max-w-[560px]">
+        <DialogContent className="flex h-[70vh] w-[90vw] max-w-[900px] flex-col overflow-hidden p-0">
           <DialogHeader className="border-b p-4">
             <DialogTitle>Conectar provedor</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col gap-4 overflow-auto p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar provedores"
-                className="pl-9"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
-              <div className="rounded-lg border bg-card">
-                {filteredPopular.map((provider, index) => (
-                  <div key={provider.name}>
-                    {index > 0 && <Separator />}
-                    <div className="flex items-center gap-3 px-4 py-3">
-                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                        {provider.icon}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{provider.name}</span>
-                        {provider.badge && (
-                          <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
-                            {provider.badge}
-                          </span>
-                        )}
+          <div className="flex min-h-0 flex-1 gap-6 p-4">
+            <div className="flex w-64 shrink-0 flex-col gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar provedores"
+                  className="pl-9"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+              <div className="min-h-0 flex-1 overflow-auto">
+                <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
+                <div className="rounded-lg border bg-card">
+                  {filteredPopular.map((provider, index) => (
+                    <div key={provider.name}>
+                      {index > 0 && <Separator />}
+                      <div className="flex items-center gap-3 px-3 py-2.5">
+                        <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                          {provider.icon}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm">{provider.name}</span>
+                          {provider.badge && (
+                            <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
+                              {provider.badge}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-
-            <div>
+            <div className="min-h-0 flex-1 overflow-auto">
               <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Outro</h4>
               <div className="rounded-lg border bg-card">
-                <div>
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                      ✿
+                <div className="flex items-center gap-3 px-3 py-2.5">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                    ✿
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-sm">Provedor personalizado compatível com OpenAI</span>
+                    <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
+                      Personalizado
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">Provedor personalizado compatível com OpenAI</span>
-                      <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
-                        Personalizado
-                      </span>
-                    </div>
                   </div>
                 </div>
                 <Separator />
                 {filteredAll.map((provider, index) => (
                   <div key={provider.name}>
                     {index > 0 && <Separator />}
-                    <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="flex items-center gap-3 px-3 py-2.5">
                       <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
                         {provider.icon}
                       </span>
