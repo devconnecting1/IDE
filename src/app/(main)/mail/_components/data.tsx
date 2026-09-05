@@ -85,9 +85,9 @@ export const mails: Mail[] = [
     labels: ["meeting", "work", "important"],
     attachments: [
       {
-        id: "studio-admin-fig",
-        name: "studio-admin.fig",
-        nameKey: "mail.attachmentStudioAdmin",
+        id: "workspaacing-fig",
+        name: "workspaacing.fig",
+        nameKey: "mail.attachmentWorkspaacing",
         size: "21 MB",
         icon: siFigma,
       },

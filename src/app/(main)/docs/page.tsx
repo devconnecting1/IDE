@@ -7,8 +7,8 @@ import { DocsToc } from "./_components/docs-toc";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("docs");
   return {
-    title: `${t("breadcrumb")} - Studio Admin`,
-    description: "Learn how to use Studio Admin, a modern Next.js dashboard starter template.",
+    title: `${t("breadcrumb")} - Workspaacing`,
+    description: "Learn how to use Workspaacing, an AI-powered admin dashboard IDE.",
   };
 }
 
@@ -46,7 +46,7 @@ export default async function DocsPage() {
         <BookOpen aria-hidden="true" className="size-4" />
         <span>{t("breadcrumb")}</span>
         <ChevronRight aria-hidden="true" className="size-3" />
-        <span className="text-foreground">Studio Admin</span>
+        <span className="text-foreground">Workspaacing</span>
       </nav>
 
       <div className="flex gap-12">
@@ -58,8 +58,8 @@ export default async function DocsPage() {
           <Paragraph>{t("intro1")}</Paragraph>
           <Paragraph>{t("intro2")}</Paragraph>
 
-          {/* What is Studio Admin */}
-          <SectionHeading id="what-is-studio-admin">{t("sectionWhatIs")}</SectionHeading>
+          {/* What is Workspaacing */}
+          <SectionHeading id="what-is-workspaacing">{t("sectionWhatIs")}</SectionHeading>
           <Paragraph>{t("whatIsDesc1")}</Paragraph>
           <Paragraph>{t("whatIsIncludes")}</Paragraph>
           <ul className="mb-6 ml-6 list-disc space-y-2">

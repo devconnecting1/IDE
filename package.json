@@ -1,11 +1,11 @@
 {
-  "name": "studio-admin",
+  "name": "workspaacing",
   "version": "2.2.0",
   "private": true,
   "main": "electron/dist/main.js",
   "author": {
-    "name": "Studio Admin",
-    "email": "dev@studioadmin.app"
+    "name": "Workspaacing",
+    "email": "dev@workspaacing.app"
   },
   "scripts": {
     "dev": "next dev",
@@ -30,8 +30,8 @@
     "electron:build:linux": "npm run electron:build:ts && electron-builder --linux"
   },
   "build": {
-    "appId": "com.studioadmin.app",
-    "productName": "Studio Admin",
+    "appId": "com.workspaacing.app",
+    "productName": "Workspaacing",
     "directories": {
       "output": "dist-electron"
     },

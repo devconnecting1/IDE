@@ -81,7 +81,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
               </div>
             ))}
             <div className="mt-auto border-t pt-3">
-              <div className="px-2 text-muted-foreground text-xs">Studio Admin</div>
+              <div className="px-2 text-muted-foreground text-xs">Workspaacing</div>
               <div className="px-2 text-muted-foreground text-xs">v1.0.0</div>
             </div>
           </nav>

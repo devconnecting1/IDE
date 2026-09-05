@@ -12,7 +12,7 @@ function createWindow(): void {
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    title: "Studio Admin",
+    title: "Workspaacing",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 const SECTIONS = [
-  "what-is-studio-admin",
+  "what-is-workspaacing",
   "key-features",
   "tech-stack",
   "dashboards",
