@@ -25,12 +25,10 @@
     },
     "mac": {
       "target": "dmg",
-      "icon": "../web/src/app/favicon.ico",
       "category": "public.app-category.developer-tools"
     },
     "linux": {
       "target": ["AppImage", "deb"],
-      "icon": "../web/src/app/favicon.ico",
       "category": "Development"
     },
     "nsis": {
