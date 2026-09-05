@@ -98,7 +98,7 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
   );
 }
 
-function SettingRow({
+export function SettingRow({
   title,
   description,
   children,
@@ -118,7 +118,7 @@ function SettingRow({
   );
 }
 
-function GeneralSettings() {
+export function GeneralSettings() {
   return (
     <div className="space-y-8">
       <div>
@@ -690,7 +690,7 @@ const shortcutsData = {
   ],
 };
 
-function ShortcutsSettings() {
+export function ShortcutsSettings() {
   const [search, setSearch] = useState("");
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(Object.keys(shortcutsData)));
 
@@ -762,7 +762,7 @@ function ShortcutsSettings() {
   );
 }
 
-function ServersSettings() {
+export function ServersSettings() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
@@ -911,7 +911,7 @@ const allProviders = [
   { name: "Zhipu AI", icon: "Zp" },
 ];
 
-function ProvidersSettings() {
+export function ProvidersSettings() {
   const [showAllProviders, setShowAllProviders] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -1134,7 +1134,7 @@ const modelProviders = [
   },
 ];
 
-function ModelsSettings() {
+export function ModelsSettings() {
   const [search, setSearch] = useState("");
   const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set(modelProviders.map((p) => p.name)));
 
