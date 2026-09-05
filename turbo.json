@@ -60,6 +60,18 @@
       "outputs": ["dist-electron/**"],
       "cache": false
     },
+    "tauri:android": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": ["src-tauri/target/**"],
+      "cache": false
+    },
+    "tauri:ios": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": ["src-tauri/target/**"],
+      "cache": false
+    },
     "knip": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"],
