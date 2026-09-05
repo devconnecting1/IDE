@@ -1,49 +1,18 @@
-# Security Policy
+## Security
 
-## Supported Versions
+Thanks for helping make Workspaacing safe for everyone.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| latest  | :white_check_mark: |
+We take the security of our software seriously. If you believe you have found a security vulnerability, please report it to us through coordinated disclosure.
 
-## Reporting a Vulnerability
+**Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
 
-If you discover a security vulnerability within this project, please send an email to the maintainers. All security vulnerabilities will be promptly addressed.
+Instead, please send an email to dev@workspaacing.app with as much of the following information as you can:
 
-**Please do NOT report security vulnerabilities through public GitHub issues.**
+- The type of issue
+- Full paths of source file(s) related to the issue
+- The location of the affected source code (tag/branch/commit or direct URL)
+- Step-by-step instructions to reproduce the issue
+- Proof-of-concept or exploit code (if possible)
+- Impact of the issue
 
-## Security Features
-
-This project implements the following security measures:
-
-### Automated Security Scanning
-
-- **CodeQL** — Static analysis for code vulnerabilities (runs on every push and PR)
-- **Semgrep** — Additional static analysis with custom rules
-- **Trivy** — Filesystem vulnerability scanning for dependencies
-- **Gitleaks** — Secret detection in source code
-- **Dependabot** — Automated dependency updates with security alerts
-- **SBOM Generation** — Software Bill of Materials for supply chain transparency
-- **OpenSSF Scorecard** — Security best practices evaluation
-
-### CI/CD Security
-
-- All GitHub Actions are pinned to specific SHA commits
-- Workflow permissions follow least-privilege principle
-- zizmor analysis for GitHub Actions security
-- actionlint for workflow validation
-
-### Dependency Management
-
-- Automated weekly dependency updates via Dependabot
-- Grouped updates for related packages
-- Auto-merge for minor and patch version bumps (via CI workflow)
-- License auditing for all dependencies
-
-## Best Practices
-
-- Never commit secrets, API keys, or credentials to the repository
-- Use environment variables for sensitive configuration
-- Enable branch protection rules on `main`
-- Require status checks before merging
-- Enable "Require pull request reviews before merging"
+This information will help us triage your report more quickly.
