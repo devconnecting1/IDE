@@ -50,6 +50,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build Web App
+        run: EXPORT_STATIC=true npx turbo run build --filter=@workspaacing/web
+
+      - name: Copy Web Assets to Mobile
+        run: |
+          mkdir -p apps/mobile/src
+          cp -r apps/web/out/* apps/mobile/src/
+
       - name: Clean and Initialize Tauri Android
         working-directory: apps/mobile
         run: |
@@ -107,6 +115,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Build Web App
+        run: EXPORT_STATIC=true npx turbo run build --filter=@workspaacing/web
+
+      - name: Copy Web Assets to Mobile
+        run: |
+          mkdir -p apps/mobile/src
+          cp -r apps/web/out/* apps/mobile/src/
 
       - name: Clean and Initialize Tauri Android
         working-directory: apps/mobile

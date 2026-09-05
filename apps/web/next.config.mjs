@@ -1,5 +1,7 @@
 import createNextIntlPlugin from "next-intl/plugin";
 
+const isStaticExport = process.env.EXPORT_STATIC === "true";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactCompiler: true,
@@ -7,6 +9,10 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  ...(isStaticExport && {
+    output: "export",
+    distDir: "out",
+  }),
   async redirects() {
     return [
       {
