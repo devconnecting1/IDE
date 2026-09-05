@@ -1,14 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
-  "globalEnv": [
-    "NODE_ENV",
-    "NEXT_PUBLIC_*"
-  ],
-  "globalPassThroughEnv": [
-    "CI",
-    "VERCEL"
-  ],
+  "globalEnv": ["NODE_ENV", "NEXT_PUBLIC_*"],
+  "globalPassThroughEnv": ["CI", "VERCEL"],
   "remoteCache": {
     "signature": true
   },

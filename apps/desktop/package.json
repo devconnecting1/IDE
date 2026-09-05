@@ -18,11 +18,7 @@
     "directories": {
       "output": "dist-electron"
     },
-    "files": [
-      "electron/dist/**/*",
-      "electron/interface.d.ts",
-      "out/**/*"
-    ],
+    "files": ["electron/dist/**/*", "electron/interface.d.ts", "out/**/*"],
     "win": {
       "target": "nsis",
       "icon": "../web/src/app/favicon.ico"

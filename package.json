@@ -7,10 +7,7 @@
     "name": "Workspaacing",
     "email": "dev@workspaacing.app"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build --filter=@workspaacing/web",
@@ -28,15 +25,9 @@
     "electron:package": "turbo run electron:package --filter=@workspaacing/desktop"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
-      "biome check --write --no-errors-on-unmatched"
-    ],
-    "*.md": [
-      "markdownlint-cli2 --fix"
-    ],
-    "*.yml": [
-      "bash -c 'pip install -q yamllint && yamllint -c .yamllint.yml'"
-    ]
+    "*.{js,ts,jsx,tsx}": ["biome check --write --no-errors-on-unmatched"],
+    "*.md": ["markdownlint-cli2 --fix"],
+    "*.yml": ["bash -c 'pip install -q yamllint && yamllint -c .yamllint.yml'"]
   },
   "allowScripts": {
     "@parcel/watcher": true,

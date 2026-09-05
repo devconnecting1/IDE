@@ -3,11 +3,7 @@
   "workspaces": {
     "apps/web": {
       "entry": ["src/app/**/page.tsx", "src/app/**/layout.tsx"],
-      "ignore": [
-        "src/components/animate-ui/**",
-        "src/components/ui/**",
-        "src/hooks/use-controlled-state.tsx"
-      ]
+      "ignore": ["src/components/animate-ui/**", "src/components/ui/**", "src/hooks/use-controlled-state.tsx"]
     }
   }
 }

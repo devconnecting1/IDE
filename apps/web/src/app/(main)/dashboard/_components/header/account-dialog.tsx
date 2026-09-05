@@ -984,7 +984,7 @@ export function ProvidersSettings() {
           <div className="flex min-h-0 flex-1 gap-6 p-4">
             <div className="flex w-64 shrink-0 flex-col gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Buscar provedores"
                   className="pl-9"
@@ -992,7 +992,7 @@ export function ProvidersSettings() {
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-            <div className="min-h-0 flex-1 overflow-auto">
+              <div className="min-h-0 flex-1 overflow-auto">
                 <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
                 <div className="rounded-lg border bg-card">
                   {filteredPopular.map((provider, index) => (

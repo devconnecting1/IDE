@@ -85,16 +85,18 @@ function TaskListRow({ task, columnId, index }: { task: Task; columnId: ColumnId
           {t(teamLabelKeys[task.team])}
         </Badge>
 
-        {showProgress ? (
+        {showProgress && (
           <div className="flex items-center gap-2">
             <Progress value={task.progress} className="w-24" />
             <span className="text-muted-foreground text-xs tabular-nums">{task.progress}%</span>
           </div>
-        ) : isDone ? (
+        )}
+        {!showProgress && isDone && (
           <Badge className="rounded-md border-transparent bg-green-500/10 px-2 font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
             {t("kanban.done")}
           </Badge>
-        ) : (
+        )}
+        {!showProgress && !isDone && (
           <div className="flex items-center gap-3 text-muted-foreground text-sm">
             {task.insights.map((insight) => (
               <span key={insight.label} className="flex items-center gap-1.5 text-sm">
