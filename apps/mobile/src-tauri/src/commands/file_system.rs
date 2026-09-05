@@ -45,9 +45,12 @@ pub fn list_directory(path: String) -> Result<Vec<FileInfo>, AppError> {
             path: path_buf.to_string_lossy().to_string(),
             is_dir: metadata.is_dir(),
             size: metadata.len(),
-            modified: chrono::DateTime::from(metadata.modified().unwrap_or(std::time::SystemTime::now()))
-                .format("%Y-%m-%d %H:%M:%S")
-                .to_string(),
+            modified: metadata.modified()
+                .map(|t| {
+                    let datetime: chrono::DateTime<chrono::Local> = t.into();
+                    datetime.format("%Y-%m-%d %H:%M:%S").to_string()
+                })
+                .unwrap_or_default(),
         });
     }
 

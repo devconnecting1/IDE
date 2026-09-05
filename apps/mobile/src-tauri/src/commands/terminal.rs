@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::process::Command;
-use tauri::Window;
+use tauri::{Emitter, Window};
 
 use crate::errors::AppError;
 
@@ -13,15 +13,9 @@ pub struct CommandResult {
 
 #[tauri::command]
 pub fn execute_command(command: String, cwd: Option<String>) -> Result<CommandResult, AppError> {
-    let mut cmd = if cfg!(target_os = "windows") {
-        Command::new("cmd")
-            .args(["/C", &command])
-            .current_dir(cwd.unwrap_or_else(|| ".".to_string()))
-    } else {
-        Command::new("sh")
-            .args(["-c", &command])
-            .current_dir(cwd.unwrap_or_else(|| ".".to_string()))
-    };
+    let mut cmd = Command::new("sh");
+    cmd.args(["-c", &command]);
+    cmd.current_dir(cwd.unwrap_or_else(|| ".".to_string()));
 
     let output = cmd.output()?;
 
@@ -41,16 +35,8 @@ pub async fn execute_command_streaming(
     use std::io::{BufRead, BufReader};
     use std::process::Stdio;
 
-    let mut cmd = if cfg!(target_os = "windows") {
-        let mut c = Command::new("cmd");
-        c.args(["/C", &command]);
-        c
-    } else {
-        let mut c = Command::new("sh");
-        c.args(["-c", &command]);
-        c
-    };
-
+    let mut cmd = Command::new("sh");
+    cmd.args(["-c", &command]);
     cmd.current_dir(cwd.unwrap_or_else(|| ".".to_string()));
     cmd.stdout(Stdio::piped());
     cmd.stderr(Stdio::piped());
