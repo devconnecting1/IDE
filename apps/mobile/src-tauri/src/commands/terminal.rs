@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::process::Command;
 use tauri::Window;
 
+use crate::errors::AppError;
+
 #[derive(Serialize, Deserialize)]
 pub struct CommandResult {
     pub stdout: String,
@@ -10,7 +12,7 @@ pub struct CommandResult {
 }
 
 #[tauri::command]
-pub fn execute_command(command: String, cwd: Option<String>) -> Result<CommandResult, String> {
+pub fn execute_command(command: String, cwd: Option<String>) -> Result<CommandResult, AppError> {
     let mut cmd = if cfg!(target_os = "windows") {
         Command::new("cmd")
             .args(["/C", &command])
@@ -21,7 +23,7 @@ pub fn execute_command(command: String, cwd: Option<String>) -> Result<CommandRe
             .current_dir(cwd.unwrap_or_else(|| ".".to_string()))
     };
 
-    let output = cmd.output().map_err(|e| format!("Failed to execute command: {}", e))?;
+    let output = cmd.output()?;
 
     Ok(CommandResult {
         stdout: String::from_utf8_lossy(&output.stdout).to_string(),
@@ -35,7 +37,7 @@ pub async fn execute_command_streaming(
     window: Window,
     command: String,
     cwd: Option<String>,
-) -> Result<CommandResult, String> {
+) -> Result<CommandResult, AppError> {
     use std::io::{BufRead, BufReader};
     use std::process::Stdio;
 
@@ -53,7 +55,7 @@ pub async fn execute_command_streaming(
     cmd.stdout(Stdio::piped());
     cmd.stderr(Stdio::piped());
 
-    let mut child = cmd.spawn().map_err(|e| format!("Failed to spawn command: {}", e))?;
+    let mut child = cmd.spawn()?;
 
     let stdout = child.stdout.take().unwrap();
     let stderr = child.stderr.take().unwrap();
@@ -65,20 +67,20 @@ pub async fn execute_command_streaming(
     let mut stderr_lines = String::new();
 
     for line in stdout_reader.lines() {
-        let line = line.map_err(|e| format!("Failed to read stdout: {}", e))?;
+        let line = line?;
         stdout_lines.push_str(&line);
         stdout_lines.push('\n');
         let _ = window.emit("terminal:stdout", &line);
     }
 
     for line in stderr_reader.lines() {
-        let line = line.map_err(|e| format!("Failed to read stderr: {}", e))?;
+        let line = line?;
         stderr_lines.push_str(&line);
         stderr_lines.push('\n');
         let _ = window.emit("terminal:stderr", &line);
     }
 
-    let status = child.wait().map_err(|e| format!("Failed to wait for command: {}", e))?;
+    let status = child.wait()?;
 
     Ok(CommandResult {
         stdout: stdout_lines,

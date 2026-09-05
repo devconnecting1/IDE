@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use reqwest::Client;
 
+use crate::errors::AppError;
+
 #[derive(Serialize, Deserialize)]
 pub struct ChatMessage {
     pub role: String,
@@ -38,7 +40,7 @@ pub struct ModelInfo {
 }
 
 #[tauri::command]
-pub async fn chat(request: ChatRequest) -> Result<ChatResponse, String> {
+pub async fn chat(request: ChatRequest) -> Result<ChatResponse, AppError> {
     let client = Client::new();
     let base_url = request.base_url.unwrap_or_else(|| "https://api.openai.com/v1".to_string());
 
@@ -51,13 +53,9 @@ pub async fn chat(request: ChatRequest) -> Result<ChatResponse, String> {
             "messages": request.messages,
         }))
         .send()
-        .await
-        .map_err(|e| format!("Failed to send request: {}", e))?;
+        .await?;
 
-    let body: serde_json::Value = response
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse response: {}", e))?;
+    let body: serde_json::Value = response.json().await?;
 
     let content = body["choices"][0]["message"]["content"]
         .as_str()
@@ -80,7 +78,7 @@ pub async fn chat(request: ChatRequest) -> Result<ChatResponse, String> {
 }
 
 #[tauri::command]
-pub async fn get_models(api_key: String, base_url: Option<String>) -> Result<Vec<ModelInfo>, String> {
+pub async fn get_models(api_key: String, base_url: Option<String>) -> Result<Vec<ModelInfo>, AppError> {
     let client = Client::new();
     let base_url = base_url.unwrap_or_else(|| "https://api.openai.com/v1".to_string());
 
@@ -88,13 +86,9 @@ pub async fn get_models(api_key: String, base_url: Option<String>) -> Result<Vec
         .get(format!("{}/models", base_url))
         .header("Authorization", format!("Bearer {}", api_key))
         .send()
-        .await
-        .map_err(|e| format!("Failed to fetch models: {}", e))?;
+        .await?;
 
-    let body: serde_json::Value = response
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse models: {}", e))?;
+    let body: serde_json::Value = response.json().await?;
 
     let models = body["data"]
         .as_array()

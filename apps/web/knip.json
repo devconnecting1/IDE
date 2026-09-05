@@ -1,12 +1,26 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": ["src/components/animate-ui/**", "src/components/ui/**", "src/hooks/use-controlled-state.tsx"],
+  "entry": ["src/app/**/page.tsx", "src/app/**/layout.tsx"],
+  "ignore": [
+    "src/components/animate-ui/**",
+    "src/components/ui/**",
+    "src/hooks/use-controlled-state.tsx",
+    "src/components/date-range-picker.tsx",
+    "src/data/countries.ts",
+    "src/data/timezones.ts",
+    "src/hooks/use-is-in-view.tsx",
+    "src/lib/get-strict-context.tsx",
+    "src/styles/flag-icons/flags.css"
+  ],
   "ignoreDependencies": [
     "@base-ui/react",
     "@floating-ui/react",
     "@workspaacing/ui",
     "@workspaacing/theme",
     "d3-geo",
+    "@types/d3-geo",
+    "topojson-client",
+    "@types/topojson-client",
     "embla-carousel-react",
     "input-otp",
     "motion",
@@ -14,7 +28,7 @@
     "react-day-picker",
     "react-markdown",
     "recharts",
-    "shiki",
-    "topojson-client"
-  ]
+    "shiki"
+  ],
+  "exclude": ["enumMembers", "namespaceMembers", "types"]
 }

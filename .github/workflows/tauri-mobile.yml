@@ -50,6 +50,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Initialize Tauri Android
+        working-directory: apps/mobile
+        run: cargo tauri android init
+
       - name: Build Android APK
         working-directory: apps/mobile
         run: cargo tauri android build --target aarch64
@@ -101,6 +105,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Initialize Tauri Android
+        working-directory: apps/mobile
+        run: cargo tauri android init
 
       - name: Build Android AAB
         working-directory: apps/mobile
