@@ -12,8 +12,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build (${{ matrix.os }})
+  build-desktop:
+    name: Build Desktop (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -68,9 +68,67 @@ jobs:
           path: apps/desktop/dist-electron/*.exe
           if-no-files-found: error
 
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/mobile/src-tauri
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Initialize Tauri Android
+        working-directory: apps/mobile
+        run: |
+          rm -rf src-tauri/gen/android
+          cargo tauri android init
+
+      - name: Build Android APK
+        working-directory: apps/mobile
+        run: cargo tauri android build --target aarch64
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: apps/mobile/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: warn
+
   release:
     name: Create Release
-    needs: build
+    needs: [build-desktop, build-android]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
@@ -93,3 +151,4 @@ jobs:
             artifacts/*.dmg
             artifacts/*.AppImage
             artifacts/*.deb
+            artifacts/*.apk
