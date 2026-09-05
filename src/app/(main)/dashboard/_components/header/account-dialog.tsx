@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ChevronDown, Cpu, Keyboard, MoreHorizontal, Plus, Server, Settings2, Sparkles } from "lucide-react";
+import { ChevronDown, Cpu, Keyboard, MoreHorizontal, Plus, Search, Server, Settings2, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -789,43 +789,33 @@ function ServersSettings() {
   );
 }
 
-const providers = [
+const popularProviders = [
   {
-    name: "OpenCode",
+    name: "OpenCode Zen",
     badge: "Recomendado",
-    description: "Plataforma gratuita com modelos selecionados",
-    icon: "OC",
+    description: "Modelos otimizados e confiáveis",
+    icon: "Z",
   },
   {
     name: "OpenCode Go",
     badge: "Recomendado",
-    description: "Assinatura de baixo custo para todos os modelos",
+    description: "Assinatura de baixo custo para todos",
     icon: "G",
   },
   {
     name: "Anthropic",
-    description: "Acesso direto aos modelos Claude, incluindo Opus, Sonnet e Haiku",
+    description: "Modelos Claude para código e raciocínio",
     icon: "A",
   },
   {
-    name: "GitHub Copilot",
-    description: "Modelos de IA para auxílio à programação pelo GitHub",
-    icon: "GH",
-  },
-  {
     name: "OpenAI",
-    description: "Modelos GPT e o系列 para tarefas gerais de IA",
+    description: "Modelos GPT para tarefas gerais de IA",
     icon: "O",
   },
   {
     name: "Google",
-    description: "Modelos Gemini para respostas rápidas e estruturadas",
+    description: "Modelos Gemini para respostas rápidas",
     icon: "✦",
-  },
-  {
-    name: "Google Vertex",
-    description: "Google Cloud Vertex AI com modelos Gemini e Anthropic",
-    icon: "GV",
   },
   {
     name: "OpenRouter",
@@ -833,84 +823,107 @@ const providers = [
     icon: "OR",
   },
   {
-    name: "xAI",
-    description: "Modelos Grok para raciocínio avançado e geração",
-    icon: "X",
-  },
-  {
-    name: "Mistral",
-    description: "Modelos Mistral e Mixtral para código e raciocínio",
-    icon: "M",
-  },
-  {
-    name: "Groq",
-    description: "Infraestrutura de alta velocidade para modelos Llama e Mixtral",
-    icon: "Gr",
-  },
-  {
-    name: "DeepInfra",
-    description: "Modelos open-source hospedados com preços acessíveis",
-    icon: "DI",
-  },
-  {
-    name: "Cerebras",
-    description: "Inferência ultra-rápida com hardware dedicado de wafer",
-    icon: "Ce",
-  },
-  {
-    name: "Cohere",
-    description: "Modelos Command para busca, geração e classificação",
-    icon: "Co",
-  },
-  {
-    name: "Together AI",
-    description: "Centenas de modelos open-source com APIs padronizadas",
-    icon: "TA",
-  },
-  {
-    name: "Perplexity",
-    description: "Modelos Sonar com acesso a informações atualizadas da web",
-    icon: "P",
-  },
-  {
-    name: "Amazon Bedrock",
-    description: "Modelos Claude, Llama, Mistral e Cohere via AWS",
-    icon: "AB",
-  },
-  {
-    name: "Azure",
-    description: "Azure OpenAI Service com modelos GPT e DALL-E",
-    icon: "Az",
-  },
-  {
-    name: "GitLab",
-    description: "Modelos de IA integrados ao GitLab para código e documentação",
-    icon: "GL",
-  },
-  {
-    name: "Vercel",
-    description: "Acesso unificado a modelos de IA com roteamento inteligente",
+    name: "Vercel AI Gateway",
+    description: "Acesso unificado com roteamento inteligente",
     icon: "▲",
-  },
-  {
-    name: "Alibaba",
-    description: "Modelos Qwen para código, raciocínio e geração multilíngue",
-    icon: "Al",
-  },
-  {
-    name: "Venice",
-    description: "Modelos open-source com foco em privacidade",
-    icon: "V",
-  },
-  {
-    name: "Provedor personalizado",
-    badge: "Personalizado",
-    description: "Adicionar um provedor compatível com OpenAI via URL base",
-    icon: "✿",
   },
 ];
 
+const allProviders = [
+  { name: "302.AI", icon: "302" },
+  { name: "Abacus", icon: "Ab" },
+  { name: "Alibaba", icon: "Al" },
+  { name: "Amazon Bedrock", icon: "AB" },
+  { name: "Arcee AI", icon: "Ar" },
+  { name: "Azure", icon: "Az" },
+  { name: "Bytedance Seed", icon: "BS" },
+  { name: "Cerebras", icon: "Ce" },
+  { name: "Cohere", icon: "Co" },
+  { name: "DeepInfra", icon: "DI" },
+  { name: "DeepSeek", icon: "DS" },
+  { name: "Deepreinforce", icon: "Dr" },
+  { name: "DigitalOcean", icon: "DO" },
+  { name: "Evroc", icon: "Ev" },
+  { name: "FastRouter", icon: "FR" },
+  { name: "Fireworks AI", icon: "FW" },
+  { name: "Firmware", icon: "Fi" },
+  { name: "Friendli", icon: "Fl" },
+  { name: "GitHub Copilot", icon: "GH" },
+  { name: "GitHub Models", icon: "GM" },
+  { name: "GitLab", icon: "GL" },
+  { name: "Google", icon: "✦" },
+  { name: "Google Vertex", icon: "GV" },
+  { name: "Groq", icon: "Gr" },
+  { name: "Helicone", icon: "He" },
+  { name: "Huggingface", icon: "Hu" },
+  { name: "IBM", icon: "IBM" },
+  { name: "Inclusion AI", icon: "In" },
+  { name: "Inception", icon: "Ic" },
+  { name: "IO.net", icon: "IO" },
+  { name: "Kilo", icon: "Ki" },
+  { name: "Llama", icon: "Ll" },
+  { name: "LM Studio", icon: "LM" },
+  { name: "LucidQuery", icon: "LQ" },
+  { name: "MegaNova", icon: "Me" },
+  { name: "Meituan", icon: "Mt" },
+  { name: "Microsoft", icon: "MS" },
+  { name: "MiniMax", icon: "MM" },
+  { name: "Mistral", icon: "Mi" },
+  { name: "Moark", icon: "Mo" },
+  { name: "ModelScope", icon: "MS" },
+  { name: "Moonshot AI", icon: "MA" },
+  { name: "Nebius", icon: "Nb" },
+  { name: "Nova", icon: "Nv" },
+  { name: "Nvidia", icon: "Nv" },
+  { name: "Novita AI", icon: "NA" },
+  { name: "Ollama Cloud", icon: "OC" },
+  { name: "OpenAI", icon: "O" },
+  { name: "OpenRouter", icon: "OR" },
+  { name: "OVHcloud", icon: "OV" },
+  { name: "Perplexity", icon: "Pe" },
+  { name: "Poe", icon: "Po" },
+  { name: "Poolside", icon: "PS" },
+  { name: "PrivateMode AI", icon: "PM" },
+  { name: "Qihang AI", icon: "QH" },
+  { name: "Qiniu AI", icon: "QN" },
+  { name: "Requesty", icon: "Rq" },
+  { name: "Sakana AI", icon: "Sa" },
+  { name: "Sarvam AI", icon: "Sv" },
+  { name: "Scaleway", icon: "Sc" },
+  { name: "Sdaia", icon: "Sd" },
+  { name: "SiliconFlow", icon: "SF" },
+  { name: "StepFun", icon: "St" },
+  { name: "Swiss AI", icon: "Sw" },
+  { name: "Synthetic", icon: "Sy" },
+  { name: "Together AI", icon: "TA" },
+  { name: "Trendyol", icon: "Tr" },
+  { name: "Upstage", icon: "Up" },
+  { name: "V0", icon: "V0" },
+  { name: "Venice", icon: "Ve" },
+  { name: "Vercel", icon: "▲" },
+  { name: "VivGrid", icon: "VG" },
+  { name: "Vultr", icon: "Vu" },
+  { name: "WandB", icon: "WB" },
+  { name: "xAI", icon: "X" },
+  { name: "Xiaomi", icon: "Xi" },
+  { name: "ZenMux", icon: "ZM" },
+  { name: "Zhipu AI", icon: "Zp" },
+];
+
 function ProvidersSettings() {
+  const [showAllProviders, setShowAllProviders] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filteredPopular = popularProviders.filter(
+    (p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.description?.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const filteredAll = allProviders
+    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <div className="space-y-6">
       <h2 className="font-semibold text-lg">Provedores</h2>
@@ -923,7 +936,7 @@ function ProvidersSettings() {
       <div>
         <h3 className="mb-2 font-medium text-sm">Provedores populares</h3>
         <div className="rounded-lg border bg-card">
-          {providers.map((provider, index) => (
+          {popularProviders.map((provider, index) => (
             <div key={provider.name}>
               {index > 0 && <Separator />}
               <div className="flex items-center justify-between gap-4 px-4 py-3">
@@ -952,11 +965,89 @@ function ProvidersSettings() {
           ))}
         </div>
         <div className="mt-3">
-          <button type="button" className="text-blue-400 text-sm hover:underline">
+          <button
+            type="button"
+            className="text-primary text-sm hover:underline"
+            onClick={() => setShowAllProviders(true)}
+          >
             Ver mais provedores
           </button>
         </div>
       </div>
+
+      <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
+        <DialogContent className="max-h-[80vh] w-[95vw] max-w-[480px] overflow-hidden p-0 sm:max-w-[560px]">
+          <DialogHeader className="border-b p-4">
+            <DialogTitle>Conectar provedor</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 overflow-auto p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Buscar provedores"
+                className="pl-9"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
+              <div className="rounded-lg border bg-card">
+                {filteredPopular.map((provider, index) => (
+                  <div key={provider.name}>
+                    {index > 0 && <Separator />}
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                        {provider.icon}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{provider.name}</span>
+                        {provider.badge && (
+                          <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
+                            {provider.badge}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Outro</h4>
+              <div className="rounded-lg border bg-card">
+                <div>
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                      ✿
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">Provedor personalizado compatível com OpenAI</span>
+                      <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
+                        Personalizado
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <Separator />
+                {filteredAll.map((provider, index) => (
+                  <div key={provider.name}>
+                    {index > 0 && <Separator />}
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
+                        {provider.icon}
+                      </span>
+                      <span className="text-sm">{provider.name}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
