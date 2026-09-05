@@ -125,28 +125,16 @@ function GeneralSettings() {
         <h2 className="mb-4 font-semibold text-lg">Geral</h2>
         <div className="rounded-lg border bg-card">
           <div className="px-4">
-            <SettingRow title="Idioma" description="Alterar o idioma de exibição do OpenCode">
-              <Select defaultValue="pt-BR">
-                <SelectTrigger className="w-44">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
-            </SettingRow>
-            <Separator />
             <SettingRow
-              title="Aceitar permissões automaticamente"
-              description="Solicitações de permissão serão aprovadas automaticamente"
+              title="Nome de exibição"
+              description="Nome personalizado exibido na interface (padrão: nome do sistema)"
             >
-              <Switch />
+              <Input className="w-44" placeholder="user" />
             </SettingRow>
             <Separator />
             <SettingRow
               title="Shell do terminal"
-              description="Escolha o shell usado no terminal. Os shells compatíveis também são usados nas chamadas de ferramentas do agente."
+              description="Shell padrão para terminal e ferramentas bash. Detectado automaticamente por padrão."
             >
               <Select defaultValue="auto">
                 <SelectTrigger className="w-44">
@@ -157,29 +145,23 @@ function GeneralSettings() {
                   <SelectItem value="bash">Bash</SelectItem>
                   <SelectItem value="zsh">Zsh</SelectItem>
                   <SelectItem value="fish">Fish</SelectItem>
+                  <SelectItem value="powershell">PowerShell</SelectItem>
                 </SelectContent>
               </Select>
             </SettingRow>
             <Separator />
-            <SettingRow
-              title="Mostrar resumos de raciocínio"
-              description="Exibir resumos de raciocínio do modelo na linha do tempo"
-            >
-              <Switch defaultChecked />
-            </SettingRow>
-            <Separator />
-            <SettingRow
-              title="Expandir partes da ferramenta shell"
-              description="Mostrar partes da ferramenta shell expandidas por padrão na linha do tempo"
-            >
-              <Switch defaultChecked />
-            </SettingRow>
-            <Separator />
-            <SettingRow
-              title="Expandir partes da ferramenta de edição"
-              description="Mostrar partes das ferramentas de edição, escrita e patch expandidas por padrão na linha do tempo"
-            >
-              <Switch defaultChecked />
+            <SettingRow title="Nível de log" description="Controla a quantidade de informações de log registradas">
+              <Select defaultValue="info">
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="debug">DEBUG</SelectItem>
+                  <SelectItem value="info">INFO (padrão)</SelectItem>
+                  <SelectItem value="warn">WARN</SelectItem>
+                  <SelectItem value="error">ERROR</SelectItem>
+                </SelectContent>
+              </Select>
             </SettingRow>
           </div>
         </div>
@@ -205,54 +187,101 @@ function GeneralSettings() {
               </Select>
             </SettingRow>
             <Separator />
-            <SettingRow title="Tema" description="Personalize como o OpenCode é tematizado.">
-              <Select defaultValue="oc-2">
+            <SettingRow title="Tema" description="Tema visual da interface do TUI">
+              <Select defaultValue="opencode">
                 <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="oc-2">OC-2</SelectItem>
+                  <SelectItem value="opencode">OpenCode</SelectItem>
                   <SelectItem value="oc-1">OC-1</SelectItem>
+                  <SelectItem value="oc-2">OC-2</SelectItem>
                 </SelectContent>
               </Select>
             </SettingRow>
             <Separator />
-            <SettingRow title="Fonte da interface" description="Personalize a fonte usada em toda a interface">
-              <Select defaultValue="system-sans">
-                <SelectTrigger className="w-44">
+            <SettingRow title="Captura do mouse" description="Habilitar ou desabilitar a captura do mouse no TUI">
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Estilo do diff"
+              description="Estilo de renderização do diff. 'Auto' se adapta à largura do terminal."
+            >
+              <Select defaultValue="auto">
+                <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="system-sans">System Sans</SelectItem>
-                  <SelectItem value="inter">Inter</SelectItem>
-                  <SelectItem value="geist">Geist</SelectItem>
-                  <SelectItem value="roboto">Roboto</SelectItem>
+                  <SelectItem value="auto">Auto (padrão)</SelectItem>
+                  <SelectItem value="stacked">Empilhado</SelectItem>
                 </SelectContent>
               </Select>
             </SettingRow>
             <Separator />
-            <SettingRow title="Fonte de código" description="Personalize a fonte usada em blocos de código">
-              <Select defaultValue="system-mono">
-                <SelectTrigger className="w-44">
+            <SettingRow title="Estilo do cursor" description="Formato do cursor no TUI">
+              <Select defaultValue="block">
+                <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="system-mono">System Mono</SelectItem>
-                  <SelectItem value="geist-mono">Geist Mono</SelectItem>
-                  <SelectItem value="jetbrains-mono">JetBrains Mono</SelectItem>
+                  <SelectItem value="block">Bloco</SelectItem>
+                  <SelectItem value="underline">Sublinhado</SelectItem>
+                  <SelectItem value="line">Linha</SelectItem>
+                  <SelectItem value="default">Padrão do terminal</SelectItem>
                 </SelectContent>
               </Select>
             </SettingRow>
             <Separator />
-            <SettingRow title="Fonte do terminal" description="Personalize a fonte usada no terminal">
-              <Select defaultValue="jetbrains-mono-nerd">
+            <SettingRow title="Piscar cursor" description="Se o cursor deve piscar no TUI">
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Velocidade de rolagem" description="Velocidade de rolagem do TUI (mínimo: 0.001)">
+              <Input className="w-24" type="number" defaultValue="1" min="0.001" step="0.1" />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Aceleração de rolagem"
+              description="Habilitar aceleração de rolagem ao girar a roda do mouse"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Notificações</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow title="Habilitar notificações" description="Ativar notificações desktop e sons do TUI">
+              <Switch />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Notificações desktop"
+              description="Mostrar notificações do sistema quando o agente concluir ou precisar de atenção"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Sons" description="Reproduzir sons de notificação">
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Volume" description="Volume dos sons de notificação (0-1)">
+              <Input className="w-24" type="number" defaultValue="0.4" min="0" max="1" step="0.1" />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Pacote de sons" description="Pacote de sons usado para notificações">
+              <Select defaultValue="opencode.default">
                 <SelectTrigger className="w-44">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="jetbrains-mono-nerd">JetBrainsMono Nerd Font</SelectItem>
-                  <SelectItem value="geist-mono">Geist Mono</SelectItem>
-                  <SelectItem value="fira-code">Fira Code</SelectItem>
+                  <SelectItem value="opencode.default">OpenCode Padrão</SelectItem>
+                  <SelectItem value="custom">Personalizado</SelectItem>
                 </SelectContent>
               </Select>
             </SettingRow>
@@ -261,24 +290,39 @@ function GeneralSettings() {
       </div>
 
       <div>
-        <h2 className="mb-4 font-semibold text-lg">Notificações do sistema</h2>
+        <h2 className="mb-4 font-semibold text-lg">Compartilhamento & Atualizações</h2>
         <div className="rounded-lg border bg-card">
           <div className="px-4">
-            <SettingRow
-              title="Agente"
-              description="Mostrar notificação do sistema quando o agente concluir o trabalho ou precisar de atenção"
-            >
-              <Switch defaultChecked />
+            <SettingRow title="Compartilhamento" description="Controla como sessões são compartilhadas">
+              <Select defaultValue="manual">
+                <SelectTrigger className="w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="manual">Manual (padrão)</SelectItem>
+                  <SelectItem value="auto">Automático</SelectItem>
+                  <SelectItem value="disabled">Desabilitado</SelectItem>
+                </SelectContent>
+              </Select>
             </SettingRow>
             <Separator />
             <SettingRow
-              title="Permissões"
-              description="Mostrar notificação do sistema quando uma permissão for necessária"
+              title="Atualização automática"
+              description="Comportamento de atualização automática do OpenCode"
             >
-              <Switch defaultChecked />
+              <Select defaultValue="true">
+                <SelectTrigger className="w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Habilitado (padrão)</SelectItem>
+                  <SelectItem value="false">Desabilitado</SelectItem>
+                  <SelectItem value="notify">Apenas notificar</SelectItem>
+                </SelectContent>
+              </Select>
             </SettingRow>
             <Separator />
-            <SettingRow title="Erros" description="Mostrar notificação do sistema quando ocorrer um erro">
+            <SettingRow title="Snapshot" description="Habilitar rastreamento de snapshot para restauração de sessões">
               <Switch defaultChecked />
             </SettingRow>
           </div>
@@ -286,47 +330,104 @@ function GeneralSettings() {
       </div>
 
       <div>
-        <h2 className="mb-4 font-semibold text-lg">Efeitos sonoros</h2>
+        <h2 className="mb-4 font-semibold text-lg">Compactação</h2>
         <div className="rounded-lg border bg-card">
           <div className="px-4">
             <SettingRow
-              title="Agente"
-              description="Reproduzir som quando o agente concluir o trabalho ou precisar de atenção"
+              title="Compactação automática"
+              description="Compactar automaticamente quando o contexto estiver cheio"
             >
-              <Select defaultValue="staplebops-01">
-                <SelectTrigger className="w-44">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="staplebops-01">Staplebops 01</SelectItem>
-                  <SelectItem value="staplebops-02">Staplebops 02</SelectItem>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                </SelectContent>
-              </Select>
+              <Switch defaultChecked />
             </SettingRow>
             <Separator />
-            <SettingRow title="Permissões" description="Reproduzir som quando uma permissão for necessária">
-              <Select defaultValue="staplebops-02">
-                <SelectTrigger className="w-44">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="staplebops-01">Staplebops 01</SelectItem>
-                  <SelectItem value="staplebops-02">Staplebops 02</SelectItem>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                </SelectContent>
-              </Select>
+            <SettingRow
+              title="Podar saídas de ferramentas"
+              description="Habilitar poda de saídas de ferramentas antigas para economizar contexto"
+            >
+              <Switch />
             </SettingRow>
             <Separator />
-            <SettingRow title="Erros" description="Reproduzir som quando ocorrer um erro">
-              <Select defaultValue="nao-03">
-                <SelectTrigger className="w-44">
+            <SettingRow
+              title="Turnos recentes preservados"
+              description="Número de turnos recentes a manter sem compactação"
+            >
+              <Input className="w-24" type="number" defaultValue="2" min="0" />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Tokens recentes preservados"
+              description="Número máximo de tokens dos turnos recentes a preservar"
+            >
+              <Input className="w-24" type="number" placeholder="auto" />
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Imagens</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow
+              title="Redimensionar automaticamente"
+              description="Redimensionar imagens que excedem os limites de tamanho"
+            >
+              <Switch defaultChecked />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Largura máxima" description="Largura máxima de imagens em pixels">
+              <Input className="w-24" type="number" defaultValue="2000" min="100" />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="Altura máxima" description="Altura máxima de imagens em pixels">
+              <Input className="w-24" type="number" defaultValue="2000" min="100" />
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Saída de Ferramentas</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow
+              title="Máximo de linhas"
+              description="Número máximo de linhas antes de truncar a saída da ferramenta"
+            >
+              <Input className="w-24" type="number" defaultValue="2000" min="100" />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Máximo de bytes"
+              description="Número máximo de bytes antes de truncar a saída da ferramenta"
+            >
+              <Input className="w-24" type="number" defaultValue="51200" min="1024" />
+            </SettingRow>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-4 font-semibold text-lg">Prompt</h2>
+        <div className="rounded-lg border bg-card">
+          <div className="px-4">
+            <SettingRow title="Altura máxima do prompt" description="Altura máxima da textarea de prompt em pixels">
+              <Input className="w-24" type="number" placeholder="auto" min="100" />
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              title="Largura máxima do prompt"
+              description="Largura máxima do prompt na tela inicial. 'auto' escala com a interface."
+            >
+              <Select defaultValue="auto">
+                <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="nao-03">Não 03</SelectItem>
-                  <SelectItem value="staplebops-01">Staplebops 01</SelectItem>
-                  <SelectItem value="none">Nenhum</SelectItem>
+                  <SelectItem value="auto">Automático</SelectItem>
+                  <SelectItem value="600">600px</SelectItem>
+                  <SelectItem value="800">800px</SelectItem>
+                  <SelectItem value="1000">1000px</SelectItem>
                 </SelectContent>
               </Select>
             </SettingRow>
@@ -338,29 +439,29 @@ function GeneralSettings() {
         <h2 className="mb-4 font-semibold text-lg">Avançado</h2>
         <div className="rounded-lg border bg-card">
           <div className="px-4">
-            <SettingRow title="Árvore de arquivos" description="Mostrar o painel da árvore de arquivos nas sessões">
-              <Switch defaultChecked />
+            <SettingRow
+              title="Timeout da leader key"
+              description="Tempo de espera em milissegundos para completar atalhos com leader key (Ctrl+X)"
+            >
+              <Input className="w-24" type="number" defaultValue="2000" min="500" step="100" />
             </SettingRow>
             <Separator />
             <SettingRow
-              title="Paleta de comandos"
-              description="Mostrar o botão de busca e paleta de comandos na barra de título"
+              title="Ferramenta batch"
+              description="Habilitar a ferramenta batch para executar múltiplas operações"
             >
-              <Switch defaultChecked />
+              <Switch />
+            </SettingRow>
+            <Separator />
+            <SettingRow title="OpenTelemetry" description="Habilitar spans OpenTelemetry para chamadas de IA">
+              <Switch />
             </SettingRow>
             <Separator />
             <SettingRow
-              title="Status do servidor"
-              description="Mostrar o botão de status do servidor na barra de título"
+              title="Continuar ao negar"
+              description="Continuar loop do agente quando uma chamada de ferramenta for negada"
             >
-              <Switch defaultChecked />
-            </SettingRow>
-            <Separator />
-            <SettingRow
-              title="Mostrar agente"
-              description="Alternar entre agentes na área de composição. Quando oculto, usa o agente Build como padrão."
-            >
-              <Switch defaultChecked />
+              <Switch />
             </SettingRow>
           </div>
         </div>
