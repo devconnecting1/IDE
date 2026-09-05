@@ -20,7 +20,7 @@ export const THEME_PRESET_OPTIONS = [
     },
   },
   {
-    label: "Supabase",
+    label: "supabase",
     value: "supabase",
     primary: {
       light: "oklch(0.8348 0.1302 160.908)",
@@ -28,7 +28,7 @@ export const THEME_PRESET_OPTIONS = [
     },
   },
   {
-    label: "Vercel",
+    label: "vercel",
     value: "vercel",
     primary: {
       light: "oklch(0 0 0)",
