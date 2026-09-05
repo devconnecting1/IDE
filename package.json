@@ -3,6 +3,10 @@
   "version": "2.2.0",
   "private": true,
   "main": "electron/dist/main.js",
+  "author": {
+    "name": "Studio Admin",
+    "email": "dev@studioadmin.app"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -19,11 +23,11 @@
     "lint:md": "markdownlint-cli2 \"*.md\"",
     "lint:yaml": "yamllint .github/workflows/*.yml .github/dependabot.yml",
     "electron:build:ts": "tsc -p electron/tsconfig.json",
-    "electron:dev": "npm run electron:build:ts && next build && electron .",
-    "electron:build": "npm run electron:build:ts && next build && electron-builder",
-    "electron:build:win": "npm run electron:build:ts && next build && electron-builder --win",
-    "electron:build:mac": "npm run electron:build:ts && next build && electron-builder --mac",
-    "electron:build:linux": "npm run electron:build:ts && next build && electron-builder --linux"
+    "electron:dev": "npm run electron:build:ts && electron .",
+    "electron:build": "npm run electron:build:ts && electron-builder",
+    "electron:build:win": "npm run electron:build:ts && electron-builder --win",
+    "electron:build:mac": "npm run electron:build:ts && electron-builder --mac",
+    "electron:build:linux": "npm run electron:build:ts && electron-builder --linux"
   },
   "build": {
     "appId": "com.studioadmin.app",
@@ -34,16 +38,16 @@
     "files": ["electron/dist/**/*", "electron/interface.d.ts", "out/**/*"],
     "win": {
       "target": "nsis",
-      "icon": "public/favicon.ico"
+      "icon": "src/app/favicon.ico"
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/favicon.ico",
+      "icon": "src/app/favicon.ico",
       "category": "public.app-category.developer-tools"
     },
     "linux": {
       "target": ["AppImage", "deb"],
-      "icon": "public/favicon.ico",
+      "icon": "src/app/favicon.ico",
       "category": "Development"
     },
     "nsis": {
