@@ -3,5 +3,6 @@
   "framework": "nextjs",
   "buildCommand": "turbo run build --filter=@workspaacing/web",
   "devCommand": "turbo run dev --filter=@workspaacing/web",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "outputDirectory": "apps/web/.next"
 }
