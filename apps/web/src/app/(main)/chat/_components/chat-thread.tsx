@@ -17,6 +17,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
 import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "@/components/ui/bubble";
@@ -47,6 +48,7 @@ import { cn, getInitials } from "@/lib/utils";
 
 import { formatChatFullDate, formatChatTime } from "./chat-time";
 import { type Message as ChatMessage, type Contact, currentUser } from "./data";
+import { useChat } from "./use-chat";
 
 interface ChatThreadProps {
   contact: Contact;
@@ -60,6 +62,28 @@ interface ChatThreadProps {
 export function ChatThread({ contact, messages, onOpenContact, onBack, showBackButton, className }: ChatThreadProps) {
   const t = useTranslations();
   const locale = useLocale();
+  const chat = useChat();
+  const [inputValue, setInputValue] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim() || chat.isLoading) return;
+    const msg = inputValue;
+    setInputValue("");
+    await chat.sendMessage(msg);
+  };
+
+  const allMessages = [
+    ...messages.map((m) => ({ ...m, isStatic: true })),
+    ...chat.messages.map((m) => ({
+      id: m.id,
+      align: m.role === "user" ? ("end" as const) : ("start" as const),
+      text: m.content,
+      textKey: "",
+      time: new Date().toISOString(),
+      isStatic: false,
+    })),
+  ];
 
   return (
     <div className={cn("flex h-full flex-col py-3", className)}>
@@ -153,7 +177,7 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                 <MarkerContent>{formatChatFullDate(messages[0].time, locale)}</MarkerContent>
               </Marker>
 
-              {messages.map((message) => {
+              {allMessages.map((message) => {
                 const isOutbound = message.align === "end";
                 const reactionAlign = isOutbound ? "start" : "end";
                 const senderName = isOutbound ? currentUser.name : contact.name;
@@ -173,7 +197,7 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                               isOutbound && "bg-primary text-primary-foreground",
                             )}
                           >
-                            {getInitials(senderName)}
+                            {isOutbound ? "MM" : getInitials(senderName)}
                           </AvatarFallback>
                         </Avatar>
                       </MessageAvatar>
@@ -181,7 +205,9 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                       <MessageContent>
                         <BubbleGroup>
                           <Bubble variant={isOutbound ? "default" : "muted"} align={message.align}>
-                            <BubbleContent>{t(message.textKey)}</BubbleContent>
+                            <BubbleContent>
+                              {message.isStatic ? t(message.textKey) : message.text}
+                            </BubbleContent>
                             {message.reaction ? (
                               <BubbleReactions
                                 aria-label={t("chat.reactionAria", { reaction: message.reaction })}
@@ -198,6 +224,29 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                   </MessageScrollerItem>
                 );
               })}
+
+              {chat.isLoading && (
+                <MessageScrollerItem messageId="loading" scrollAnchor>
+                  <Message align="start">
+                    <MessageAvatar>
+                      <Avatar>
+                        <AvatarFallback className="bg-muted text-foreground text-xs">AI</AvatarFallback>
+                      </Avatar>
+                    </MessageAvatar>
+                    <MessageContent>
+                      <BubbleGroup>
+                        <Bubble variant="muted" align="start">
+                          <BubbleContent className="flex gap-1">
+                            <span className="animate-pulse">.</span>
+                            <span className="animate-pulse [animation-delay:0.2s]">.</span>
+                            <span className="animate-pulse [animation-delay:0.4s]">.</span>
+                          </BubbleContent>
+                        </Bubble>
+                      </BubbleGroup>
+                    </MessageContent>
+                  </Message>
+                </MessageScrollerItem>
+              )}
             </MessageScrollerContent>
           </MessageScrollerViewport>
           <MessageScrollerButton />
@@ -219,7 +268,38 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
           </TabsList>
 
           <TabsContent value="reply" className="m-0">
-            <MessageComposer placeholder={t("chat.typeMessage")} />
+            <form onSubmit={handleSubmit}>
+              <InputGroup className="border-0 bg-transparent shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0 dark:bg-transparent dark:has-[[data-slot][aria-invalid=true]]:ring-0">
+                <InputGroupTextarea
+                  placeholder={t("chat.typeMessage")}
+                  className="min-h-14 px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  disabled={chat.isLoading}
+                />
+                <InputGroupAddon align="block-end">
+                  <InputGroupButton aria-label={t("chat.format")} type="button" size="icon-sm">
+                    <Type />
+                  </InputGroupButton>
+                  <InputGroupButton aria-label={t("chat.emoji")} type="button" size="icon-sm">
+                    <Smile />
+                  </InputGroupButton>
+                  <InputGroupButton aria-label={t("chat.attachFile")} type="button" size="icon-sm">
+                    <Paperclip />
+                  </InputGroupButton>
+                  <InputGroupButton aria-label={t("chat.insertLink")} type="button" size="icon-sm">
+                    <Link />
+                  </InputGroupButton>
+                  <InputGroupButton aria-label={t("chat.aiAssist")} type="button" size="icon-sm" variant="outline">
+                    <Sparkles />
+                  </InputGroupButton>
+                  <InputGroupButton type="submit" variant="default" size="icon-sm" className="ml-auto" disabled={chat.isLoading || !inputValue.trim()}>
+                    <Send />
+                    <span className="sr-only">{t("chat.send")}</span>
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
+            </form>
           </TabsContent>
           <TabsContent value="note" className="m-0">
             <MessageComposer placeholder={t("chat.writeInternalNote")} />

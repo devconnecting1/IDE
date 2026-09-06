@@ -17,7 +17,7 @@ import { useChat } from "./use-chat";
 
 interface ChatConversationListProps {
   conversations: Conversation[];
-  onSelectConversation?: (conversation: Conversation) => void;
+  onSelectConversation?: (id: number) => void;
   className?: string;
 }
 
@@ -30,7 +30,7 @@ const groupLabelKeys: Record<Conversation["group"], string> = {
 export function ChatConversationList({ conversations, onSelectConversation, className }: ChatConversationListProps) {
   const t = useTranslations();
   const locale = useLocale();
-  const [chat, setChat] = useChat();
+  const { selected, setChat } = useChat();
 
   const conversationGroups = conversations.reduce<
     Array<{ group: Conversation["group"]; conversations: Conversation[] }>
@@ -92,7 +92,7 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
                 <CollapsibleContent>
                   <div className="flex flex-col gap-1 px-2">
                     {conversations.map((conversation) => {
-                      const isSelected = chat.selected === conversation.id;
+                      const isSelected = selected === conversation.id;
 
                       return (
                         <button
@@ -105,7 +105,7 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
                           onClick={(event) => {
                             event.currentTarget.blur();
                             setChat({ selected: conversation.id });
-                            onSelectConversation?.(conversation);
+                            onSelectConversation?.(conversation.id);
                           }}
                         >
                           <div className="flex min-w-0 items-start gap-2.5">

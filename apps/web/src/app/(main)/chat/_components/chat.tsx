@@ -22,14 +22,14 @@ interface ChatProps {
 
 export function Chat({ conversations }: ChatProps) {
   const t = useTranslations();
-  const [chat] = useChat();
+  const { selected, setChat } = useChat();
   const [showContact, setShowContact] = useState(false);
   const [showThread, setShowThread] = useState(false);
   const isLg = useIsLg();
   const isMobile = useIsMobile();
   const visualViewportHeight = useVisualViewport();
 
-  const activeConversation = conversations.find((c) => c.id === chat.selected) ?? conversations[0];
+  const activeConversation = conversations.find((c) => c.id === selected) ?? conversations[0];
 
   return (
     <>
@@ -48,7 +48,10 @@ export function Chat({ conversations }: ChatProps) {
             "transition-transform duration-300 ease-out will-change-transform max-md:col-start-1 max-md:row-start-1",
             showThread && "max-md:pointer-events-none max-md:-translate-x-full",
           )}
-          onSelectConversation={() => setShowThread(true)}
+          onSelectConversation={(id) => {
+            setChat({ selected: id });
+            setShowThread(true);
+          }}
         />
         <ChatThread
           contact={activeConversation.contact}
