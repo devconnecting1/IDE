@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   AlarmClock,
@@ -8,12 +8,11 @@ import {
   Check,
   Copy,
   Flag,
-  Link,
+  Globe,
   MoreHorizontal,
   Paperclip,
   PhoneCall,
   Send,
-  Smile,
   Sparkles,
   Tag,
   Type,
@@ -25,6 +24,16 @@ import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
 import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -33,6 +42,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
 import { Marker, MarkerContent } from "@/components/ui/marker";
 import { Message, MessageAvatar, MessageContent, MessageFooter } from "@/components/ui/message";
@@ -53,14 +63,11 @@ import { formatChatFullDate, formatChatTime } from "./chat-time";
 import { type Contact, currentUser } from "./data";
 import { useChat } from "./use-chat";
 
-const AI_MODELS = [
-  { id: "openai/gpt-4o", name: "GPT-4o", provider: "OpenAI" },
-  { id: "openai/gpt-4o-mini", name: "GPT-4o Mini", provider: "OpenAI" },
-  { id: "anthropic/claude-sonnet-4", name: "Claude Sonnet 4", provider: "Anthropic" },
-  { id: "anthropic/claude-3-5-haiku", name: "Claude 3.5 Haiku", provider: "Anthropic" },
-  { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "Google" },
-  { id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: "Google" },
-];
+type ProviderModel = {
+  id: string;
+  name: string;
+  provider: string;
+};
 
 interface ChatThreadProps {
   contact?: Contact;
@@ -83,6 +90,46 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
   const locale = useLocale();
   const chat = useChat();
   const [inputValue, setInputValue] = useState("");
+  const [urlValue, setUrlValue] = useState("");
+  const [availableModels, setAvailableModels] = useState<ProviderModel[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        const { configStorage } = await import("@/lib/storage");
+        const config = await configStorage.read();
+        const providerIds = Object.keys(config.providers);
+        if (providerIds.length === 0) {
+          setAvailableModels([]);
+          return;
+        }
+        const res = await fetch(`/api/models?provider=${providerIds.join(",")}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const models: ProviderModel[] = [];
+        const entries = Object.entries(data) as Array<
+          [string, { name?: string; models?: Record<string, { name?: string }> }]
+        >;
+        for (const [provId, provData] of entries) {
+          const provName = provData.name ?? provId;
+          if (provData.models) {
+            for (const [modelId, modelData] of Object.entries(provData.models)) {
+              models.push({
+                id: `${provId}/${modelId}`,
+                name: modelData.name ?? modelId,
+                provider: provName,
+              });
+            }
+          }
+        }
+        setAvailableModels(models);
+      } catch {
+        /* ignore */
+      }
+    };
+    void loadModels();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +137,25 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
     const msg = inputValue;
     setInputValue("");
     await chat.sendMessage(msg);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const fileList = Array.from(files)
+      .map((f) => f.name)
+      .join(", ");
+    if (fileList) {
+      setInputValue((prev) => (prev ? `${prev}\n${fileList}` : fileList));
+    }
+    e.target.value = "";
+  };
+
+  const handleUrlInsert = () => {
+    if (urlValue.trim()) {
+      setInputValue((prev) => (prev ? `${prev}\n${urlValue.trim()}` : urlValue.trim()));
+      setUrlValue("");
+    }
   };
 
   const allMessages = [
@@ -105,7 +171,7 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
     })),
   ];
 
-  const selectedModel = AI_MODELS.find((m) => m.id === chat.selectedModel) ?? AI_MODELS[0];
+  const _selectedModel = availableModels.find((m) => m.id === chat.selectedModel) ?? availableModels[0];
 
   const contactName = contact?.name ?? currentUser.name;
   const contactRole = contact?.role ?? "";
@@ -295,31 +361,6 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
           <TabsContent value="reply" className="m-0">
             <form onSubmit={handleSubmit}>
               <InputGroup className="border-0 bg-background shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0">
-                <div className="flex items-center gap-1 border-b px-2 py-1.5">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-6 gap-1 px-1.5 text-muted-foreground text-xs">
-                        <Sparkles className="size-3" />
-                        {selectedModel.name}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
-                      <DropdownMenuLabel>Modelo AI</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {AI_MODELS.map((model) => (
-                        <DropdownMenuItem key={model.id} onSelect={() => chat.setSelectedModel(model.id)}>
-                          <Check
-                            className={cn("size-4", chat.selectedModel === model.id ? "opacity-100" : "opacity-0")}
-                          />
-                          <div className="flex flex-col">
-                            <span>{model.name}</span>
-                            <span className="text-muted-foreground text-xs">{model.provider}</span>
-                          </div>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
                 <InputGroupTextarea
                   placeholder={t("chat.typeMessage")}
                   className="max-h-40 min-h-14 overflow-y-auto px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
@@ -331,15 +372,73 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                   <InputGroupButton aria-label={t("chat.format")} type="button" size="icon-sm">
                     <Type />
                   </InputGroupButton>
-                  <InputGroupButton aria-label={t("chat.emoji")} type="button" size="icon-sm">
-                    <Smile />
-                  </InputGroupButton>
-                  <InputGroupButton aria-label={t("chat.attachFile")} type="button" size="icon-sm">
+                  <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileSelect} />
+                  <InputGroupButton
+                    aria-label={t("chat.attachFile")}
+                    type="button"
+                    size="icon-sm"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
                     <Paperclip />
                   </InputGroupButton>
-                  <InputGroupButton aria-label={t("chat.insertLink")} type="button" size="icon-sm">
-                    <Link />
-                  </InputGroupButton>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <InputGroupButton aria-label={t("chat.insertLink")} type="button" size="icon-sm">
+                        <Globe />
+                      </InputGroupButton>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Inserir link</DialogTitle>
+                        <DialogDescription>Cole a URL que deseja adicionar à mensagem.</DialogDescription>
+                      </DialogHeader>
+                      <Input
+                        placeholder="https://exemplo.com"
+                        value={urlValue}
+                        onChange={(e) => setUrlValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleUrlInsert();
+                          }
+                        }}
+                      />
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button variant="outline">Cancelar</Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                          <Button onClick={handleUrlInsert}>Inserir</Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <InputGroupButton type="button" size="icon-sm" variant="outline">
+                        <Sparkles />
+                      </InputGroupButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      <DropdownMenuLabel>Modelo AI</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {availableModels.length === 0 ? (
+                        <DropdownMenuItem disabled>Nenhum modelo disponível</DropdownMenuItem>
+                      ) : (
+                        availableModels.map((model) => (
+                          <DropdownMenuItem key={model.id} onSelect={() => chat.setSelectedModel(model.id)}>
+                            <Check
+                              className={cn("size-4", chat.selectedModel === model.id ? "opacity-100" : "opacity-0")}
+                            />
+                            <div className="flex flex-col">
+                              <span>{model.name}</span>
+                              <span className="text-muted-foreground text-xs">{model.provider}</span>
+                            </div>
+                          </DropdownMenuItem>
+                        ))
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <InputGroupButton
                     type="submit"
                     variant="default"
@@ -382,14 +481,11 @@ function MessageComposer({ placeholder }: { placeholder: string }) {
           <InputGroupButton aria-label={t("chat.format")} type="button" size="icon-sm">
             <Type />
           </InputGroupButton>
-          <InputGroupButton aria-label={t("chat.emoji")} type="button" size="icon-sm">
-            <Smile />
-          </InputGroupButton>
           <InputGroupButton aria-label={t("chat.attachFile")} type="button" size="icon-sm">
             <Paperclip />
           </InputGroupButton>
           <InputGroupButton aria-label={t("chat.insertLink")} type="button" size="icon-sm">
-            <Link />
+            <Globe />
           </InputGroupButton>
           <InputGroupButton type="submit" variant="default" size="icon-sm" className="ml-auto">
             <Send />
