@@ -1,102 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { ChevronDown, Cpu, Keyboard, MoreHorizontal, Plus, Search, Server, Settings2, Sparkles } from "lucide-react";
+import { Check, ChevronDown, Loader2, MoreHorizontal, Plus, Search, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-
-type Section = "general" | "shortcuts" | "servers" | "providers" | "models";
-
-interface NavGroup {
-  label: string;
-  items: Array<{ id: Section; label: string; icon: React.ElementType }>;
-}
-
-const navGroups: NavGroup[] = [
-  {
-    label: "Desktop",
-    items: [
-      { id: "general", label: "Geral", icon: Settings2 },
-      { id: "shortcuts", label: "Atalhos", icon: Keyboard },
-    ],
-  },
-  {
-    label: "Servidor",
-    items: [
-      { id: "servers", label: "Servidores", icon: Server },
-      { id: "providers", label: "Provedores", icon: Sparkles },
-      { id: "models", label: "Modelos", icon: Cpu },
-    ],
-  },
-];
-
-interface AccountDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
-  const [activeSection, setActiveSection] = useState<Section>("general");
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] gap-0 overflow-hidden p-0 sm:max-w-[640px] md:h-[80vh] md:max-w-[800px] lg:max-w-[960px]">
-        <DialogHeader className="sr-only">
-          <DialogTitle>Configurações</DialogTitle>
-        </DialogHeader>
-        <div className="flex h-full overflow-hidden">
-          <nav className="w-44 shrink-0 overflow-y-auto border-r bg-sidebar p-3 sm:w-56">
-            {navGroups.map((group) => (
-              <div key={group.label} className="mb-4">
-                <div className="mb-1 px-2 font-medium text-muted-foreground text-xs">{group.label}</div>
-                <div className="flex flex-col gap-0.5">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className={cn(
-                          "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
-                          activeSection === item.id
-                            ? "bg-accent text-accent-foreground"
-                            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-                        )}
-                        onClick={() => setActiveSection(item.id)}
-                      >
-                        <Icon className="size-4 shrink-0" />
-                        {item.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-            <div className="mt-auto border-t pt-3">
-              <div className="px-2 text-muted-foreground text-xs">Workspaacing</div>
-              <div className="px-2 text-muted-foreground text-xs">v1.0.0</div>
-            </div>
-          </nav>
-          <div className="min-h-0 flex-1 overflow-y-auto bg-background p-6">
-            {activeSection === "general" && <GeneralSettings />}
-            {activeSection === "shortcuts" && <ShortcutsSettings />}
-            {activeSection === "servers" && <ServersSettings />}
-            {activeSection === "providers" && <ProvidersSettings />}
-            {activeSection === "models" && <ModelsSettings />}
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 export function SettingRow({
   title,
@@ -790,140 +704,80 @@ export function ServersSettings() {
   );
 }
 
-const popularProviders = [
-  {
-    name: "OpenCode Zen",
-    badge: "Recomendado",
-    description: "Modelos otimizados e confiáveis",
-    icon: "Z",
-  },
-  {
-    name: "OpenCode Go",
-    badge: "Recomendado",
-    description: "Assinatura de baixo custo para todos",
-    icon: "G",
-  },
-  {
-    name: "Anthropic",
-    description: "Modelos Claude para código e raciocínio",
-    icon: "A",
-  },
-  {
-    name: "OpenAI",
-    description: "Modelos GPT para tarefas gerais de IA",
-    icon: "O",
-  },
-  {
-    name: "Google",
-    description: "Modelos Gemini para respostas rápidas",
-    icon: "✦",
-  },
-  {
-    name: "OpenRouter",
-    description: "Acesse centenas de modelos de múltiplos provedores",
-    icon: "OR",
-  },
-  {
-    name: "Vercel AI Gateway",
-    description: "Acesso unificado com roteamento inteligente",
-    icon: "▲",
-  },
-];
+const STORAGE_KEY = "workspaacing:providers";
 
-const allProviders = [
-  { name: "302.AI", icon: "302" },
-  { name: "Abacus", icon: "Ab" },
-  { name: "Alibaba", icon: "Al" },
-  { name: "Amazon Bedrock", icon: "AB" },
-  { name: "Arcee AI", icon: "Ar" },
-  { name: "Azure", icon: "Az" },
-  { name: "Bytedance Seed", icon: "BS" },
-  { name: "Cerebras", icon: "Ce" },
-  { name: "Cohere", icon: "Co" },
-  { name: "DeepInfra", icon: "DI" },
-  { name: "DeepSeek", icon: "DS" },
-  { name: "Deepreinforce", icon: "Dr" },
-  { name: "DigitalOcean", icon: "DO" },
-  { name: "Evroc", icon: "Ev" },
-  { name: "FastRouter", icon: "FR" },
-  { name: "Fireworks AI", icon: "FW" },
-  { name: "Firmware", icon: "Fi" },
-  { name: "Friendli", icon: "Fl" },
-  { name: "GitHub Copilot", icon: "GH" },
-  { name: "GitHub Models", icon: "GM" },
-  { name: "GitLab", icon: "GL" },
-  { name: "Google", icon: "✦" },
-  { name: "Google Vertex", icon: "GV" },
-  { name: "Groq", icon: "Gr" },
-  { name: "Helicone", icon: "He" },
-  { name: "Huggingface", icon: "Hu" },
-  { name: "IBM", icon: "IBM" },
-  { name: "Inclusion AI", icon: "In" },
-  { name: "Inception", icon: "Ic" },
-  { name: "IO.net", icon: "IO" },
-  { name: "Kilo", icon: "Ki" },
-  { name: "Llama", icon: "Ll" },
-  { name: "LM Studio", icon: "LM" },
-  { name: "LucidQuery", icon: "LQ" },
-  { name: "MegaNova", icon: "Me" },
-  { name: "Meituan", icon: "Mt" },
-  { name: "Microsoft", icon: "MS" },
-  { name: "MiniMax", icon: "MM" },
-  { name: "Mistral", icon: "Mi" },
-  { name: "Moark", icon: "Mo" },
-  { name: "ModelScope", icon: "MS" },
-  { name: "Moonshot AI", icon: "MA" },
-  { name: "Nebius", icon: "Nb" },
-  { name: "Nova", icon: "Nv" },
-  { name: "Nvidia", icon: "Nv" },
-  { name: "Novita AI", icon: "NA" },
-  { name: "Ollama Cloud", icon: "OC" },
-  { name: "OpenAI", icon: "O" },
-  { name: "OpenRouter", icon: "OR" },
-  { name: "OVHcloud", icon: "OV" },
-  { name: "Perplexity", icon: "Pe" },
-  { name: "Poe", icon: "Po" },
-  { name: "Poolside", icon: "PS" },
-  { name: "PrivateMode AI", icon: "PM" },
-  { name: "Qihang AI", icon: "QH" },
-  { name: "Qiniu AI", icon: "QN" },
-  { name: "Requesty", icon: "Rq" },
-  { name: "Sakana AI", icon: "Sa" },
-  { name: "Sarvam AI", icon: "Sv" },
-  { name: "Scaleway", icon: "Sc" },
-  { name: "Sdaia", icon: "Sd" },
-  { name: "SiliconFlow", icon: "SF" },
-  { name: "StepFun", icon: "St" },
-  { name: "Swiss AI", icon: "Sw" },
-  { name: "Synthetic", icon: "Sy" },
-  { name: "Together AI", icon: "TA" },
-  { name: "Trendyol", icon: "Tr" },
-  { name: "Upstage", icon: "Up" },
-  { name: "V0", icon: "V0" },
-  { name: "Venice", icon: "Ve" },
-  { name: "Vercel", icon: "▲" },
-  { name: "VivGrid", icon: "VG" },
-  { name: "Vultr", icon: "Vu" },
-  { name: "WandB", icon: "WB" },
-  { name: "xAI", icon: "X" },
-  { name: "Xiaomi", icon: "Xi" },
-  { name: "ZenMux", icon: "ZM" },
-  { name: "Zhipu AI", icon: "Zp" },
-];
+function getConnectedProviders(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveConnectedProviders(data: Record<string, string>) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
 
 export function ProvidersSettings() {
-  const [showAllProviders, setShowAllProviders] = useState(false);
+  const [connected, setConnected] = useState<Record<string, string>>({});
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [apiKeyInput, setApiKeyInput] = useState("");
   const [search, setSearch] = useState("");
-
-  const filteredPopular = popularProviders.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.description?.toLowerCase().includes(search.toLowerCase()),
+  const [allProviders, setAllProviders] = useState<Array<{ id: string; name: string; icon: string; envKey: string }>>(
+    [],
   );
+  const [loading, setLoading] = useState(true);
 
-  const filteredAll = allProviders
-    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  useEffect(() => {
+    setConnected(getConnectedProviders());
+    fetch("/api/models")
+      .then((res) => res.json())
+      .then((data: Record<string, { name: string; env?: string[] }>) => {
+        const providers = Object.entries(data).map(([id, p]) => ({
+          id,
+          name: p.name,
+          icon: p.name.slice(0, 2),
+          envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
+        }));
+        providers.sort((a, b) => a.name.localeCompare(b.name));
+        setAllProviders(providers);
+      })
+      .catch(() => {
+        /* ignore */
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleConnect = (provider: { id: string; name: string; icon: string; envKey: string }) => {
+    setEditingId(provider.id);
+    setApiKeyInput(connected[provider.id] || "");
+  };
+
+  const handleSave = (providerId: string) => {
+    const trimmed = apiKeyInput.trim();
+    if (!trimmed) return;
+    const next = { ...connected, [providerId]: trimmed };
+    saveConnectedProviders(next);
+    setConnected(next);
+    setEditingId(null);
+    setApiKeyInput("");
+  };
+
+  const handleDisconnect = (providerId: string) => {
+    const next = { ...connected };
+    delete next[providerId];
+    saveConnectedProviders(next);
+    setConnected(next);
+  };
+
+  const connectedProviders = allProviders.filter((p) => connected[p.id]);
+  const availableProviders = allProviders.filter(
+    (p) =>
+      !connected[p.id] &&
+      (p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toLowerCase().includes(search.toLowerCase())),
+  );
 
   return (
     <div className="space-y-6">
@@ -931,292 +785,317 @@ export function ProvidersSettings() {
 
       <div>
         <h3 className="mb-2 font-medium text-sm">Provedores conectados</h3>
-        <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">Nenhum provedor conectado</div>
+        {connectedProviders.length === 0 ? (
+          <div className="rounded-lg border bg-card p-4 text-muted-foreground text-sm">Nenhum provedor conectado</div>
+        ) : (
+          <div className="rounded-lg border bg-card">
+            {connectedProviders.map((provider, index) => (
+              <div key={provider.id}>
+                {index > 0 && <Separator />}
+                <div className="flex items-center justify-between gap-4 px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                      {provider.icon}
+                    </span>
+                    <div>
+                      <span className="font-medium text-sm">{provider.name}</span>
+                      <p className="text-muted-foreground text-xs">
+                        Conectado · Chave: {connected[provider.id].slice(0, 8)}...
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="shrink-0 text-destructive hover:text-destructive"
+                    onClick={() => handleDisconnect(provider.id)}
+                  >
+                    <X className="mr-1 size-3" />
+                    Desconectar
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>
-        <h3 className="mb-2 font-medium text-sm">Provedores populares</h3>
-        <div className="rounded-lg border bg-card">
-          {popularProviders.map((provider, index) => (
-            <div key={provider.name}>
-              {index > 0 && <Separator />}
-              <div className="flex items-center justify-between gap-4 px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                    {provider.icon}
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{provider.name}</span>
-                      {provider.badge && (
-                        <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
-                          {provider.badge}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-muted-foreground text-xs">{provider.description}</p>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm" className="shrink-0">
-                  <Plus className="mr-1 size-3" />
-                  Conectar
-                </Button>
-              </div>
-            </div>
-          ))}
+        <h3 className="mb-2 font-medium text-sm">Adicionar provedor</h3>
+        <div className="relative mb-3">
+          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar provedores"
+            className="pl-9"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <div className="mt-3">
-          <button
-            type="button"
-            className="text-primary text-sm hover:underline"
-            onClick={() => setShowAllProviders(true)}
-          >
-            Ver mais provedores
-          </button>
-        </div>
-      </div>
-
-      <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
-        <DialogContent className="flex h-[85vh] max-h-[90vh] w-[95vw] max-w-[480px] flex-col overflow-hidden rounded-2xl bg-popover p-0 text-popover-foreground sm:max-w-[640px]">
-          <DialogHeader className="border-b bg-popover p-4">
-            <DialogTitle>Conectar provedor</DialogTitle>
-          </DialogHeader>
-          <div className="flex min-h-0 flex-1 flex-col gap-4 p-4">
-            <div className="relative">
-              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar provedores"
-                className="pl-9"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-            <div className="min-h-0 flex-1 overflow-auto">
-              <h4 className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Popular</h4>
-              <div className="rounded-lg border bg-card">
-                {filteredPopular.map((provider, index) => (
-                  <div key={provider.name}>
-                    {index > 0 && <Separator />}
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-accent"
-                    >
+        {loading ? (
+          <div className="flex items-center justify-center gap-2 rounded-lg border bg-card py-8 text-muted-foreground text-sm">
+            <Loader2 className="size-4 animate-spin" />
+            Carregando provedores...
+          </div>
+        ) : (
+          <div className="rounded-lg border bg-card">
+            {availableProviders.map((provider, index) => (
+              <div key={provider.id}>
+                {index > 0 && <Separator />}
+                {editingId === provider.id ? (
+                  <div className="px-4 py-3">
+                    <div className="mb-2 flex items-center gap-2">
                       <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
                         {provider.icon}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{provider.name}</span>
-                        {provider.badge && (
-                          <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
-                            {provider.badge}
-                          </span>
-                        )}
-                      </div>
-                    </button>
+                      <span className="font-medium text-sm">{provider.name}</span>
+                    </div>
+                    <p className="mb-2 text-muted-foreground text-xs">
+                      Insira a chave da API oficial ({provider.envKey})
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        type="password"
+                        placeholder={provider.envKey}
+                        value={apiKeyInput}
+                        onChange={(e) => setApiKeyInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSave(provider.id)}
+                        className="flex-1"
+                        autoFocus
+                      />
+                      <Button size="sm" onClick={() => handleSave(provider.id)} disabled={!apiKeyInput.trim()}>
+                        <Check className="mr-1 size-3" />
+                        Salvar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingId(null);
+                          setApiKeyInput("");
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
                   </div>
-                ))}
-              </div>
-
-              <h4 className="mt-4 mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">Outro</h4>
-              <div className="rounded-lg border bg-card">
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-accent"
-                >
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                    ✿
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">Provedor personalizado compatível com OpenAI</span>
-                    <span className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
-                      Personalizado
-                    </span>
-                  </div>
-                </button>
-                <Separator />
-                {filteredAll.map((provider, index) => (
-                  <div key={provider.name}>
-                    {index > 0 && <Separator />}
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-accent"
-                    >
-                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
+                ) : (
+                  <div className="flex items-center justify-between gap-4 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
                         {provider.icon}
                       </span>
-                      <span className="text-sm">{provider.name}</span>
-                    </button>
+                      <span className="font-medium text-sm">{provider.name}</span>
+                    </div>
+                    <Button variant="ghost" size="sm" className="shrink-0" onClick={() => handleConnect(provider)}>
+                      <Plus className="mr-1 size-3" />
+                      Conectar
+                    </Button>
                   </div>
-                ))}
+                )}
               </div>
-            </div>
+            ))}
+            {availableProviders.length === 0 && (
+              <p className="px-4 py-6 text-center text-muted-foreground text-sm">
+                {allProviders.length === 0 ? "Nenhum provedor encontrado" : "Todos os provedores já estão conectados"}
+              </p>
+            )}
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
     </div>
   );
 }
 
-const modelProviders = [
-  {
-    name: "OpenCode",
-    icon: "OC",
-    models: [{ name: "Big Pickle", description: "Modelo forte e rápido da OpenCode", enabled: true }],
-  },
-  {
-    name: "Anthropic",
-    icon: "A",
-    models: [
-      { name: "Claude Opus 5", description: "Modelo mais inteligente para tarefas complexas", enabled: false },
-      { name: "Claude Sonnet 4", description: " equilíbrio ideal entre inteligência e velocidade", enabled: true },
-      { name: "Claude Haiku 4.5", description: "Modelo rápido e eficiente para tarefas leves", enabled: true },
-    ],
-  },
-  {
-    name: "OpenAI",
-    icon: "O",
-    models: [
-      { name: "GPT-5", description: "Modelo mais avançado da OpenAI", enabled: true },
-      { name: "GPT-5 Nano", description: "Modelo leve e rápido para tarefas simples", enabled: false },
-      { name: "GPT-6 Astra", description: "Próxima geração de modelos GPT", enabled: false },
-    ],
-  },
-  {
-    name: "Google",
-    icon: "✦",
-    models: [
-      { name: "Gemini 3 Pro", description: "Modelo avançado com reasoning e multimodal", enabled: true },
-      { name: "Gemini 3.7 Flash", description: "Modelo rápido para respostas ágeis", enabled: true },
-      { name: "Gemini 3.8 Flash", description: "Versão aprimorada do Flash", enabled: false },
-    ],
-  },
-  {
-    name: "xAI",
-    icon: "X",
-    models: [
-      { name: "Grok 4.5", description: "Modelo com raciocínio avançado", enabled: false },
-      { name: "Grok 4.6", description: "Última versão do Grok", enabled: false },
-    ],
-  },
-  {
-    name: "Meta",
-    icon: "M",
-    models: [
-      { name: "Muse Spark 1.3", description: "Modelo open-source da Meta", enabled: true },
-      { name: "Muse Spark 1.2", description: "Versão anterior do Muse Spark", enabled: false },
-    ],
-  },
-  {
-    name: "DeepSeek",
-    icon: "DS",
-    models: [
-      { name: "V4 Pro", description: "Modelo avançado com raciocínio profundo", enabled: false },
-      { name: "V4 Flash", description: "Versão rápida do DeepSeek V4", enabled: false },
-    ],
-  },
-  {
-    name: "Alibaba",
-    icon: "Al",
-    models: [
-      { name: "Qwen3.8 Max", description: "Modelo mais inteligente da série Qwen", enabled: false },
-      { name: "Qwen3.7 Flash", description: "Modelo rápido para código e raciocínio", enabled: false },
-    ],
-  },
-  {
-    name: "Mistral",
-    icon: "Mi",
-    models: [
-      { name: "Mistral Large", description: "Modelo principal da Mistral", enabled: false },
-      { name: "Mixtral 8x22B", description: "Modelo mixture-of-experts de alta performance", enabled: false },
-    ],
-  },
-  {
-    name: "Nvidia",
-    icon: "Nv",
-    models: [
-      { name: "Nemotron 3.5 Lightning", description: "Modelo ultra-rápido da Nvidia", enabled: true },
-      { name: "Nemotron 3 Ultra", description: "Modelo de alta performance da Nvidia", enabled: false },
-    ],
-  },
-];
+interface ModelData {
+  id: string;
+  name: string;
+  description?: string;
+  cost?: { input?: number; output?: number };
+  limit?: { context?: number; output?: number };
+  reasoning?: boolean;
+  tool_call?: boolean;
+  attachment?: boolean;
+}
+
+const MODELS_STORAGE_KEY = "workspaacing:models";
+
+function getEnabledModels(): Record<string, boolean> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(MODELS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveEnabledModels(data: Record<string, boolean>) {
+  localStorage.setItem(MODELS_STORAGE_KEY, JSON.stringify(data));
+}
+
+function getProviderIcon(name: string): string {
+  return name.slice(0, 2);
+}
 
 export function ModelsSettings() {
   const [search, setSearch] = useState("");
-  const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set(modelProviders.map((p) => p.name)));
+  const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set());
+  const [modelsByProvider, setModelsByProvider] = useState<Record<string, { name: string; models: ModelData[] }>>({});
+  const [loading, setLoading] = useState(false);
+  const [enabledModels, setEnabledModels] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setEnabledModels(getEnabledModels());
+
+    const connectedRaw = localStorage.getItem(STORAGE_KEY);
+    const connected: Record<string, string> = connectedRaw ? JSON.parse(connectedRaw) : {};
+    const providerIds = Object.keys(connected);
+
+    if (providerIds.length === 0) {
+      setModelsByProvider({});
+      return;
+    }
+
+    setLoading(true);
+    const params = providerIds.join(",");
+    fetch(`/api/models?provider=${params}`)
+      .then((res) => res.json())
+      .then((data: Record<string, { name: string; models: Record<string, ModelData> }>) => {
+        const result: Record<string, { name: string; models: ModelData[] }> = {};
+        for (const [providerId, providerData] of Object.entries(data)) {
+          const models = Object.values(providerData.models);
+          if (models.length > 0) {
+            result[providerId] = { name: providerData.name, models };
+          }
+        }
+        setModelsByProvider(result);
+        setExpandedProviders(new Set(Object.keys(result)));
+      })
+      .catch(() => {
+        /* ignore */
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const toggleProvider = (name: string) => {
     setExpandedProviders((prev) => {
       const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
-      } else {
-        next.add(name);
-      }
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
       return next;
     });
   };
 
-  const filteredProviders = modelProviders
-    .map((provider) => ({
-      ...provider,
+  const toggleModel = (modelId: string) => {
+    setEnabledModels((prev) => {
+      const next = { ...prev, [modelId]: !prev[modelId] };
+      saveEnabledModels(next);
+      return next;
+    });
+  };
+
+  const filteredProviders = Object.entries(modelsByProvider)
+    .map(([providerId, provider]) => ({
+      providerId,
+      name: provider.name,
+      icon: getProviderIcon(provider.name),
       models: provider.models.filter(
-        (m) =>
-          m.name.toLowerCase().includes(search.toLowerCase()) ||
-          m.description.toLowerCase().includes(search.toLowerCase()),
+        (m) => m.name.toLowerCase().includes(search.toLowerCase()) || m.id.toLowerCase().includes(search.toLowerCase()),
       ),
     }))
-    .filter((provider) => provider.models.length > 0);
+    .filter((p) => p.models.length > 0);
+
+  const connectedCount = Object.keys(modelsByProvider).length;
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="font-semibold text-lg">Modelos</h2>
         <p className="text-muted-foreground text-xs">
-          Modelos carregados de models.dev. Ative os modelos que deseja usar.
+          {connectedCount === 0
+            ? "Conecte um provedor em Configurações > Provedores para ver seus modelos."
+            : `${connectedCount} provedor(es) conectado(s). Modelos carregados de models.dev.`}
         </p>
       </div>
 
-      <Input placeholder="Buscar modelos" value={search} onChange={(e) => setSearch(e.target.value)} />
+      {connectedCount > 0 && (
+        <Input placeholder="Buscar modelos" value={search} onChange={(e) => setSearch(e.target.value)} />
+      )}
+
+      {loading && (
+        <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground text-sm">
+          <Loader2 className="size-4 animate-spin" />
+          Carregando modelos...
+        </div>
+      )}
+
+      {!loading && connectedCount === 0 && (
+        <div className="rounded-lg border bg-card p-8 text-center">
+          <p className="mb-1 text-muted-foreground text-sm">Nenhum provedor conectado</p>
+          <p className="text-muted-foreground text-xs">
+            Vá para Configurações &gt; Provedores e conecte um provedor para ver seus modelos disponíveis.
+          </p>
+        </div>
+      )}
+
+      {!loading && connectedCount > 0 && filteredProviders.length === 0 && (
+        <p className="py-8 text-center text-muted-foreground text-sm">Nenhum modelo encontrado</p>
+      )}
 
       <div className="space-y-4">
-        {filteredProviders.length === 0 ? (
-          <p className="py-8 text-center text-muted-foreground text-sm">Nenhum modelo encontrado</p>
-        ) : (
-          filteredProviders.map((provider) => (
-            <div key={provider.name}>
-              <button
-                type="button"
-                className="mb-1 flex w-full items-center gap-2 py-1 text-muted-foreground text-xs uppercase tracking-wide hover:text-foreground"
-                onClick={() => toggleProvider(provider.name)}
-              >
-                <ChevronDown
-                  className={cn("size-3 transition-transform", !expandedProviders.has(provider.name) && "-rotate-90")}
-                />
-                <span className="flex size-5 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
-                  {provider.icon}
-                </span>
-                <span className="font-medium">{provider.name}</span>
-                <span className="text-muted-foreground">({provider.models.length})</span>
-              </button>
-              {expandedProviders.has(provider.name) && (
-                <div className="rounded-lg border bg-card">
-                  {provider.models.map((model, index) => (
-                    <div key={model.name}>
-                      {index > 0 && <Separator />}
-                      <div className="flex items-center justify-between px-4 py-3">
-                        <div>
-                          <span className="text-sm">{model.name}</span>
-                          <p className="text-muted-foreground text-xs">{model.description}</p>
+        {filteredProviders.map((provider) => (
+          <div key={provider.providerId}>
+            <button
+              type="button"
+              className="mb-1 flex w-full items-center gap-2 py-1 text-muted-foreground text-xs uppercase tracking-wide hover:text-foreground"
+              onClick={() => toggleProvider(provider.providerId)}
+            >
+              <ChevronDown
+                className={cn(
+                  "size-3 transition-transform",
+                  !expandedProviders.has(provider.providerId) && "-rotate-90",
+                )}
+              />
+              <span className="flex size-5 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
+                {provider.icon}
+              </span>
+              <span className="font-medium">{provider.name}</span>
+              <span className="text-muted-foreground">({provider.models.length})</span>
+            </button>
+            {expandedProviders.has(provider.providerId) && (
+              <div className="rounded-lg border bg-card">
+                {provider.models.map((model, index) => (
+                  <div key={model.id}>
+                    {index > 0 && <Separator />}
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm">{model.name}</span>
+                        {model.description && (
+                          <p className="truncate text-muted-foreground text-xs">{model.description}</p>
+                        )}
+                        <div className="mt-0.5 flex flex-wrap gap-2 text-muted-foreground text-xs">
+                          {model.reasoning && <span>Raciocínio</span>}
+                          {model.tool_call && <span>Tool Call</span>}
+                          {model.attachment && <span>Anexos</span>}
+                          {model.limit?.context && <span>{Math.round(model.limit.context / 1000)}k contexto</span>}
+                          {model.cost?.input !== undefined && model.cost?.output !== undefined && (
+                            <span>
+                              ${model.cost.input} / ${model.cost.output} por 1M tokens
+                            </span>
+                          )}
                         </div>
-                        <Switch defaultChecked={model.enabled} />
                       </div>
+                      <Switch
+                        checked={enabledModels[model.id] ?? false}
+                        onCheckedChange={() => toggleModel(model.id)}
+                      />
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))
-        )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -5,26 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-type FormatCurrencyOptions = Intl.NumberFormatOptions & {
-  noDecimals?: boolean;
-};
-
-/**
- * Format a number as currency (BRL).
- */
-function formatCurrency(value: number, options: FormatCurrencyOptions = {}, locale = "pt-BR"): string {
-  const { noDecimals, ...rest } = options;
-  if (noDecimals) {
-    rest.maximumFractionDigits = 0;
-    rest.minimumFractionDigits = 0;
-  }
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "BRL",
-    ...rest,
-  }).format(value);
-}
-
 export function getInitials(name: string): string {
   if (!name) return "";
   const parts = name.trim().split(/\s+/);

@@ -30,7 +30,7 @@ const groupLabelKeys: Record<Conversation["group"], string> = {
 export function ChatConversationList({ conversations, onSelectConversation, className }: ChatConversationListProps) {
   const t = useTranslations();
   const locale = useLocale();
-  const { selected, setChat } = useChat();
+  const { selected, setChat, messages, isLoading } = useChat();
 
   const conversationGroups = conversations.reduce<
     Array<{ group: Conversation["group"]; conversations: Conversation[] }>
@@ -104,7 +104,7 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
                           )}
                           onClick={(event) => {
                             event.currentTarget.blur();
-                            setChat({ selected: conversation.id });
+                            setChat({ selected: conversation.id, messages, isLoading });
                             onSelectConversation?.(conversation.id);
                           }}
                         >

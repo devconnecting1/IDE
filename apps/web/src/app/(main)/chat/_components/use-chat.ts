@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { type Conversation, conversations, type Message } from "./data";
+import { type Conversation, conversations } from "./data";
 
 type ChatMessage = {
   id: number;
@@ -87,7 +87,7 @@ export function useChat() {
       };
       addMessage(assistantMessage);
 
-      while (true) {
+      for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -103,7 +103,7 @@ export function useChat() {
               if (parsed.content) {
                 assistantContent += parsed.content;
                 // Update the last message in store
-                set((state) => {
+                useChatStore.setState((state) => {
                   const messages = [...state.chat.messages];
                   const lastMsg = messages[messages.length - 1];
                   if (lastMsg && lastMsg.role === "assistant") {

@@ -22,7 +22,7 @@ interface ChatProps {
 
 export function Chat({ conversations }: ChatProps) {
   const t = useTranslations();
-  const { selected, setChat } = useChat();
+  const { selected, setChat, messages, isLoading } = useChat();
   const [showContact, setShowContact] = useState(false);
   const [showThread, setShowThread] = useState(false);
   const isLg = useIsLg();
@@ -49,7 +49,7 @@ export function Chat({ conversations }: ChatProps) {
             showThread && "max-md:pointer-events-none max-md:-translate-x-full",
           )}
           onSelectConversation={(id) => {
-            setChat({ selected: id });
+            setChat({ selected: id, messages, isLoading });
             setShowThread(true);
           }}
         />

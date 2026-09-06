@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   AlarmClock,
   ArrowLeft,
@@ -17,7 +19,6 @@ import {
   UserRound,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
 
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
 import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "@/components/ui/bubble";
@@ -82,6 +83,7 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
       textKey: "",
       time: new Date().toISOString(),
       isStatic: false,
+      reaction: undefined,
     })),
   ];
 
@@ -205,9 +207,7 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                       <MessageContent>
                         <BubbleGroup>
                           <Bubble variant={isOutbound ? "default" : "muted"} align={message.align}>
-                            <BubbleContent>
-                              {message.isStatic ? t(message.textKey) : message.text}
-                            </BubbleContent>
+                            <BubbleContent>{message.isStatic ? t(message.textKey) : message.text}</BubbleContent>
                             {message.reaction ? (
                               <BubbleReactions
                                 aria-label={t("chat.reactionAria", { reaction: message.reaction })}
@@ -293,7 +293,13 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                   <InputGroupButton aria-label={t("chat.aiAssist")} type="button" size="icon-sm" variant="outline">
                     <Sparkles />
                   </InputGroupButton>
-                  <InputGroupButton type="submit" variant="default" size="icon-sm" className="ml-auto" disabled={chat.isLoading || !inputValue.trim()}>
+                  <InputGroupButton
+                    type="submit"
+                    variant="default"
+                    size="icon-sm"
+                    className="ml-auto"
+                    disabled={chat.isLoading || !inputValue.trim()}
+                  >
                     <Send />
                     <span className="sr-only">{t("chat.send")}</span>
                   </InputGroupButton>
