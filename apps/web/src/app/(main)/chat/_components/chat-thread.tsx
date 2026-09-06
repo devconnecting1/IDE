@@ -153,30 +153,29 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
   }, []);
 
   const groupedModels: GroupedModels[] = [];
+  const buildGroups = (models: ProviderModel[]) => {
+    const providerMap = new Map<string, ProviderModel[]>();
+    for (const m of models) {
+      const existing = providerMap.get(m.provider) ?? [];
+      existing.push(m);
+      providerMap.set(m.provider, existing);
+    }
+    const groups: GroupedModels[] = [];
+    for (const [provider, provModels] of providerMap) {
+      groups.push({ provider, providerId: provModels[0]?.id.split("/")[0] ?? "", models: provModels });
+    }
+    groups.sort((a, b) => a.provider.localeCompare(b.provider));
+    return groups;
+  };
+
   if (modelSearch.trim()) {
     const search = modelSearch.toLowerCase();
     const filtered = availableModels.filter(
       (m) => m.name.toLowerCase().includes(search) || m.provider.toLowerCase().includes(search),
     );
-    const providerMap = new Map<string, ProviderModel[]>();
-    for (const m of filtered) {
-      const existing = providerMap.get(m.provider) ?? [];
-      existing.push(m);
-      providerMap.set(m.provider, existing);
-    }
-    for (const [provider, models] of providerMap) {
-      groupedModels.push({ provider, providerId: models[0]?.id.split("/")[0] ?? "", models });
-    }
+    groupedModels.push(...buildGroups(filtered));
   } else {
-    const providerMap = new Map<string, ProviderModel[]>();
-    for (const m of availableModels) {
-      const existing = providerMap.get(m.provider) ?? [];
-      existing.push(m);
-      providerMap.set(m.provider, existing);
-    }
-    for (const [provider, models] of providerMap) {
-      groupedModels.push({ provider, providerId: models[0]?.id.split("/")[0] ?? "", models });
-    }
+    groupedModels.push(...buildGroups(availableModels));
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
