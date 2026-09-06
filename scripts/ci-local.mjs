@@ -53,7 +53,7 @@ if (withAudit) {
 }
 
 if (withOutdated) {
-  info(
+  report(
     "Atualizações de dependências (npm outdated — equivalente local do Dependabot)",
     run("outdated", "npm", ["outdated"]),
   );
