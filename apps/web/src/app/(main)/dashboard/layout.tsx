@@ -15,6 +15,7 @@ import { LayoutControls } from "./_components/header/layout-controls";
 import { SearchDialog } from "./_components/header/search-dialog";
 import { SidebarToggleButton } from "./_components/header/sidebar-toggle-button";
 import { ThemeSwitcher } from "./_components/header/theme-switcher";
+import { ScrollToTop } from "./_components/scroll-to-top";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
   const cookieStore = await cookies();
@@ -33,6 +34,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         } as React.CSSProperties
       }
     >
+      <ScrollToTop />
       <ShellSidebar variant={variant} collapsible={collapsible} />
       <SidebarInset
         className={cn(
