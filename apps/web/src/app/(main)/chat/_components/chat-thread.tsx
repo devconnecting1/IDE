@@ -269,10 +269,10 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
 
           <TabsContent value="reply" className="m-0">
             <form onSubmit={handleSubmit}>
-              <InputGroup className="border-0 bg-transparent shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0 dark:bg-transparent dark:has-[[data-slot][aria-invalid=true]]:ring-0">
+              <InputGroup className="border-0 bg-background shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0">
                 <InputGroupTextarea
                   placeholder={t("chat.typeMessage")}
-                  className="min-h-14 px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
+                  className="min-h-14 max-h-40 overflow-y-auto px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   disabled={chat.isLoading}
@@ -326,10 +326,10 @@ function MessageComposer({ placeholder }: { placeholder: string }) {
         event.preventDefault();
       }}
     >
-      <InputGroup className="border-0 bg-transparent shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0 dark:bg-transparent dark:has-[[data-slot][aria-invalid=true]]:ring-0">
+      <InputGroup className="border-0 bg-background shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0">
         <InputGroupTextarea
           placeholder={placeholder}
-          className="min-h-14 px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
+          className="min-h-14 max-h-40 overflow-y-auto px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
         />
         <InputGroupAddon align="block-end">
           <InputGroupButton aria-label={t("chat.format")} type="button" size="icon-sm">
