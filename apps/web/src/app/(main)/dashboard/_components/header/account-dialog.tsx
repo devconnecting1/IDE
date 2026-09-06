@@ -723,14 +723,33 @@ function saveConnectedProviders(data: Record<string, string>) {
 
 const POPULAR_PROVIDER_IDS = ["openai", "anthropic", "google", "xai", "deepseek", "meta", "mistralai", "alibaba"];
 
+function ProviderLogo({ logo, name, className }: { logo: string; name: string; className?: string }) {
+  const [error, setError] = useState(false);
+  if (error) {
+    return (
+      <span className={cn("flex items-center justify-center rounded-md bg-muted font-medium text-xs", className)}>
+        {name.slice(0, 2)}
+      </span>
+    );
+  }
+  return (
+    <img
+      src={logo}
+      alt={name}
+      className={cn("rounded-md bg-muted object-contain p-1", className)}
+      onError={() => setError(true)}
+    />
+  );
+}
+
 export function ProvidersSettings() {
   const [connected, setConnected] = useState<Record<string, string>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [search, setSearch] = useState("");
-  const [allProviders, setAllProviders] = useState<Array<{ id: string; name: string; icon: string; envKey: string }>>(
-    [],
-  );
+  const [allProviders, setAllProviders] = useState<
+    Array<{ id: string; name: string; icon: string; logo: string; envKey: string }>
+  >([]);
   const [loading, setLoading] = useState(true);
   const [customDialogOpen, setCustomDialogOpen] = useState(false);
   const [customId, setCustomId] = useState("");
@@ -747,6 +766,7 @@ export function ProvidersSettings() {
           id,
           name: p.name,
           icon: p.name.slice(0, 2),
+          logo: `https://models.dev/logos/${id}.svg`,
           envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
         }));
         providers.sort((a, b) => a.name.localeCompare(b.name));
@@ -820,9 +840,7 @@ export function ProvidersSettings() {
                 {index > 0 && <Separator />}
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                      {provider.icon}
-                    </span>
+                    <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
                     <div>
                       <span className="font-medium text-sm">{provider.name}</span>
                       <p className="text-muted-foreground text-xs">
@@ -856,9 +874,7 @@ export function ProvidersSettings() {
                 {editingId === provider.id ? (
                   <div className="px-4 py-3">
                     <div className="mb-2 flex items-center gap-2">
-                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                        {provider.icon}
-                      </span>
+                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-7 shrink-0" />
                       <span className="font-medium text-sm">{provider.name}</span>
                     </div>
                     <p className="mb-2 text-muted-foreground text-xs">
@@ -893,9 +909,7 @@ export function ProvidersSettings() {
                 ) : (
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                        {provider.icon}
-                      </span>
+                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
                       <span className="font-medium text-sm">{provider.name}</span>
                     </div>
                     <Button variant="ghost" size="sm" className="shrink-0" onClick={() => handleConnect(provider)}>
@@ -948,9 +962,7 @@ export function ProvidersSettings() {
                 {editingId === provider.id ? (
                   <div className="px-4 py-3">
                     <div className="mb-2 flex items-center gap-2">
-                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                        {provider.icon}
-                      </span>
+                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-7 shrink-0" />
                       <span className="font-medium text-sm">{provider.name}</span>
                     </div>
                     <p className="mb-2 text-muted-foreground text-xs">
@@ -985,9 +997,7 @@ export function ProvidersSettings() {
                 ) : (
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
-                        {provider.icon}
-                      </span>
+                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
                       <span className="font-medium text-sm">{provider.name}</span>
                     </div>
                     <Button variant="ghost" size="sm" className="shrink-0" onClick={() => handleConnect(provider)}>
@@ -1233,9 +1243,11 @@ export function ModelsSettings() {
                   !expandedProviders.has(provider.providerId) && "-rotate-90",
                 )}
               />
-              <span className="flex size-5 items-center justify-center rounded-md bg-muted font-medium text-[10px]">
-                {provider.icon}
-              </span>
+              <ProviderLogo
+                logo={`https://models.dev/logos/${provider.providerId}.svg`}
+                name={provider.name}
+                className="size-5 shrink-0"
+              />
               <span className="font-medium">{provider.name}</span>
               <span className="text-muted-foreground">({provider.models.length})</span>
             </button>
