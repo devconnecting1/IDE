@@ -340,9 +340,6 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                   <InputGroupButton aria-label={t("chat.insertLink")} type="button" size="icon-sm">
                     <Link />
                   </InputGroupButton>
-                  <InputGroupButton aria-label={t("chat.aiAssist")} type="button" size="icon-sm" variant="outline">
-                    <Sparkles />
-                  </InputGroupButton>
                   <InputGroupButton
                     type="submit"
                     variant="default"
@@ -393,9 +390,6 @@ function MessageComposer({ placeholder }: { placeholder: string }) {
           </InputGroupButton>
           <InputGroupButton aria-label={t("chat.insertLink")} type="button" size="icon-sm">
             <Link />
-          </InputGroupButton>
-          <InputGroupButton aria-label={t("chat.aiAssist")} type="button" size="icon-sm" variant="outline">
-            <Sparkles />
           </InputGroupButton>
           <InputGroupButton type="submit" variant="default" size="icon-sm" className="ml-auto">
             <Send />
