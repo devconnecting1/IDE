@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useRouter } from "next/navigation";
+
 import {
   AlarmClock,
   ArrowLeft,
@@ -13,6 +15,7 @@ import {
   Paperclip,
   PhoneCall,
   Send,
+  Settings,
   Sparkles,
   Tag,
   Type,
@@ -38,7 +41,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -54,6 +56,7 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -67,6 +70,12 @@ type ProviderModel = {
   id: string;
   name: string;
   provider: string;
+};
+
+type GroupedModels = {
+  provider: string;
+  providerId: string;
+  models: ProviderModel[];
 };
 
 interface ChatThreadProps {
@@ -89,9 +98,11 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
   const t = useTranslations();
   const locale = useLocale();
   const chat = useChat();
+  const router = useRouter();
   const [inputValue, setInputValue] = useState("");
   const [urlValue, setUrlValue] = useState("");
   const [availableModels, setAvailableModels] = useState<ProviderModel[]>([]);
+  const [modelSearch, setModelSearch] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -100,10 +111,13 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
         const { configStorage } = await import("@/lib/storage");
         const config = await configStorage.read();
         const providerIds = Object.keys(config.providers);
+        const enabledModelIds = config.enabledModels;
+
         if (providerIds.length === 0) {
           setAvailableModels([]);
           return;
         }
+
         const res = await fetch(`/api/models?provider=${providerIds.join(",")}`);
         if (!res.ok) return;
         const data = await res.json();
@@ -111,12 +125,15 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
         const entries = Object.entries(data) as Array<
           [string, { name?: string; models?: Record<string, { name?: string }> }]
         >;
+
         for (const [provId, provData] of entries) {
           const provName = provData.name ?? provId;
           if (provData.models) {
             for (const [modelId, modelData] of Object.entries(provData.models)) {
+              const fullId = `${provId}/${modelId}`;
+              if (enabledModelIds.length > 0 && !enabledModelIds.includes(fullId)) continue;
               models.push({
-                id: `${provId}/${modelId}`,
+                id: fullId,
                 name: modelData.name ?? modelId,
                 provider: provName,
               });
@@ -130,6 +147,33 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
     };
     void loadModels();
   }, []);
+
+  const groupedModels: GroupedModels[] = [];
+  if (modelSearch.trim()) {
+    const search = modelSearch.toLowerCase();
+    const filtered = availableModels.filter(
+      (m) => m.name.toLowerCase().includes(search) || m.provider.toLowerCase().includes(search),
+    );
+    const providerMap = new Map<string, ProviderModel[]>();
+    for (const m of filtered) {
+      const existing = providerMap.get(m.provider) ?? [];
+      existing.push(m);
+      providerMap.set(m.provider, existing);
+    }
+    for (const [provider, models] of providerMap) {
+      groupedModels.push({ provider, providerId: models[0]?.id.split("/")[0] ?? "", models });
+    }
+  } else {
+    const providerMap = new Map<string, ProviderModel[]>();
+    for (const m of availableModels) {
+      const existing = providerMap.get(m.provider) ?? [];
+      existing.push(m);
+      providerMap.set(m.provider, existing);
+    }
+    for (const [provider, models] of providerMap) {
+      groupedModels.push({ provider, providerId: models[0]?.id.split("/")[0] ?? "", models });
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -419,24 +463,63 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
                         <Sparkles />
                       </InputGroupButton>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
-                      <DropdownMenuLabel>Modelo AI</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {availableModels.length === 0 ? (
-                        <DropdownMenuItem disabled>Nenhum modelo disponível</DropdownMenuItem>
-                      ) : (
-                        availableModels.map((model) => (
-                          <DropdownMenuItem key={model.id} onSelect={() => chat.setSelectedModel(model.id)}>
-                            <Check
-                              className={cn("size-4", chat.selectedModel === model.id ? "opacity-100" : "opacity-0")}
-                            />
-                            <div className="flex flex-col">
-                              <span>{model.name}</span>
-                              <span className="text-muted-foreground text-xs">{model.provider}</span>
+                    <DropdownMenuContent align="start" className="w-72 p-0">
+                      <div className="border-b px-3 py-2">
+                        <Input
+                          placeholder="Buscar modelo..."
+                          value={modelSearch}
+                          onChange={(e) => setModelSearch(e.target.value)}
+                          className="h-8 border-0 bg-transparent text-sm shadow-none focus-visible:ring-0"
+                        />
+                      </div>
+                      <ScrollArea className="h-72">
+                        <div className="py-1">
+                          {groupedModels.length === 0 ? (
+                            <div className="px-3 py-6 text-center text-muted-foreground text-sm">
+                              {availableModels.length === 0 ? "Nenhum modelo disponível" : "Nenhum modelo encontrado"}
                             </div>
-                          </DropdownMenuItem>
-                        ))
-                      )}
+                          ) : (
+                            groupedModels.map((group) => (
+                              <div key={group.providerId}>
+                                <div className="px-3 py-1.5 font-medium text-muted-foreground text-xs">
+                                  {group.provider}
+                                </div>
+                                {group.models.map((model) => (
+                                  <button
+                                    key={model.id}
+                                    type="button"
+                                    className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm hover:bg-accent"
+                                    onClick={() => {
+                                      chat.setSelectedModel(model.id);
+                                      setModelSearch("");
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "size-4 shrink-0",
+                                        chat.selectedModel === model.id ? "opacity-100" : "opacity-0",
+                                      )}
+                                    />
+                                    <span className="truncate">{model.name}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </ScrollArea>
+                      <div className="border-t">
+                        <button
+                          type="button"
+                          className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
+                          onClick={() => {
+                            router.push("/dashboard/settings/models");
+                          }}
+                        >
+                          <Settings className="size-4" />
+                          Gerenciar modelos
+                        </button>
+                      </div>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <InputGroupButton
