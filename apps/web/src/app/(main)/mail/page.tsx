@@ -8,7 +8,7 @@ export default async function Page() {
   const layoutCookie = await getValueFromCookie(MAIL_LAYOUT_COOKIE);
 
   return (
-    <div className="h-dvh min-h-0 overflow-hidden">
+    <div className="h-full min-h-0 overflow-hidden">
       <MailComponent mails={mails} defaultLayout={layoutCookie ? JSON.parse(layoutCookie) : [...DEFAULT_MAIL_LAYOUT]} />
     </div>
   );
