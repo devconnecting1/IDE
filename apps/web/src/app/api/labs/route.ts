@@ -45,18 +45,7 @@ async function fetchLabDescriptions(): Promise<Record<string, string>> {
   return descriptions;
 }
 
-const cache: { data: Record<string, string>; timestamp: number } = { data: {}, timestamp: 0 };
-const CACHE_TTL = 3600_000;
-
 export async function GET() {
-  const now = Date.now();
-  if (now - cache.timestamp < CACHE_TTL) {
-    return NextResponse.json(cache.data);
-  }
-
   const descriptions = await fetchLabDescriptions();
-  cache.data = descriptions;
-  cache.timestamp = now;
-
   return NextResponse.json(descriptions);
 }
