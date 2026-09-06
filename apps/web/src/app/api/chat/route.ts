@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     let providerConfig: ProviderConfig | null = null;
     if (providerConfigRaw) {
       try {
-        providerConfig = JSON.parse(decodeURIComponent(providerConfigRaw));
+        providerConfig = JSON.parse(providerConfigRaw);
       } catch {
         /* ignore */
       }

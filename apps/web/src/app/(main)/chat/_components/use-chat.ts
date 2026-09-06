@@ -160,15 +160,26 @@ const useChatStore = create<ChatStore>((set, get) => ({
         modelName = modelId.substring(slashIndex + 1);
       }
 
-      if (providerId && providers[providerId]) {
-        const { credentialsStorage } = await import("@/lib/storage");
+      const { credentialsStorage } = await import("@/lib/storage");
+      if (providerId) {
         const cred = await credentialsStorage.get(providerId);
         if (cred) {
           apiKey = cred;
         }
       }
 
-      const providerConfig = providerId ? providers[providerId] : undefined;
+      if (!apiKey) {
+        const allCreds = await credentialsStorage.list();
+        if (allCreds.length > 0) {
+          const firstCred = await credentialsStorage.get(allCreds[0]);
+          if (firstCred) {
+            apiKey = firstCred;
+            if (!providerId) providerId = allCreds[0];
+          }
+        }
+      }
+
+      const providerConfig = providers[providerId] ?? undefined;
       const params = new URLSearchParams();
       if (providerConfig) {
         params.set("providerConfig", JSON.stringify(providerConfig));
@@ -187,7 +198,10 @@ const useChatStore = create<ChatStore>((set, get) => ({
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to get response");
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({ error: "Unknown error" }));
+        throw new Error(errData.error ?? `HTTP ${response.status}`);
+      }
 
       const reader = response.body?.getReader();
       if (!reader) throw new Error("No reader");
@@ -223,13 +237,14 @@ const useChatStore = create<ChatStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Chat error:", error);
+      const msg = error instanceof Error ? error.message : "erro desconhecido";
       set((s) => ({
         messages: [
           ...s.messages,
           {
             id: Date.now() + 2,
             role: "assistant",
-            content: "Desculpe, ocorreu um erro ao processar sua mensagem.",
+            content: `Erro: ${msg}`,
           },
         ],
       }));
