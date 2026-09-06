@@ -721,19 +721,6 @@ function saveConnectedProviders(data: Record<string, string>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-const POPULAR_PROVIDER_IDS = ["openai", "anthropic", "google", "xai", "deepseek", "meta", "mistralai", "alibaba"];
-
-const PROVIDER_DESCRIPTIONS: Record<string, string> = {
-  openai: "Modelos GPT rápidos e avançados para tarefas gerais de IA",
-  anthropic: "Modelos Claude para código, raciocínio e análise",
-  google: "Modelos Gemini para respostas rápidas e estruturadas",
-  xai: "Modelos Grok com raciocínio avançado e busca em tempo real",
-  deepseek: "Modelos com raciocínio profundo e código avançado",
-  meta: "Modelos open-source Muse Spark para uso geral",
-  mistralai: "Modelos Mistral para múltiplas tarefas e código",
-  alibaba: "Modelos Qwen para código, raciocínio e multimodal",
-};
-
 function ProviderLogo({ logo, name, className }: { logo: string; name: string; className?: string }) {
   const [error, setError] = useState(false);
   if (error) {
@@ -770,15 +757,14 @@ export function ProvidersSettings() {
 
   useEffect(() => {
     setConnected(getConnectedProviders());
-    fetch("/api/models")
-      .then((res) => res.json())
-      .then((data: Record<string, { name: string; env?: string[] }>) => {
-        const providers = Object.entries(data).map(([id, p]) => ({
+    Promise.all([fetch("/api/models").then((res) => res.json()), fetch("/api/labs").then((res) => res.json())])
+      .then(([modelsData, labsData]: [Record<string, { name: string; env?: string[] }>, Record<string, string>]) => {
+        const providers = Object.entries(modelsData).map(([id, p]) => ({
           id,
           name: p.name,
           icon: p.name.slice(0, 2),
           logo: `https://models.dev/logos/${id}.svg`,
-          description: PROVIDER_DESCRIPTIONS[id] || "",
+          description: labsData[id] || "",
           envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
         }));
         providers.sort((a, b) => a.name.localeCompare(b.name));
@@ -829,11 +815,11 @@ export function ProvidersSettings() {
   };
 
   const connectedProviders = allProviders.filter((p) => connected[p.id]);
-  const popularProviders = allProviders.filter((p) => POPULAR_PROVIDER_IDS.includes(p.id) && !connected[p.id]);
+  const popularProviders = allProviders.filter((p) => p.description && !connected[p.id]);
   const availableProviders = allProviders.filter(
     (p) =>
       !connected[p.id] &&
-      !POPULAR_PROVIDER_IDS.includes(p.id) &&
+      !p.description &&
       (p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toLowerCase().includes(search.toLowerCase())),
   );
 
