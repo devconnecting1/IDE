@@ -723,6 +723,17 @@ function saveConnectedProviders(data: Record<string, string>) {
 
 const POPULAR_PROVIDER_IDS = ["openai", "anthropic", "google", "xai", "deepseek", "meta", "mistralai", "alibaba"];
 
+const PROVIDER_DESCRIPTIONS: Record<string, string> = {
+  openai: "Modelos GPT rápidos e avançados para tarefas gerais de IA",
+  anthropic: "Modelos Claude para código, raciocínio e análise",
+  google: "Modelos Gemini para respostas rápidas e estruturadas",
+  xai: "Modelos Grok com raciocínio avançado e busca em tempo real",
+  deepseek: "Modelos com raciocínio profundo e código avançado",
+  meta: "Modelos open-source Muse Spark para uso geral",
+  mistralai: "Modelos Mistral para múltiplas tarefas e código",
+  alibaba: "Modelos Qwen para código, raciocínio e multimodal",
+};
+
 function ProviderLogo({ logo, name, className }: { logo: string; name: string; className?: string }) {
   const [error, setError] = useState(false);
   if (error) {
@@ -748,7 +759,7 @@ export function ProvidersSettings() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [search, setSearch] = useState("");
   const [allProviders, setAllProviders] = useState<
-    Array<{ id: string; name: string; icon: string; logo: string; envKey: string }>
+    Array<{ id: string; name: string; icon: string; logo: string; description: string; envKey: string }>
   >([]);
   const [loading, setLoading] = useState(true);
   const [customDialogOpen, setCustomDialogOpen] = useState(false);
@@ -767,6 +778,7 @@ export function ProvidersSettings() {
           name: p.name,
           icon: p.name.slice(0, 2),
           logo: `https://models.dev/logos/${id}.svg`,
+          description: PROVIDER_DESCRIPTIONS[id] || "",
           envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
         }));
         providers.sort((a, b) => a.name.localeCompare(b.name));
@@ -910,7 +922,12 @@ export function ProvidersSettings() {
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div className="flex items-center gap-3">
                       <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
-                      <span className="font-medium text-sm">{provider.name}</span>
+                      <div>
+                        <span className="font-medium text-sm">{provider.name}</span>
+                        {provider.description && (
+                          <p className="text-muted-foreground text-xs">{provider.description}</p>
+                        )}
+                      </div>
                     </div>
                     <Button variant="ghost" size="sm" className="shrink-0" onClick={() => handleConnect(provider)}>
                       <Plus className="mr-1 size-3" />
@@ -952,7 +969,7 @@ export function ProvidersSettings() {
               </span>
               <div>
                 <span className="font-medium text-sm">Provedor personalizado</span>
-                <p className="text-muted-foreground text-xs">Compatível com OpenAI</p>
+                <p className="text-muted-foreground text-xs">URL base, chave de API — compatível com OpenAI</p>
               </div>
             </button>
             <Separator />
@@ -998,7 +1015,12 @@ export function ProvidersSettings() {
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div className="flex items-center gap-3">
                       <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
-                      <span className="font-medium text-sm">{provider.name}</span>
+                      <div>
+                        <span className="font-medium text-sm">{provider.name}</span>
+                        {provider.description && (
+                          <p className="text-muted-foreground text-xs">{provider.description}</p>
+                        )}
+                      </div>
                     </div>
                     <Button variant="ghost" size="sm" className="shrink-0" onClick={() => handleConnect(provider)}>
                       <Plus className="mr-1 size-3" />
