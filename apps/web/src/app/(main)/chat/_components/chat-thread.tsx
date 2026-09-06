@@ -103,6 +103,7 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
   const [urlValue, setUrlValue] = useState("");
   const [availableModels, setAvailableModels] = useState<ProviderModel[]>([]);
   const [modelSearch, setModelSearch] = useState("");
+  const [labsData, setLabsData] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -122,9 +123,15 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
           return;
         }
 
-        const res = await fetch(`/api/models?provider=${providerIds.join(",")}`);
-        if (!res.ok) return;
-        const data = await res.json();
+        const [modelsRes, labsRes] = await Promise.all([
+          fetch(`/api/models?provider=${providerIds.join(",")}`),
+          fetch("/api/labs"),
+        ]);
+        if (!modelsRes.ok) return;
+        const data = await modelsRes.json();
+        const labs: Record<string, string> = labsRes.ok ? await labsRes.json() : {};
+        setLabsData(labs);
+
         const models: ProviderModel[] = [];
         const entries = Object.entries(data) as Array<
           [string, { name?: string; models?: Record<string, { name?: string }> }]
@@ -164,7 +171,12 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
     for (const [provider, provModels] of providerMap) {
       groups.push({ provider, providerId: provModels[0]?.id.split("/")[0] ?? "", models: provModels });
     }
-    groups.sort((a, b) => a.provider.localeCompare(b.provider));
+    groups.sort((a, b) => {
+      const aPopular = labsData[a.providerId] ? 0 : 1;
+      const bPopular = labsData[b.providerId] ? 0 : 1;
+      if (aPopular !== bPopular) return aPopular - bPopular;
+      return a.provider.localeCompare(b.provider);
+    });
     return groups;
   };
 

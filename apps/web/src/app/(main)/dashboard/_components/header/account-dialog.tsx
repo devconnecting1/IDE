@@ -809,7 +809,6 @@ export function ProvidersSettings() {
     void getConnectedProviders().then(setConnected);
     fetchProvidersData()
       .then(({ models, labs }) => {
-        const popular = new Set(["openai", "anthropic", "google", "groq", "mistral", "deepseek", "xai"]);
         const providers = Object.entries(models).map(([id, p]) => ({
           id,
           name: p.name,
@@ -819,8 +818,8 @@ export function ProvidersSettings() {
           envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
         }));
         providers.sort((a, b) => {
-          const aPopular = popular.has(a.id) ? 0 : 1;
-          const bPopular = popular.has(b.id) ? 0 : 1;
+          const aPopular = a.description ? 0 : 1;
+          const bPopular = b.description ? 0 : 1;
           if (aPopular !== bPopular) return aPopular - bPopular;
           return a.name.localeCompare(b.name);
         });
