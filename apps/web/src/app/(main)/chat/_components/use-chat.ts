@@ -14,6 +14,7 @@ type ChatStore = {
   messages: ChatMessage[];
   isLoading: boolean;
   selectedModel: string;
+  connectedProviders: Record<string, { name: string; npm: string; api?: string }>;
 
   selectConversation: (id: number) => void;
   createConversation: () => void;
@@ -21,6 +22,7 @@ type ChatStore = {
   updateLastAssistantMessage: (content: string) => void;
   setLoading: (loading: boolean) => void;
   setSelectedModel: (model: string) => void;
+  loadConnectedProviders: () => Promise<void>;
   sendMessage: (content: string) => Promise<void>;
 };
 
@@ -31,7 +33,8 @@ const useChatStore = create<ChatStore>((set, get) => ({
   selected: seedConversations[0]?.id ?? null,
   messages: [],
   isLoading: false,
-  selectedModel: "openai/gpt-4o",
+  selectedModel: "",
+  connectedProviders: {},
 
   selectConversation: (id) => set({ selected: id, messages: [] }),
 
@@ -91,6 +94,42 @@ const useChatStore = create<ChatStore>((set, get) => ({
 
   setSelectedModel: (model) => set({ selectedModel: model }),
 
+  loadConnectedProviders: async () => {
+    try {
+      const { configStorage, credentialsStorage } = await import("@/lib/storage");
+      const config = await configStorage.read();
+      const providers: Record<string, { name: string; npm: string; api?: string }> = {};
+
+      for (const [id, provConfig] of Object.entries(config.providers)) {
+        const cred = await credentialsStorage.get(id);
+        if (cred) {
+          providers[id] = { name: provConfig.name, npm: provConfig.npm, api: provConfig.api };
+        }
+      }
+
+      const customProviders = await configStorage.getCustomProviders();
+      for (const [id, custom] of Object.entries(customProviders)) {
+        const cred = await credentialsStorage.get(id);
+        if (cred) {
+          providers[id] = { name: custom.name, npm: custom.npm ?? "@ai-sdk/openai-compatible", api: custom.baseUrl };
+        }
+      }
+
+      set({ connectedProviders: providers });
+
+      if (!get().selectedModel && Object.keys(providers).length > 0) {
+        const { configStorage: cs } = await import("@/lib/storage");
+        const cfg = await cs.read();
+        const enabled = cfg.enabledModels;
+        if (enabled.length > 0) {
+          set({ selectedModel: enabled[0] });
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  },
+
   sendMessage: async (content) => {
     const state = get();
     if (!content.trim() || state.isLoading) return;
@@ -108,12 +147,43 @@ const useChatStore = create<ChatStore>((set, get) => ({
         content: m.content,
       }));
 
-      const response = await fetch("/api/chat", {
+      const modelId = get().selectedModel;
+      const providers = get().connectedProviders;
+
+      let providerId = "";
+      let apiKey = "";
+      let modelName = modelId;
+
+      const slashIndex = modelId.indexOf("/");
+      if (slashIndex > 0) {
+        providerId = modelId.substring(0, slashIndex);
+        modelName = modelId.substring(slashIndex + 1);
+      }
+
+      if (providerId && providers[providerId]) {
+        const { credentialsStorage } = await import("@/lib/storage");
+        const cred = await credentialsStorage.get(providerId);
+        if (cred) {
+          apiKey = cred;
+        }
+      }
+
+      const providerConfig = providerId ? providers[providerId] : undefined;
+      const params = new URLSearchParams();
+      if (providerConfig) {
+        params.set("providerConfig", JSON.stringify(providerConfig));
+      }
+
+      const url = `/api/chat${params.toString() ? `?${params.toString()}` : ""}`;
+
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: allMessages,
-          model: get().selectedModel,
+          providerId: providerId || "openai",
+          apiKey: apiKey || "",
+          model: modelName,
         }),
       });
 

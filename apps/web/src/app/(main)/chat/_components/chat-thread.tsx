@@ -106,6 +106,10 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    void chat.loadConnectedProviders();
+  }, [chat.loadConnectedProviders]);
+
+  useEffect(() => {
     const loadModels = async () => {
       try {
         const { configStorage } = await import("@/lib/storage");
@@ -131,7 +135,7 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
           if (provData.models) {
             for (const [modelId, modelData] of Object.entries(provData.models)) {
               const fullId = `${provId}/${modelId}`;
-              if (enabledModelIds.length > 0 && !enabledModelIds.includes(fullId)) continue;
+              if (enabledModelIds.length > 0 && !enabledModelIds.includes(modelId)) continue;
               models.push({
                 id: fullId,
                 name: modelData.name ?? modelId,
