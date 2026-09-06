@@ -56,10 +56,17 @@ function ensureDirs(): void {
 }
 
 // ─── Config file helpers ───────────────────────────────────────────
+interface ProviderConfig {
+  name: string;
+  npm: string;
+  api?: string;
+  baseUrl?: string;
+}
+
 interface AppConfig {
-  providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+  providers: Record<string, ProviderConfig>;
   enabledModels: string[];
-  customProviders: Record<string, { name: string; baseUrl: string; apiKeyRef?: string }>;
+  customProviders: Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>;
 }
 
 const DEFAULT_CONFIG: AppConfig = {
@@ -292,7 +299,7 @@ function registerIPC(): void {
     return config.providers[providerId] || null;
   });
 
-  ipcMain.handle("config:set-provider", (_event, providerId: string, data: { name: string; baseUrl?: string; npm?: string }) => {
+  ipcMain.handle("config:set-provider", (_event, providerId: string, data: ProviderConfig) => {
     const config = readConfig();
     config.providers[providerId] = data;
     writeConfig(config);
@@ -318,7 +325,7 @@ function registerIPC(): void {
     return readConfig().customProviders;
   });
 
-  ipcMain.handle("config:set-custom-provider", (_event, id: string, data: { name: string; baseUrl: string }) => {
+  ipcMain.handle("config:set-custom-provider", (_event, id: string, data: { name: string; baseUrl: string; npm?: string; api?: string }) => {
     const config = readConfig();
     config.customProviders[id] = data;
     writeConfig(config);

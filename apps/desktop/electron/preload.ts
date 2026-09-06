@@ -52,16 +52,16 @@ const electronAPI = {
       return ipcRenderer.invoke("config:read");
     },
     write: (config: {
-      providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+      providers: Record<string, { name: string; npm: string; api?: string; baseUrl?: string }>;
       enabledModels: string[];
-      customProviders: Record<string, { name: string; baseUrl: string }>;
+      customProviders: Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>;
     }): Promise<void> => {
       return ipcRenderer.invoke("config:write", config);
     },
-    getProvider: (id: string): Promise<{ name: string; baseUrl?: string; npm?: string } | null> => {
+    getProvider: (id: string): Promise<{ name: string; npm: string; api?: string; baseUrl?: string } | null> => {
       return ipcRenderer.invoke("config:get-provider", id);
     },
-    setProvider: (id: string, data: { name: string; baseUrl?: string; npm?: string }): Promise<void> => {
+    setProvider: (id: string, data: { name: string; npm: string; api?: string; baseUrl?: string }): Promise<void> => {
       return ipcRenderer.invoke("config:set-provider", id, data);
     },
     deleteProvider: (id: string): Promise<void> => {
@@ -73,10 +73,10 @@ const electronAPI = {
     setEnabledModels: (models: string[]): Promise<void> => {
       return ipcRenderer.invoke("config:set-enabled-models", models);
     },
-    getCustomProviders: (): Promise<Record<string, { name: string; baseUrl: string }>> => {
+    getCustomProviders: (): Promise<Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>> => {
       return ipcRenderer.invoke("config:get-custom-providers");
     },
-    setCustomProvider: (id: string, data: { name: string; baseUrl: string }): Promise<void> => {
+    setCustomProvider: (id: string, data: { name: string; baseUrl: string; npm?: string; api?: string }): Promise<void> => {
       return ipcRenderer.invoke("config:set-custom-provider", id, data);
     },
     deleteCustomProvider: (id: string): Promise<void> => {

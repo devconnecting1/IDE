@@ -5,68 +5,25 @@
  * - Web: Uses IndexedDB for sessions and localStorage for config/credentials (with warnings)
  */
 
-declare global {
-  interface Window {
-    electronAPI?: {
-      setTitle: (title: string) => void;
-      getVersion: () => Promise<string>;
-      getPaths: () => Promise<{ config: string; data: string; cache: string; home: string }>;
-      config: {
-        read: () => Promise<{
-          providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
-          enabledModels: string[];
-          customProviders: Record<string, { name: string; baseUrl: string }>;
-        }>;
-        write: (config: {
-          providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
-          enabledModels: string[];
-          customProviders: Record<string, { name: string; baseUrl: string }>;
-        }) => Promise<void>;
-        getProvider: (id: string) => Promise<{ name: string; baseUrl?: string; npm?: string } | null>;
-        setProvider: (id: string, data: { name: string; baseUrl?: string; npm?: string }) => Promise<void>;
-        deleteProvider: (id: string) => Promise<void>;
-        getEnabledModels: () => Promise<string[]>;
-        setEnabledModels: (models: string[]) => Promise<void>;
-        getCustomProviders: () => Promise<Record<string, { name: string; baseUrl: string }>>;
-        setCustomProvider: (id: string, data: { name: string; baseUrl: string }) => Promise<void>;
-        deleteCustomProvider: (id: string) => Promise<void>;
-      };
-      credentials: {
-        get: (key: string) => Promise<string | null>;
-        set: (key: string, value: string) => Promise<void>;
-        delete: (key: string) => Promise<void>;
-        list: () => Promise<string[]>;
-        hasEncryption: () => Promise<boolean>;
-      };
-      sessions: {
-        list: () => Promise<{ id: string; title: string; createdAt: number; updatedAt: number }[]>;
-        create: (id: string, title: string) => Promise<void>;
-        update: (id: string, data: { title?: string }) => Promise<void>;
-        delete: (id: string) => Promise<void>;
-        messages: (sessionId: string) => Promise<{ id: string; role: string; content: string; createdAt: number }[]>;
-        addMessage: (id: string, sessionId: string, role: string, content: string) => Promise<void>;
-      };
-      executeCommand: (
-        command: string,
-        cwd?: string,
-      ) => Promise<{ stdout: string; stderr: string; code: number; error?: string }>;
-      executeCommandStreaming: (
-        command: string,
-        cwd?: string,
-      ) => Promise<{ stdout: string; stderr: string; code: number }>;
-      onTerminalStdout: (callback: (data: string) => void) => () => void;
-      onTerminalStderr: (callback: (data: string) => void) => () => void;
-    };
-  }
-}
-
 const isElectron = typeof window !== "undefined" && window.electronAPI != null;
 
+function getElectronAPI(): NonNullable<Window["electronAPI"]> {
+  if (!window.electronAPI) throw new Error("Electron API not available");
+  return window.electronAPI;
+}
+
 // ─── Config ────────────────────────────────────────────────────────
+export interface ProviderConfig {
+  name: string;
+  npm: string;
+  api?: string;
+  baseUrl?: string;
+}
+
 export interface AppConfig {
-  providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+  providers: Record<string, ProviderConfig>;
   enabledModels: string[];
-  customProviders: Record<string, { name: string; baseUrl: string }>;
+  customProviders: Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>;
 }
 
 const DEFAULT_CONFIG: AppConfig = {
@@ -80,7 +37,7 @@ const CONFIG_KEY = "workspaacing:config";
 export const configStorage = {
   async read(): Promise<AppConfig> {
     if (isElectron) {
-      return window.electronAPI!.config.read() ?? DEFAULT_CONFIG;
+      return getElectronAPI().config.read() ?? DEFAULT_CONFIG;
     }
     try {
       const raw = localStorage.getItem(CONFIG_KEY);
@@ -93,22 +50,22 @@ export const configStorage = {
 
   async write(config: AppConfig): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.config.write(config);
+      return getElectronAPI().config.write(config);
     }
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
   },
 
-  async getProvider(id: string): Promise<{ name: string; baseUrl?: string; npm?: string } | null> {
+  async getProvider(id: string): Promise<ProviderConfig | null> {
     if (isElectron) {
-      return window.electronAPI!.config.getProvider(id);
+      return getElectronAPI().config.getProvider(id);
     }
     const config = await configStorage.read();
     return config.providers[id] || null;
   },
 
-  async setProvider(id: string, data: { name: string; baseUrl?: string; npm?: string }): Promise<void> {
+  async setProvider(id: string, data: ProviderConfig): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.config.setProvider(id, data);
+      return getElectronAPI().config.setProvider(id, data);
     }
     const config = await configStorage.read();
     config.providers[id] = data;
@@ -117,7 +74,7 @@ export const configStorage = {
 
   async deleteProvider(id: string): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.config.deleteProvider(id);
+      return getElectronAPI().config.deleteProvider(id);
     }
     const config = await configStorage.read();
     delete config.providers[id];
@@ -126,7 +83,7 @@ export const configStorage = {
 
   async getEnabledModels(): Promise<string[]> {
     if (isElectron) {
-      return window.electronAPI!.config.getEnabledModels();
+      return getElectronAPI().config.getEnabledModels();
     }
     const config = await configStorage.read();
     return config.enabledModels;
@@ -134,24 +91,27 @@ export const configStorage = {
 
   async setEnabledModels(models: string[]): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.config.setEnabledModels(models);
+      return getElectronAPI().config.setEnabledModels(models);
     }
     const config = await configStorage.read();
     config.enabledModels = models;
     await configStorage.write(config);
   },
 
-  async getCustomProviders(): Promise<Record<string, { name: string; baseUrl: string }>> {
+  async getCustomProviders(): Promise<Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>> {
     if (isElectron) {
-      return window.electronAPI!.config.getCustomProviders();
+      return getElectronAPI().config.getCustomProviders();
     }
     const config = await configStorage.read();
     return config.customProviders;
   },
 
-  async setCustomProvider(id: string, data: { name: string; baseUrl: string }): Promise<void> {
+  async setCustomProvider(
+    id: string,
+    data: { name: string; baseUrl: string; npm?: string; api?: string },
+  ): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.config.setCustomProvider(id, data);
+      return getElectronAPI().config.setCustomProvider(id, data);
     }
     const config = await configStorage.read();
     config.customProviders[id] = data;
@@ -160,7 +120,7 @@ export const configStorage = {
 
   async deleteCustomProvider(id: string): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.config.deleteCustomProvider(id);
+      return getElectronAPI().config.deleteCustomProvider(id);
     }
     const config = await configStorage.read();
     delete config.customProviders[id];
@@ -174,7 +134,7 @@ const CREDS_KEY = "workspaacing:credentials";
 export const credentialsStorage = {
   async get(key: string): Promise<string | null> {
     if (isElectron) {
-      return window.electronAPI!.credentials.get(key);
+      return getElectronAPI().credentials.get(key);
     }
     // Web fallback: localStorage (NOT secure - warn in console)
     try {
@@ -191,7 +151,7 @@ export const credentialsStorage = {
 
   async set(key: string, value: string): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.credentials.set(key, value);
+      return getElectronAPI().credentials.set(key, value);
     }
     // Web fallback: localStorage (NOT secure)
     console.warn("[Workspaacing] API keys stored in localStorage. Use Electron desktop app for secure storage.");
@@ -207,7 +167,7 @@ export const credentialsStorage = {
 
   async delete(key: string): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.credentials.delete(key);
+      return getElectronAPI().credentials.delete(key);
     }
     try {
       const raw = localStorage.getItem(CREDS_KEY);
@@ -223,7 +183,7 @@ export const credentialsStorage = {
 
   async list(): Promise<string[]> {
     if (isElectron) {
-      return window.electronAPI!.credentials.list();
+      return getElectronAPI().credentials.list();
     }
     try {
       const raw = localStorage.getItem(CREDS_KEY);
@@ -236,7 +196,7 @@ export const credentialsStorage = {
 
   async hasEncryption(): Promise<boolean> {
     if (isElectron) {
-      return window.electronAPI!.credentials.hasEncryption();
+      return getElectronAPI().credentials.hasEncryption();
     }
     return false;
   },
@@ -280,10 +240,10 @@ export interface Message {
   createdAt: number;
 }
 
-const sessionsStorage = {
+const _sessionsStorage = {
   async list(): Promise<Session[]> {
     if (isElectron) {
-      return window.electronAPI!.sessions.list();
+      return getElectronAPI().sessions.list();
     }
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -307,7 +267,7 @@ const sessionsStorage = {
 
   async create(id: string, title: string): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.sessions.create(id, title);
+      return getElectronAPI().sessions.create(id, title);
     }
     const db = await openDB();
     const now = Date.now();
@@ -322,7 +282,7 @@ const sessionsStorage = {
 
   async update(id: string, data: { title?: string }): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.sessions.update(id, data);
+      return getElectronAPI().sessions.update(id, data);
     }
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -344,7 +304,7 @@ const sessionsStorage = {
 
   async delete(id: string): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.sessions.delete(id);
+      return getElectronAPI().sessions.delete(id);
     }
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -367,7 +327,7 @@ const sessionsStorage = {
 
   async messages(sessionId: string): Promise<Message[]> {
     if (isElectron) {
-      return window.electronAPI!.sessions.messages(sessionId);
+      return getElectronAPI().sessions.messages(sessionId);
     }
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -384,7 +344,7 @@ const sessionsStorage = {
 
   async addMessage(id: string, sessionId: string, role: string, content: string): Promise<void> {
     if (isElectron) {
-      return window.electronAPI!.sessions.addMessage(id, sessionId, role, content);
+      return getElectronAPI().sessions.addMessage(id, sessionId, role, content);
     }
     const db = await openDB();
     const now = Date.now();
@@ -408,10 +368,10 @@ const sessionsStorage = {
 };
 
 // ─── Paths ─────────────────────────────────────────────────────────
-const pathsStorage = {
+const _pathsStorage = {
   async get(): Promise<{ config: string; data: string; cache: string; home: string }> {
     if (isElectron) {
-      return window.electronAPI!.getPaths();
+      return getElectronAPI().getPaths();
     }
     return {
       config: "~/.config/workspaacing",

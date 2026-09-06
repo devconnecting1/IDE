@@ -752,7 +752,7 @@ const PROVIDERS_CACHE_KEY = "workspaacing:providers_cache";
 const MODELS_CACHE_KEY = "workspaacing:models_cache";
 const CACHE_TTL = 3600_000;
 
-type ProviderData = Record<string, { name: string; env?: string[] }>;
+type ProviderData = Record<string, { name: string; env?: string[]; npm?: string; api?: string }>;
 type LabsData = Record<string, string>;
 
 async function fetchProvidersData(): Promise<{ models: ProviderData; labs: LabsData }> {
@@ -796,7 +796,7 @@ export function ProvidersSettings() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [search, setSearch] = useState("");
   const [allProviders, setAllProviders] = useState<
-    Array<{ id: string; name: string; description: string; envKey: string }>
+    Array<{ id: string; name: string; npm: string; api?: string; description: string; envKey: string }>
   >([]);
   const [loading, setLoading] = useState(true);
   const [customDialogOpen, setCustomDialogOpen] = useState(false);
@@ -812,6 +812,8 @@ export function ProvidersSettings() {
         const providers = Object.entries(models).map(([id, p]) => ({
           id,
           name: p.name,
+          npm: p.npm || "@ai-sdk/openai-compatible",
+          api: p.api,
           description: labs[id] || "",
           envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
         }));
@@ -824,7 +826,7 @@ export function ProvidersSettings() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleConnect = (provider: { id: string; name: string; envKey: string }) => {
+  const handleConnect = (provider: { id: string; name: string; npm: string; api?: string; envKey: string }) => {
     setEditingId(provider.id);
     setApiKeyInput(connected[provider.id] || "");
   };
@@ -833,6 +835,14 @@ export function ProvidersSettings() {
     const trimmed = apiKeyInput.trim();
     if (!trimmed) return;
     await saveConnectedProvider(providerId, trimmed);
+    const provider = allProviders.find((p) => p.id === providerId);
+    if (provider) {
+      await configStorage.setProvider(providerId, {
+        name: provider.name,
+        npm: provider.npm,
+        api: provider.api,
+      });
+    }
     setConnected({ ...connected, [providerId]: trimmed });
     setEditingId(null);
     setApiKeyInput("");
@@ -840,6 +850,7 @@ export function ProvidersSettings() {
 
   const handleDisconnect = async (providerId: string) => {
     await removeConnectedProvider(providerId);
+    await configStorage.deleteProvider(providerId);
     const next = { ...connected };
     delete next[providerId];
     setConnected(next);
@@ -852,6 +863,11 @@ export function ProvidersSettings() {
     const apiKey = customApiKey.trim();
     if (!id || !name || !baseUrl || !apiKey) return;
     await saveConnectedProvider(id, apiKey);
+    await configStorage.setCustomProvider(id, {
+      name,
+      baseUrl,
+      npm: "@ai-sdk/openai-compatible",
+    });
     setConnected({ ...connected, [id]: apiKey });
     setCustomDialogOpen(false);
     setCustomId("");

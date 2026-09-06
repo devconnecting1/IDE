@@ -4,22 +4,25 @@ interface ElectronAPI {
   getPaths: () => Promise<{ config: string; data: string; cache: string; home: string }>;
   config: {
     read: () => Promise<{
-      providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+      providers: Record<string, { name: string; npm: string; api?: string; baseUrl?: string }>;
       enabledModels: string[];
-      customProviders: Record<string, { name: string; baseUrl: string }>;
+      customProviders: Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>;
     }>;
     write: (config: {
-      providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+      providers: Record<string, { name: string; npm: string; api?: string; baseUrl?: string }>;
       enabledModels: string[];
-      customProviders: Record<string, { name: string; baseUrl: string }>;
+      customProviders: Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>;
     }) => Promise<void>;
-    getProvider: (id: string) => Promise<{ name: string; baseUrl?: string; npm?: string } | null>;
-    setProvider: (id: string, data: { name: string; baseUrl?: string; npm?: string }) => Promise<void>;
+    getProvider: (id: string) => Promise<{ name: string; npm: string; api?: string; baseUrl?: string } | null>;
+    setProvider: (id: string, data: { name: string; npm: string; api?: string; baseUrl?: string }) => Promise<void>;
     deleteProvider: (id: string) => Promise<void>;
     getEnabledModels: () => Promise<string[]>;
     setEnabledModels: (models: string[]) => Promise<void>;
-    getCustomProviders: () => Promise<Record<string, { name: string; baseUrl: string }>>;
-    setCustomProvider: (id: string, data: { name: string; baseUrl: string }) => Promise<void>;
+    getCustomProviders: () => Promise<Record<string, { name: string; baseUrl: string; npm?: string; api?: string }>>;
+    setCustomProvider: (
+      id: string,
+      data: { name: string; baseUrl: string; npm?: string; api?: string },
+    ) => Promise<void>;
     deleteCustomProvider: (id: string) => Promise<void>;
   };
   credentials: {
