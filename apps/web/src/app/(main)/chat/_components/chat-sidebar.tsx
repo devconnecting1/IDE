@@ -28,7 +28,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useVisualViewport } from "@/hooks/use-visual-viewport";
 import { getInitials } from "@/lib/utils";
 
 import { channelItems, currentUser, navItems, viewItems } from "./data";
@@ -42,15 +41,10 @@ const channelBrandIcons = {
 export function ChatSidebar() {
   const t = useTranslations();
   const { state } = useSidebar();
-  const visualViewportHeight = useVisualViewport();
   const _isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar
-      collapsible="offcanvas"
-      className="top-(--header-height) h-[calc(100dvh-var(--header-height))]! **:data-[sidebar=sidebar]:bg-background"
-      style={visualViewportHeight ? { height: `calc(${visualViewportHeight}px - var(--header-height))` } : undefined}
-    >
+    <Sidebar collapsible="offcanvas" className="top-(--header-height) h-full! **:data-[sidebar=sidebar]:bg-background">
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu className="gap-1">

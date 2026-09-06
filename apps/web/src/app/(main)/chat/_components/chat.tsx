@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { useIsLg } from "@/hooks/use-lg";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useVisualViewport } from "@/hooks/use-visual-viewport";
 import { cn } from "@/lib/utils";
 
 import { ChatConversationList } from "./chat-conversation-list";
@@ -27,7 +26,6 @@ export function Chat({ conversations }: ChatProps) {
   const [showThread, setShowThread] = useState(false);
   const isLg = useIsLg();
   const isMobile = useIsMobile();
-  const visualViewportHeight = useVisualViewport();
 
   const activeConversation = conversations.find((c) => c.id === selected) ?? conversations[0];
 
@@ -38,7 +36,6 @@ export function Chat({ conversations }: ChatProps) {
         style={
           {
             "--profile-width": showContact ? "20rem" : "0rem",
-            ...(visualViewportHeight ? { height: `calc(${visualViewportHeight}px - var(--header-height))` } : {}),
           } as CSSProperties
         }
       >
