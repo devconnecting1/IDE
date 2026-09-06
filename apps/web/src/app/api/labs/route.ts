@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 const REPO_API = "https://api.github.com/repos/anomalyco/models.dev/contents/labs?ref=dev";
 
-interface LabEntry {
+interface GitHubEntry {
   name: string;
   path: string;
-  url: string;
+  type: string;
 }
 
 async function fetchLabDescriptions(): Promise<Record<string, string>> {
@@ -18,16 +18,17 @@ async function fetchLabDescriptions(): Promise<Record<string, string>> {
     return {};
   }
 
-  const entries: LabEntry[] = await res.json();
+  const entries: GitHubEntry[] = await res.json();
+  const dirs = entries.filter((e) => e.type === "dir");
+
   const results: Record<string, string> = {};
 
-  const labEntries = entries.filter((e) => e.name.endsWith("/lab.toml") || e.path.endsWith("/lab.toml"));
-
   await Promise.all(
-    labEntries.map(async (entry) => {
+    dirs.map(async (dir) => {
       try {
-        const labId = entry.path.replace("labs/", "").replace("/lab.toml", "");
-        const rawRes = await fetch(entry.url, {
+        const labId = dir.name;
+        const fileUrl = `https://api.github.com/repos/anomalyco/models.dev/contents/labs/${labId}/lab.toml?ref=dev`;
+        const rawRes = await fetch(fileUrl, {
           headers: { Accept: "application/vnd.github.v3.raw" },
           next: { revalidate: 86400 },
         });
