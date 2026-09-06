@@ -775,7 +775,7 @@ function ProviderLogo({ logo, name, className }: { logo: string; name: string; c
     <img
       src={logo}
       alt={name}
-      className={cn("rounded-md bg-muted object-contain p-1", className)}
+      className={cn("rounded-md object-contain p-1 text-foreground", className)}
       onError={() => setError(true)}
     />
   );
