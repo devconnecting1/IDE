@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { Check, ChevronDown, Loader2, MoreHorizontal, Plus, Search, X } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Loader2, MoreHorizontal, Plus, Search, Sparkles, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -720,6 +721,8 @@ function saveConnectedProviders(data: Record<string, string>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+const POPULAR_PROVIDER_IDS = ["openai", "anthropic", "google", "xai", "deepseek", "meta", "mistralai", "alibaba"];
+
 export function ProvidersSettings() {
   const [connected, setConnected] = useState<Record<string, string>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -729,6 +732,11 @@ export function ProvidersSettings() {
     [],
   );
   const [loading, setLoading] = useState(true);
+  const [customDialogOpen, setCustomDialogOpen] = useState(false);
+  const [customId, setCustomId] = useState("");
+  const [customName, setCustomName] = useState("");
+  const [customBaseUrl, setCustomBaseUrl] = useState("");
+  const [customApiKey, setCustomApiKey] = useState("");
 
   useEffect(() => {
     setConnected(getConnectedProviders());
@@ -772,10 +780,28 @@ export function ProvidersSettings() {
     setConnected(next);
   };
 
+  const handleSaveCustom = () => {
+    const id = customId.trim();
+    const name = customName.trim();
+    const baseUrl = customBaseUrl.trim();
+    const apiKey = customApiKey.trim();
+    if (!id || !name || !baseUrl || !apiKey) return;
+    const next = { ...connected, [id]: apiKey };
+    saveConnectedProviders(next);
+    setConnected(next);
+    setCustomDialogOpen(false);
+    setCustomId("");
+    setCustomName("");
+    setCustomBaseUrl("");
+    setCustomApiKey("");
+  };
+
   const connectedProviders = allProviders.filter((p) => connected[p.id]);
+  const popularProviders = allProviders.filter((p) => POPULAR_PROVIDER_IDS.includes(p.id) && !connected[p.id]);
   const availableProviders = allProviders.filter(
     (p) =>
       !connected[p.id] &&
+      !POPULAR_PROVIDER_IDS.includes(p.id) &&
       (p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toLowerCase().includes(search.toLowerCase())),
   );
 
@@ -820,8 +846,72 @@ export function ProvidersSettings() {
         )}
       </div>
 
+      {popularProviders.length > 0 && (
+        <div>
+          <h3 className="mb-2 font-medium text-sm">Provedores populares</h3>
+          <div className="rounded-lg border bg-card">
+            {popularProviders.map((provider, index) => (
+              <div key={provider.id}>
+                {index > 0 && <Separator />}
+                {editingId === provider.id ? (
+                  <div className="px-4 py-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                        {provider.icon}
+                      </span>
+                      <span className="font-medium text-sm">{provider.name}</span>
+                    </div>
+                    <p className="mb-2 text-muted-foreground text-xs">
+                      Insira a chave da API oficial ({provider.envKey})
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        type="password"
+                        placeholder={provider.envKey}
+                        value={apiKeyInput}
+                        onChange={(e) => setApiKeyInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSave(provider.id)}
+                        className="flex-1"
+                        autoFocus
+                      />
+                      <Button size="sm" onClick={() => handleSave(provider.id)} disabled={!apiKeyInput.trim()}>
+                        <Check className="mr-1 size-3" />
+                        Salvar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingId(null);
+                          setApiKeyInput("");
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-4 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted font-medium text-xs">
+                        {provider.icon}
+                      </span>
+                      <span className="font-medium text-sm">{provider.name}</span>
+                    </div>
+                    <Button variant="ghost" size="sm" className="shrink-0" onClick={() => handleConnect(provider)}>
+                      <Plus className="mr-1 size-3" />
+                      Conectar
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
-        <h3 className="mb-2 font-medium text-sm">Adicionar provedor</h3>
+        <h3 className="mb-2 font-medium text-sm">Todos os provedores</h3>
         <div className="relative mb-3">
           <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -838,6 +928,20 @@ export function ProvidersSettings() {
           </div>
         ) : (
           <div className="rounded-lg border bg-card">
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-accent"
+              onClick={() => setCustomDialogOpen(true)}
+            >
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted">
+                <Sparkles className="size-4" />
+              </span>
+              <div>
+                <span className="font-medium text-sm">Provedor personalizado</span>
+                <p className="text-muted-foreground text-xs">Compatível com OpenAI</p>
+              </div>
+            </button>
+            <Separator />
             {availableProviders.map((provider, index) => (
               <div key={provider.id}>
                 {index > 0 && <Separator />}
@@ -902,6 +1006,79 @@ export function ProvidersSettings() {
           </div>
         )}
       </div>
+
+      <Dialog open={customDialogOpen} onOpenChange={setCustomDialogOpen}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="rounded-md p-1 hover:bg-accent"
+                onClick={() => setCustomDialogOpen(false)}
+              >
+                <ArrowLeft className="size-4" />
+              </button>
+              <DialogTitle className="flex items-center gap-2">
+                <Sparkles className="size-4" />
+                Provedor personalizado
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <p className="text-muted-foreground text-sm">
+              Configure um provedor compatível com OpenAI. Veja a{" "}
+              <a
+                href="https://opencode.ai/docs/providers/#custom-provider"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground underline underline-offset-2"
+              >
+                documentação de configuração do provedor
+              </a>
+              .
+            </p>
+            <div className="space-y-2">
+              <Label>ID do provedor</Label>
+              <Input placeholder="meuproveedor" value={customId} onChange={(e) => setCustomId(e.target.value)} />
+              <p className="text-muted-foreground text-xs">Letras minúsculas, números, hifens ou sublinhados</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Nome de exibição</Label>
+              <Input
+                placeholder="Meu provedor de IA"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>URL base</Label>
+              <Input
+                placeholder="https://api.meuproveedor.com/v1"
+                value={customBaseUrl}
+                onChange={(e) => setCustomBaseUrl(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Chave da API</Label>
+              <Input
+                type="password"
+                placeholder="sk-..."
+                value={customApiKey}
+                onChange={(e) => setCustomApiKey(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSaveCustom()}
+              />
+            </div>
+            <Button
+              className="w-full"
+              onClick={handleSaveCustom}
+              disabled={!customId.trim() || !customName.trim() || !customBaseUrl.trim() || !customApiKey.trim()}
+            >
+              <Check className="mr-1 size-3" />
+              Salvar provedor
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
