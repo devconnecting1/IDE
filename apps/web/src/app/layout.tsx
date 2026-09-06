@@ -41,13 +41,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       data-sidebar-variant={sidebar_variant}
       data-sidebar-collapsible={sidebar_collapsible}
       data-font={font}
+      className="h-dvh overflow-hidden"
       suppressHydrationWarning
     >
       <head>
         {/* Applies theme and layout preferences on load to avoid flicker and unnecessary server rerenders. */}
         <ThemeBootScript />
       </head>
-      <body className={`${fontVars} min-h-screen antialiased`}>
+      <body className={`${fontVars} h-dvh min-h-0 overflow-hidden antialiased`}>
         <Providers>
           <TooltipProvider>
             <NextIntlClientProvider timeZone="America/Sao_Paulo" messages={messages}>
