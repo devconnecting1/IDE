@@ -7,3 +7,4 @@ dist-electron/
 .turbo/cache/
 *.tsbuildinfo
 apps/web/.env.local
+tsconfig.tsbuildinfo

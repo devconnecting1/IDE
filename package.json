@@ -7,7 +7,10 @@
     "name": "Workspaacing",
     "email": "dev@workspaacing.app"
   },
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build --filter=@workspaacing/web",
@@ -26,9 +29,15 @@
     "generate:presets": "npm run generate:presets --workspace=apps/web"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": ["biome check --write --no-errors-on-unmatched"],
-    "*.md": ["markdownlint-cli2 --fix"],
-    "*.yml": ["bash -c 'pip install -q yamllint && yamllint -c .yamllint.yml'"]
+    "*.{js,ts,jsx,tsx}": [
+      "biome check --write --no-errors-on-unmatched"
+    ],
+    "*.md": [
+      "markdownlint-cli2 --fix"
+    ],
+    "*.yml": [
+      "bash -c 'pip install -q yamllint && yamllint -c .yamllint.yml'"
+    ]
   },
   "allowScripts": {
     "@parcel/watcher": true,
@@ -40,5 +49,8 @@
     "lint-staged": "^17.5.0",
     "markdownlint-cli2": "^0.23.2",
     "turbo": "^2.10.12"
+  },
+  "dependencies": {
+    "@opencode-ai/models": "^0.0.66"
   }
 }

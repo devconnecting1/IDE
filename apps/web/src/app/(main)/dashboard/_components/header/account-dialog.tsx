@@ -745,13 +745,14 @@ function setCache<T>(key: string, data: T): void {
 }
 
 const PROVIDERS_CACHE_KEY = "workspaacing:providers_cache";
-const PROVIDERS_CACHE_TTL = 86400_000;
+const MODELS_CACHE_KEY = "workspaacing:models_cache";
+const CACHE_TTL = 3600_000;
 
 type ProviderData = Record<string, { name: string; env?: string[] }>;
 type LabsData = Record<string, string>;
 
 async function fetchProvidersData(): Promise<{ models: ProviderData; labs: LabsData }> {
-  const cached = getCached<{ models: ProviderData; labs: LabsData }>(PROVIDERS_CACHE_KEY, PROVIDERS_CACHE_TTL);
+  const cached = getCached<{ models: ProviderData; labs: LabsData }>(PROVIDERS_CACHE_KEY, CACHE_TTL);
   if (cached) return cached;
 
   const [modelsRes, labsRes] = await Promise.all([fetch("/api/models"), fetch("/api/labs")]);
@@ -762,22 +763,26 @@ async function fetchProvidersData(): Promise<{ models: ProviderData; labs: LabsD
   return { models, labs };
 }
 
-function ProviderLogo({ logo, name, className }: { logo: string; name: string; className?: string }) {
-  const [error, setError] = useState(false);
-  if (error) {
-    return (
-      <span className={cn("flex items-center justify-center rounded-md bg-muted font-medium text-xs", className)}>
-        {name.slice(0, 2)}
-      </span>
-    );
-  }
+type ModelsByProvider = Record<string, { name: string; models: Record<string, ModelData> }>;
+
+async function fetchModelsData(providerIds: string[]): Promise<ModelsByProvider> {
+  const cacheKey = `${MODELS_CACHE_KEY}:${providerIds.sort().join(",")}`;
+  const cached = getCached<ModelsByProvider>(cacheKey, CACHE_TTL);
+  if (cached) return cached;
+
+  const params = providerIds.join(",");
+  const res = await fetch(`/api/models?provider=${params}`);
+  const data: ModelsByProvider = await res.json();
+
+  setCache(cacheKey, data);
+  return data;
+}
+
+function ProviderInitials({ name, className }: { name: string; className?: string }) {
   return (
-    <img
-      src={logo}
-      alt={name}
-      className={cn("rounded-md object-contain p-1 text-foreground", className)}
-      onError={() => setError(true)}
-    />
+    <span className={cn("flex items-center justify-center rounded-md bg-muted font-medium text-xs", className)}>
+      {name.slice(0, 2)}
+    </span>
   );
 }
 
@@ -787,7 +792,7 @@ export function ProvidersSettings() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [search, setSearch] = useState("");
   const [allProviders, setAllProviders] = useState<
-    Array<{ id: string; name: string; icon: string; logo: string; description: string; envKey: string }>
+    Array<{ id: string; name: string; description: string; envKey: string }>
   >([]);
   const [loading, setLoading] = useState(true);
   const [customDialogOpen, setCustomDialogOpen] = useState(false);
@@ -803,8 +808,6 @@ export function ProvidersSettings() {
         const providers = Object.entries(models).map(([id, p]) => ({
           id,
           name: p.name,
-          icon: p.name.slice(0, 2),
-          logo: `https://models.dev/logos/${id}.svg`,
           description: labs[id] || "",
           envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
         }));
@@ -817,7 +820,7 @@ export function ProvidersSettings() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleConnect = (provider: { id: string; name: string; icon: string; envKey: string }) => {
+  const handleConnect = (provider: { id: string; name: string; envKey: string }) => {
     setEditingId(provider.id);
     setApiKeyInput(connected[provider.id] || "");
   };
@@ -879,7 +882,7 @@ export function ProvidersSettings() {
                 {index > 0 && <Separator />}
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
+                    <ProviderInitials name={provider.name} className="size-8 shrink-0" />
                     <div>
                       <span className="font-medium text-sm">{provider.name}</span>
                       <p className="text-muted-foreground text-xs">
@@ -913,7 +916,7 @@ export function ProvidersSettings() {
                 {editingId === provider.id ? (
                   <div className="px-4 py-3">
                     <div className="mb-2 flex items-center gap-2">
-                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-7 shrink-0" />
+                      <ProviderInitials name={provider.name} className="size-7 shrink-0" />
                       <span className="font-medium text-sm">{provider.name}</span>
                     </div>
                     <p className="mb-2 text-muted-foreground text-xs">
@@ -948,7 +951,7 @@ export function ProvidersSettings() {
                 ) : (
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
+                      <ProviderInitials name={provider.name} className="size-8 shrink-0" />
                       <div>
                         <span className="font-medium text-sm">{provider.name}</span>
                         {provider.description && (
@@ -1006,7 +1009,7 @@ export function ProvidersSettings() {
                 {editingId === provider.id ? (
                   <div className="px-4 py-3">
                     <div className="mb-2 flex items-center gap-2">
-                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-7 shrink-0" />
+                      <ProviderInitials name={provider.name} className="size-7 shrink-0" />
                       <span className="font-medium text-sm">{provider.name}</span>
                     </div>
                     <p className="mb-2 text-muted-foreground text-xs">
@@ -1041,7 +1044,7 @@ export function ProvidersSettings() {
                 ) : (
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <ProviderLogo logo={provider.logo} name={provider.name} className="size-8 shrink-0" />
+                      <ProviderInitials name={provider.name} className="size-8 shrink-0" />
                       <div>
                         <span className="font-medium text-sm">{provider.name}</span>
                         {provider.description && (
@@ -1193,10 +1196,8 @@ export function ModelsSettings() {
     }
 
     setLoading(true);
-    const params = providerIds.join(",");
-    fetch(`/api/models?provider=${params}`)
-      .then((res) => res.json())
-      .then((data: Record<string, { name: string; models: Record<string, ModelData> }>) => {
+    fetchModelsData(providerIds)
+      .then((data) => {
         const result: Record<string, { name: string; models: ModelData[] }> = {};
         for (const [providerId, providerData] of Object.entries(data)) {
           const models = Object.values(providerData.models);
@@ -1292,11 +1293,7 @@ export function ModelsSettings() {
                   !expandedProviders.has(provider.providerId) && "-rotate-90",
                 )}
               />
-              <ProviderLogo
-                logo={`https://models.dev/logos/${provider.providerId}.svg`}
-                name={provider.name}
-                className="size-5 shrink-0"
-              />
+              <ProviderInitials name={provider.name} className="size-5 shrink-0" />
               <span className="font-medium">{provider.name}</span>
               <span className="text-muted-foreground">({provider.models.length})</span>
             </button>

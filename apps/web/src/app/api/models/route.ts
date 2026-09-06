@@ -1,30 +1,27 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { Models } from "@opencode-ai/models";
 
-const MODELS_API = "https://models.dev/api.json";
+const client = Models.make();
 
 export async function GET(request: NextRequest) {
   const provider = request.nextUrl.searchParams.get("provider");
 
-  const res = await fetch(MODELS_API, {
-    next: { revalidate: 3600 },
-  });
+  try {
+    const allProviders = await client.providers();
 
-  if (!res.ok) {
+    if (provider) {
+      const ids = provider.split(",");
+      const filtered: Record<string, unknown> = {};
+      for (const id of ids) {
+        if (allProviders[id]) {
+          filtered[id] = allProviders[id];
+        }
+      }
+      return NextResponse.json(filtered);
+    }
+
+    return NextResponse.json(allProviders);
+  } catch {
     return NextResponse.json({ error: "Failed to fetch models" }, { status: 502 });
   }
-
-  const data: Record<string, { name: string; models: Record<string, unknown> }> = await res.json();
-
-  if (provider) {
-    const providers = provider.split(",");
-    const filtered: Record<string, { name: string; models: Record<string, unknown> }> = {};
-    for (const p of providers) {
-      if (data[p]) {
-        filtered[p] = data[p];
-      }
-    }
-    return NextResponse.json(filtered);
-  }
-
-  return NextResponse.json(data);
 }

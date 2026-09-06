@@ -1,51 +1,56 @@
 import { NextResponse } from "next/server";
 
-const GITHUB_API = "https://api.github.com";
-const REPO = "anomalyco/models.dev";
-const BRANCH = "dev";
+const REPO_API = "https://api.github.com/repos/anomalyco/models.dev/contents/labs?ref=dev";
+
+interface LabEntry {
+  name: string;
+  path: string;
+  url: string;
+}
+
+interface LabTomlContent {
+  description?: string;
+}
 
 async function fetchLabDescriptions(): Promise<Record<string, string>> {
-  const treeRes = await fetch(`${GITHUB_API}/repos/${REPO}/git/trees/${BRANCH}?recursive=1`, {
+  const res = await fetch(REPO_API, {
+    headers: { Accept: "application/vnd.github.v3+json" },
     next: { revalidate: 86400 },
   });
 
-  if (!treeRes.ok) {
+  if (!res.ok) {
     return {};
   }
 
-  const tree = await treeRes.json();
-  const labPaths: string[] = tree.tree
-    .filter((t: { path: string; type: string }) => t.path.startsWith("labs/") && t.path.endsWith("/lab.toml"))
-    .map((t: { path: string }) => t.path);
+  const entries: LabEntry[] = await res.json();
+  const results: Record<string, string> = {};
 
-  const descriptions: Record<string, string> = {};
+  const labEntries = entries.filter((e) => e.name.endsWith("/lab.toml") || e.path.endsWith("/lab.toml"));
 
-  const results = await Promise.allSettled(
-    labPaths.map(async (path) => {
-      const res = await fetch(`${GITHUB_API}/repos/${REPO}/contents/${path}?ref=${BRANCH}`, {
-        next: { revalidate: 86400 },
-      });
-      if (!res.ok) return null;
-      const data = await res.json();
-      if (!data.content) return null;
-      const content = atob(data.content);
-      const match = content.match(/description\s*=\s*"([^"]+)"/);
-      if (!match) return null;
-      const labId = path.split("/")[1];
-      return { id: labId, description: match[1] };
+  await Promise.all(
+    labEntries.map(async (entry) => {
+      try {
+        const labId = entry.path.replace("labs/", "").replace("/lab.toml", "");
+        const rawRes = await fetch(entry.url, {
+          headers: { Accept: "application/vnd.github.v3.raw" },
+          next: { revalidate: 86400 },
+        });
+        if (!rawRes.ok) return;
+        const text = await rawRes.text();
+        const descMatch = text.match(/^description\s*=\s*"(.+?)"/m);
+        if (descMatch?.[1]) {
+          results[labId] = descMatch[1];
+        }
+      } catch {
+        /* skip */
+      }
     }),
   );
 
-  for (const result of results) {
-    if (result.status === "fulfilled" && result.value) {
-      descriptions[result.value.id] = result.value.description;
-    }
-  }
-
-  return descriptions;
+  return results;
 }
 
 export async function GET() {
-  const descriptions = await fetchLabDescriptions();
-  return NextResponse.json(descriptions);
+  const data = await fetchLabDescriptions();
+  return NextResponse.json(data);
 }
