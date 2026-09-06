@@ -1,10 +1,187 @@
-import { app, BrowserWindow, shell, ipcMain } from "electron";
+import { app, BrowserWindow, shell, ipcMain, safeStorage } from "electron";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { exec, spawn } from "node:child_process";
+import os from "node:os";
 
 const isDev = !app.isPackaged;
 
+// ─── XDG-style paths ───────────────────────────────────────────────
+function getConfigDir(): string {
+  if (process.platform === "win32") {
+    return path.join(process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming"), "workspaacing");
+  }
+  if (process.platform === "darwin") {
+    return path.join(os.homedir(), "Library", "Application Support", "workspaacing");
+  }
+  // Linux / other
+  const xdgConfig = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config");
+  return path.join(xdgConfig, "workspaacing");
+}
+
+function getDataDir(): string {
+  if (process.platform === "win32") {
+    return path.join(process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming"), "workspaacing");
+  }
+  if (process.platform === "darwin") {
+    return path.join(os.homedir(), "Library", "Application Support", "workspaacing");
+  }
+  const xdgData = process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share");
+  return path.join(xdgData, "workspaacing");
+}
+
+function getCacheDir(): string {
+  if (process.platform === "win32") {
+    return path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), "AppData", "Local"), "workspaacing", "cache");
+  }
+  if (process.platform === "darwin") {
+    return path.join(os.homedir(), "Library", "Caches", "workspaacing");
+  }
+  const xdgCache = process.env.XDG_CACHE_HOME || path.join(os.homedir(), ".cache");
+  return path.join(xdgCache, "workspaacing");
+}
+
+const CONFIG_DIR = getConfigDir();
+const DATA_DIR = getDataDir();
+const CACHE_DIR = getCacheDir();
+const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
+const CREDENTIALS_FILE = path.join(DATA_DIR, "credentials.enc");
+const SESSIONS_DB = path.join(DATA_DIR, "sessions.db");
+
+// ─── Ensure directories exist ──────────────────────────────────────
+function ensureDirs(): void {
+  for (const dir of [CONFIG_DIR, DATA_DIR, CACHE_DIR]) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+// ─── Config file helpers ───────────────────────────────────────────
+interface AppConfig {
+  providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+  enabledModels: string[];
+  customProviders: Record<string, { name: string; baseUrl: string; apiKeyRef?: string }>;
+}
+
+const DEFAULT_CONFIG: AppConfig = {
+  providers: {},
+  enabledModels: [],
+  customProviders: {},
+};
+
+function readConfig(): AppConfig {
+  try {
+    if (fs.existsSync(CONFIG_FILE)) {
+      const raw = fs.readFileSync(CONFIG_FILE, "utf-8");
+      return { ...DEFAULT_CONFIG, ...JSON.parse(raw) };
+    }
+  } catch {
+    /* ignore */
+  }
+  return DEFAULT_CONFIG;
+}
+
+function writeConfig(config: AppConfig): void {
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), "utf-8");
+}
+
+// ─── Credentials (safeStorage) ─────────────────────────────────────
+interface CredentialStore {
+  [key: string]: string; // base64 encoded encrypted values
+}
+
+function readCredentials(): CredentialStore {
+  try {
+    if (fs.existsSync(CREDENTIALS_FILE)) {
+      const encrypted = fs.readFileSync(CREDENTIALS_FILE);
+      if (safeStorage.isEncryptionAvailable()) {
+        const decrypted = safeStorage.decryptString(encrypted);
+        return JSON.parse(decrypted);
+      }
+      // Fallback: decrypt without OS encryption (not recommended)
+      return JSON.parse(encrypted.toString("utf-8"));
+    }
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+function writeCredentials(store: CredentialStore): void {
+  const json = JSON.stringify(store);
+  if (safeStorage.isEncryptionAvailable()) {
+    const encrypted = safeStorage.encryptString(json);
+    fs.writeFileSync(CREDENTIALS_FILE, encrypted);
+  } else {
+    fs.writeFileSync(CREDENTIALS_FILE, json, "utf-8");
+  }
+}
+
+// ─── SQLite sessions ───────────────────────────────────────────────
+let db: import("better-sqlite3").Database | null = null;
+
+function initDatabase(): void {
+  try {
+    // Dynamic import for better-sqlite3
+    const Database = require("better-sqlite3");
+    db = new Database(SESSIONS_DB);
+    db!.pragma("journal_mode = WAL");
+    db!.exec(`
+      CREATE TABLE IF NOT EXISTS sessions (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL DEFAULT 'Nova sessão',
+        created_at INTEGER NOT NULL DEFAULT (unixepoch('now')),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch('now')),
+        data TEXT NOT NULL DEFAULT '{}'
+      );
+      CREATE TABLE IF NOT EXISTS messages (
+        id TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL,
+        role TEXT NOT NULL,
+        content TEXT NOT NULL,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch('now')),
+        FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+      );
+    `);
+  } catch (err) {
+    console.warn("SQLite not available, sessions will use fallback:", err);
+  }
+}
+
+function getSessions(): { id: string; title: string; createdAt: number; updatedAt: number }[] {
+  if (!db) return [];
+  return db.prepare("SELECT id, title, created_at as createdAt, updated_at as updatedAt FROM sessions ORDER BY updated_at DESC").all() as { id: string; title: string; createdAt: number; updatedAt: number }[];
+}
+
+function createSession(id: string, title: string): void {
+  if (!db) return;
+  db.prepare("INSERT INTO sessions (id, title) VALUES (?, ?)").run(id, title);
+}
+
+function updateSession(id: string, data: { title?: string }): void {
+  if (!db) return;
+  if (data.title) {
+    db.prepare("UPDATE sessions SET title = ?, updated_at = unixepoch('now') WHERE id = ?").run(data.title, id);
+  }
+}
+
+function deleteSession(id: string): void {
+  if (!db) return;
+  db.prepare("DELETE FROM messages WHERE session_id = ?").run(id);
+  db.prepare("DELETE FROM sessions WHERE id = ?").run(id);
+}
+
+function getMessages(sessionId: string): { id: string; role: string; content: string; createdAt: number }[] {
+  if (!db) return [];
+  return db.prepare("SELECT id, role, content, created_at as createdAt FROM messages WHERE session_id = ? ORDER BY created_at ASC").all(sessionId) as { id: string; role: string; content: string; createdAt: number }[];
+}
+
+function addMessage(id: string, sessionId: string, role: string, content: string): void {
+  if (!db) return;
+  db.prepare("INSERT INTO messages (id, session_id, role, content) VALUES (?, ?, ?, ?)").run(id, sessionId, role, content);
+  db.prepare("UPDATE sessions SET updated_at = unixepoch('now') WHERE id = ?").run(sessionId);
+}
+
+// ─── Electron main ─────────────────────────────────────────────────
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
@@ -55,6 +232,7 @@ function registerIPC(): void {
     }
   });
 
+  // ─── File system (generic) ─────────────────────────────────────
   ipcMain.handle("read-file", async (_event, filePath: string) => {
     return fs.promises.readFile(filePath, "utf-8");
   });
@@ -94,6 +272,113 @@ function registerIPC(): void {
     }
   });
 
+  // ─── Paths ─────────────────────────────────────────────────────
+  ipcMain.handle("get-paths", () => ({
+    config: CONFIG_DIR,
+    data: DATA_DIR,
+    cache: CACHE_DIR,
+    home: os.homedir(),
+  }));
+
+  // ─── Config ────────────────────────────────────────────────────
+  ipcMain.handle("config:read", () => readConfig());
+
+  ipcMain.handle("config:write", (_event, config: AppConfig) => {
+    writeConfig(config);
+  });
+
+  ipcMain.handle("config:get-provider", (_event, providerId: string) => {
+    const config = readConfig();
+    return config.providers[providerId] || null;
+  });
+
+  ipcMain.handle("config:set-provider", (_event, providerId: string, data: { name: string; baseUrl?: string; npm?: string }) => {
+    const config = readConfig();
+    config.providers[providerId] = data;
+    writeConfig(config);
+  });
+
+  ipcMain.handle("config:delete-provider", (_event, providerId: string) => {
+    const config = readConfig();
+    delete config.providers[providerId];
+    writeConfig(config);
+  });
+
+  ipcMain.handle("config:get-enabled-models", () => {
+    return readConfig().enabledModels;
+  });
+
+  ipcMain.handle("config:set-enabled-models", (_event, models: string[]) => {
+    const config = readConfig();
+    config.enabledModels = models;
+    writeConfig(config);
+  });
+
+  ipcMain.handle("config:get-custom-providers", () => {
+    return readConfig().customProviders;
+  });
+
+  ipcMain.handle("config:set-custom-provider", (_event, id: string, data: { name: string; baseUrl: string }) => {
+    const config = readConfig();
+    config.customProviders[id] = data;
+    writeConfig(config);
+  });
+
+  ipcMain.handle("config:delete-custom-provider", (_event, id: string) => {
+    const config = readConfig();
+    delete config.customProviders[id];
+    writeConfig(config);
+  });
+
+  // ─── Credentials (safeStorage) ─────────────────────────────────
+  ipcMain.handle("creds:get", (_event, key: string) => {
+    const store = readCredentials();
+    return store[key] || null;
+  });
+
+  ipcMain.handle("creds:set", (_event, key: string, value: string) => {
+    const store = readCredentials();
+    store[key] = value;
+    writeCredentials(store);
+  });
+
+  ipcMain.handle("creds:delete", (_event, key: string) => {
+    const store = readCredentials();
+    delete store[key];
+    writeCredentials(store);
+  });
+
+  ipcMain.handle("creds:list", () => {
+    const store = readCredentials();
+    return Object.keys(store);
+  });
+
+  ipcMain.handle("creds:has-encryption", () => safeStorage.isEncryptionAvailable());
+
+  // ─── Sessions (SQLite) ─────────────────────────────────────────
+  ipcMain.handle("sessions:list", () => getSessions());
+
+  ipcMain.handle("sessions:create", (_event, id: string, title: string) => {
+    createSession(id, title);
+  });
+
+  ipcMain.handle("sessions:update", (_event, id: string, data: { title?: string }) => {
+    updateSession(id, data);
+  });
+
+  ipcMain.handle("sessions:delete", (_event, id: string) => {
+    deleteSession(id);
+  });
+
+  ipcMain.handle("sessions:messages", (_event, sessionId: string) => {
+    return getMessages(sessionId);
+  });
+
+  ipcMain.handle("sessions:add-message", (_event, id: string, sessionId: string, role: string, content: string) => {
+    addMessage(id, sessionId, role, content);
+  });
+
+  // ─── Execute commands ──────────────────────────────────────────
   ipcMain.handle("execute-command", async (_event, command: string, cwd?: string) => {
     return new Promise((resolve, reject) => {
       exec(command, { cwd: cwd || process.cwd() }, (error, stdout, stderr) => {
@@ -141,11 +426,16 @@ function registerIPC(): void {
 }
 
 app.whenReady().then(() => {
+  ensureDirs();
+  initDatabase();
   registerIPC();
   createWindow();
 });
 
 app.on("window-all-closed", () => {
+  if (db) {
+    db.close();
+  }
   if (process.platform !== "darwin") {
     app.quit();
   }

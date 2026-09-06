@@ -8,10 +8,6 @@ interface LabEntry {
   url: string;
 }
 
-interface LabTomlContent {
-  description?: string;
-}
-
 async function fetchLabDescriptions(): Promise<Record<string, string>> {
   const res = await fetch(REPO_API, {
     headers: { Accept: "application/vnd.github.v3+json" },

@@ -24,7 +24,11 @@
     "directories": {
       "output": "dist-electron"
     },
-    "files": ["electron/dist/**/*", "electron/interface.d.ts", "out/**/*"],
+    "files": [
+      "electron/dist/**/*",
+      "electron/interface.d.ts",
+      "out/**/*"
+    ],
     "win": {
       "target": "nsis",
       "icon": "../web/src/app/favicon.ico"
@@ -34,7 +38,9 @@
       "category": "public.app-category.developer-tools"
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Development",
       "executableName": "workspaacing"
     },
@@ -44,8 +50,12 @@
     }
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "electron": "44.2.0",
     "electron-builder": "^26.15.3",
     "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3"
   }
 }

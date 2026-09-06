@@ -16,6 +16,8 @@ const electronAPI = {
       ipcRenderer.removeListener("menu-click", handler as (...args: unknown[]) => void);
     };
   },
+
+  // ─── File system ────────────────────────────────────────────────
   readFile: (path: string): Promise<string> => {
     return ipcRenderer.invoke("read-file", path);
   },
@@ -34,6 +36,96 @@ const electronAPI = {
   fileExists: (path: string): Promise<boolean> => {
     return ipcRenderer.invoke("file-exists", path);
   },
+
+  // ─── Paths ──────────────────────────────────────────────────────
+  getPaths: (): Promise<{ config: string; data: string; cache: string; home: string }> => {
+    return ipcRenderer.invoke("get-paths");
+  },
+
+  // ─── Config ─────────────────────────────────────────────────────
+  config: {
+    read: (): Promise<{
+      providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+      enabledModels: string[];
+      customProviders: Record<string, { name: string; baseUrl: string }>;
+    }> => {
+      return ipcRenderer.invoke("config:read");
+    },
+    write: (config: {
+      providers: Record<string, { name: string; baseUrl?: string; npm?: string }>;
+      enabledModels: string[];
+      customProviders: Record<string, { name: string; baseUrl: string }>;
+    }): Promise<void> => {
+      return ipcRenderer.invoke("config:write", config);
+    },
+    getProvider: (id: string): Promise<{ name: string; baseUrl?: string; npm?: string } | null> => {
+      return ipcRenderer.invoke("config:get-provider", id);
+    },
+    setProvider: (id: string, data: { name: string; baseUrl?: string; npm?: string }): Promise<void> => {
+      return ipcRenderer.invoke("config:set-provider", id, data);
+    },
+    deleteProvider: (id: string): Promise<void> => {
+      return ipcRenderer.invoke("config:delete-provider", id);
+    },
+    getEnabledModels: (): Promise<string[]> => {
+      return ipcRenderer.invoke("config:get-enabled-models");
+    },
+    setEnabledModels: (models: string[]): Promise<void> => {
+      return ipcRenderer.invoke("config:set-enabled-models", models);
+    },
+    getCustomProviders: (): Promise<Record<string, { name: string; baseUrl: string }>> => {
+      return ipcRenderer.invoke("config:get-custom-providers");
+    },
+    setCustomProvider: (id: string, data: { name: string; baseUrl: string }): Promise<void> => {
+      return ipcRenderer.invoke("config:set-custom-provider", id, data);
+    },
+    deleteCustomProvider: (id: string): Promise<void> => {
+      return ipcRenderer.invoke("config:delete-custom-provider", id);
+    },
+  },
+
+  // ─── Credentials (safeStorage) ──────────────────────────────────
+  credentials: {
+    get: (key: string): Promise<string | null> => {
+      return ipcRenderer.invoke("creds:get", key);
+    },
+    set: (key: string, value: string): Promise<void> => {
+      return ipcRenderer.invoke("creds:set", key, value);
+    },
+    delete: (key: string): Promise<void> => {
+      return ipcRenderer.invoke("creds:delete", key);
+    },
+    list: (): Promise<string[]> => {
+      return ipcRenderer.invoke("creds:list");
+    },
+    hasEncryption: (): Promise<boolean> => {
+      return ipcRenderer.invoke("creds:has-encryption");
+    },
+  },
+
+  // ─── Sessions (SQLite) ──────────────────────────────────────────
+  sessions: {
+    list: (): Promise<{ id: string; title: string; createdAt: number; updatedAt: number }[]> => {
+      return ipcRenderer.invoke("sessions:list");
+    },
+    create: (id: string, title: string): Promise<void> => {
+      return ipcRenderer.invoke("sessions:create", id, title);
+    },
+    update: (id: string, data: { title?: string }): Promise<void> => {
+      return ipcRenderer.invoke("sessions:update", id, data);
+    },
+    delete: (id: string): Promise<void> => {
+      return ipcRenderer.invoke("sessions:delete", id);
+    },
+    messages: (sessionId: string): Promise<{ id: string; role: string; content: string; createdAt: number }[]> => {
+      return ipcRenderer.invoke("sessions:messages", sessionId);
+    },
+    addMessage: (id: string, sessionId: string, role: string, content: string): Promise<void> => {
+      return ipcRenderer.invoke("sessions:add-message", id, sessionId, role, content);
+    },
+  },
+
+  // ─── Commands ───────────────────────────────────────────────────
   executeCommand: (
     command: string,
     cwd?: string,

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { configStorage, credentialsStorage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
 export function SettingRow({
@@ -705,20 +706,23 @@ export function ServersSettings() {
   );
 }
 
-const STORAGE_KEY = "workspaacing:providers";
-
-function getConnectedProviders(): Record<string, string> {
+async function getConnectedProviders(): Promise<Record<string, string>> {
   if (typeof window === "undefined") return {};
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
+  const keys = await credentialsStorage.list();
+  const result: Record<string, string> = {};
+  for (const key of keys) {
+    const value = await credentialsStorage.get(key);
+    if (value) result[key] = value;
   }
+  return result;
 }
 
-function saveConnectedProviders(data: Record<string, string>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+async function saveConnectedProvider(providerId: string, apiKey: string): Promise<void> {
+  await credentialsStorage.set(providerId, apiKey);
+}
+
+async function removeConnectedProvider(providerId: string): Promise<void> {
+  await credentialsStorage.delete(providerId);
 }
 
 interface CacheEntry<T> {
@@ -802,7 +806,7 @@ export function ProvidersSettings() {
   const [customApiKey, setCustomApiKey] = useState("");
 
   useEffect(() => {
-    setConnected(getConnectedProviders());
+    void getConnectedProviders().then(setConnected);
     fetchProvidersData()
       .then(({ models, labs }) => {
         const providers = Object.entries(models).map(([id, p]) => ({
@@ -825,32 +829,30 @@ export function ProvidersSettings() {
     setApiKeyInput(connected[provider.id] || "");
   };
 
-  const handleSave = (providerId: string) => {
+  const handleSave = async (providerId: string) => {
     const trimmed = apiKeyInput.trim();
     if (!trimmed) return;
-    const next = { ...connected, [providerId]: trimmed };
-    saveConnectedProviders(next);
-    setConnected(next);
+    await saveConnectedProvider(providerId, trimmed);
+    setConnected({ ...connected, [providerId]: trimmed });
     setEditingId(null);
     setApiKeyInput("");
   };
 
-  const handleDisconnect = (providerId: string) => {
+  const handleDisconnect = async (providerId: string) => {
+    await removeConnectedProvider(providerId);
     const next = { ...connected };
     delete next[providerId];
-    saveConnectedProviders(next);
     setConnected(next);
   };
 
-  const handleSaveCustom = () => {
+  const handleSaveCustom = async () => {
     const id = customId.trim();
     const name = customName.trim();
     const baseUrl = customBaseUrl.trim();
     const apiKey = customApiKey.trim();
     if (!id || !name || !baseUrl || !apiKey) return;
-    const next = { ...connected, [id]: apiKey };
-    saveConnectedProviders(next);
-    setConnected(next);
+    await saveConnectedProvider(id, apiKey);
+    setConnected({ ...connected, [id]: apiKey });
     setCustomDialogOpen(false);
     setCustomId("");
     setCustomName("");
@@ -1156,20 +1158,21 @@ interface ModelData {
   attachment?: boolean;
 }
 
-const MODELS_STORAGE_KEY = "workspaacing:models";
-
-function getEnabledModels(): Record<string, boolean> {
+async function getEnabledModels(): Promise<Record<string, boolean>> {
   if (typeof window === "undefined") return {};
-  try {
-    const raw = localStorage.getItem(MODELS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
+  const models = await configStorage.getEnabledModels();
+  const result: Record<string, boolean> = {};
+  for (const model of models) {
+    result[model] = true;
   }
+  return result;
 }
 
-function saveEnabledModels(data: Record<string, boolean>) {
-  localStorage.setItem(MODELS_STORAGE_KEY, JSON.stringify(data));
+async function saveEnabledModels(data: Record<string, boolean>): Promise<void> {
+  const models = Object.entries(data)
+    .filter(([, enabled]) => enabled)
+    .map(([id]) => id);
+  await configStorage.setEnabledModels(models);
 }
 
 function getProviderIcon(name: string): string {
@@ -1184,34 +1187,34 @@ export function ModelsSettings() {
   const [enabledModels, setEnabledModels] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    setEnabledModels(getEnabledModels());
+    void getEnabledModels().then(setEnabledModels);
 
-    const connectedRaw = localStorage.getItem(STORAGE_KEY);
-    const connected: Record<string, string> = connectedRaw ? JSON.parse(connectedRaw) : {};
-    const providerIds = Object.keys(connected);
+    void getConnectedProviders().then((connected) => {
+      const providerIds = Object.keys(connected);
 
-    if (providerIds.length === 0) {
-      setModelsByProvider({});
-      return;
-    }
+      if (providerIds.length === 0) {
+        setModelsByProvider({});
+        return;
+      }
 
-    setLoading(true);
-    fetchModelsData(providerIds)
-      .then((data) => {
-        const result: Record<string, { name: string; models: ModelData[] }> = {};
-        for (const [providerId, providerData] of Object.entries(data)) {
-          const models = Object.values(providerData.models);
-          if (models.length > 0) {
-            result[providerId] = { name: providerData.name, models };
+      setLoading(true);
+      fetchModelsData(providerIds)
+        .then((data) => {
+          const result: Record<string, { name: string; models: ModelData[] }> = {};
+          for (const [providerId, providerData] of Object.entries(data)) {
+            const models = Object.values(providerData.models);
+            if (models.length > 0) {
+              result[providerId] = { name: providerData.name, models };
+            }
           }
-        }
-        setModelsByProvider(result);
-        setExpandedProviders(new Set(Object.keys(result)));
-      })
-      .catch(() => {
-        /* ignore */
-      })
-      .finally(() => setLoading(false));
+          setModelsByProvider(result);
+          setExpandedProviders(new Set(Object.keys(result)));
+        })
+        .catch(() => {
+          /* ignore */
+        })
+        .finally(() => setLoading(false));
+    });
   }, []);
 
   const toggleProvider = (name: string) => {
@@ -1226,7 +1229,7 @@ export function ModelsSettings() {
   const toggleModel = (modelId: string) => {
     setEnabledModels((prev) => {
       const next = { ...prev, [modelId]: !prev[modelId] };
-      saveEnabledModels(next);
+      void saveEnabledModels(next);
       return next;
     });
   };

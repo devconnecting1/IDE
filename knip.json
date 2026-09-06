@@ -20,6 +20,7 @@
         "@workspaacing/ui",
         "@workspaacing/theme",
         "@biomejs/biome",
+        "@opencode-ai/models",
         "d3-geo",
         "@types/d3-geo",
         "topojson-client",
@@ -39,7 +40,17 @@
     },
     "apps/mobile": {
       "entry": ["src-tauri/src/lib.rs"],
-      "ignoreDependencies": ["@tauri-apps/api", "@tauri-apps/plugin-shell"]
+      "ignoreDependencies": [
+        "@tauri-apps/api",
+        "@tauri-apps/plugin-shell",
+        "@tauri-apps/plugin-fs",
+        "@tauri-apps/plugin-http",
+        "@tauri-apps/plugin-dialog",
+        "@tauri-apps/plugin-clipboard-manager",
+        "@tauri-apps/plugin-notification",
+        "@tauri-apps/plugin-store",
+        "@tauri-apps/plugin-opener"
+      ]
     },
     "packages/ui": {
       "ignoreDependencies": ["@floating-ui/react", "@hookform/resolvers", "@tanstack/react-table", "motion", "react-hook-form", "shiki"]
