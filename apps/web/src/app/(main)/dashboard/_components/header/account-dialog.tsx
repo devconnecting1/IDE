@@ -721,6 +721,47 @@ function saveConnectedProviders(data: Record<string, string>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+function getCached<T>(key: string, ttlMs: number): T | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const entry: CacheEntry<T> = JSON.parse(raw);
+    if (Date.now() - entry.timestamp > ttlMs) return null;
+    return entry.data;
+  } catch {
+    return null;
+  }
+}
+
+function setCache<T>(key: string, data: T): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
+}
+
+const PROVIDERS_CACHE_KEY = "workspaacing:providers_cache";
+const PROVIDERS_CACHE_TTL = 86400_000;
+
+type ProviderData = Record<string, { name: string; env?: string[] }>;
+type LabsData = Record<string, string>;
+
+async function fetchProvidersData(): Promise<{ models: ProviderData; labs: LabsData }> {
+  const cached = getCached<{ models: ProviderData; labs: LabsData }>(PROVIDERS_CACHE_KEY, PROVIDERS_CACHE_TTL);
+  if (cached) return cached;
+
+  const [modelsRes, labsRes] = await Promise.all([fetch("/api/models"), fetch("/api/labs")]);
+  const models: ProviderData = await modelsRes.json();
+  const labs: LabsData = await labsRes.json();
+
+  setCache(PROVIDERS_CACHE_KEY, { models, labs });
+  return { models, labs };
+}
+
 function ProviderLogo({ logo, name, className }: { logo: string; name: string; className?: string }) {
   const [error, setError] = useState(false);
   if (error) {
@@ -757,14 +798,14 @@ export function ProvidersSettings() {
 
   useEffect(() => {
     setConnected(getConnectedProviders());
-    Promise.all([fetch("/api/models").then((res) => res.json()), fetch("/api/labs").then((res) => res.json())])
-      .then(([modelsData, labsData]: [Record<string, { name: string; env?: string[] }>, Record<string, string>]) => {
-        const providers = Object.entries(modelsData).map(([id, p]) => ({
+    fetchProvidersData()
+      .then(({ models, labs }) => {
+        const providers = Object.entries(models).map(([id, p]) => ({
           id,
           name: p.name,
           icon: p.name.slice(0, 2),
           logo: `https://models.dev/logos/${id}.svg`,
-          description: labsData[id] || "",
+          description: labs[id] || "",
           envKey: p.env?.[0] || `${id.toUpperCase()}_API_KEY`,
         }));
         providers.sort((a, b) => a.name.localeCompare(b.name));
