@@ -16,22 +16,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const repositories = [
+const githubLinks = [
   {
-    label: "Radix UI",
-    href: "https://github.com/arhamkhnz/next-shadcn-admin-dashboard",
+    label: "Meu Perfil",
+    href: "https://github.com/devconnecting1",
   },
   {
-    label: "Base UI",
-    href: "https://github.com/arhamkhnz/next-shadcn-admin-dashboard-baseui",
+    label: "Workspaacing",
+    href: "https://github.com/devconnecting1/Workspaacing",
   },
   {
-    label: "React Aria",
-    href: "https://github.com/arhamkhnz/next-shadcn-admin-dashboard-aria",
-  },
-  {
-    label: "TanStack Start",
-    href: "https://github.com/arhamkhnz/tanstack-shadcn-admin-dashboard",
+    label: "Repositórios",
+    href: "https://github.com/devconnecting1?tab=repositories",
   },
 ] as const;
 
@@ -47,11 +43,11 @@ export function GitHubRepositoriesMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>{t("projectVersions")}</DropdownMenuLabel>
-          {repositories.map((repository) => (
-            <DropdownMenuItem key={repository.href} asChild>
-              <Link prefetch={false} href={repository.href} target="_blank" rel="noreferrer">
-                {repository.label}
+          <DropdownMenuLabel>GitHub</DropdownMenuLabel>
+          {githubLinks.map((link) => (
+            <DropdownMenuItem key={link.href} asChild>
+              <Link prefetch={false} href={link.href} target="_blank" rel="noreferrer">
+                {link.label}
               </Link>
             </DropdownMenuItem>
           ))}
