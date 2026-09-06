@@ -3,7 +3,7 @@ import { conversations } from "./_components/data";
 
 export default function Page() {
   return (
-    <div className="min-h-0 flex-1 overflow-hidden">
+    <div className="h-full min-h-0 overflow-hidden">
       <Chat conversations={conversations} />
     </div>
   );
