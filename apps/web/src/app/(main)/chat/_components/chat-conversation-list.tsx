@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Filter, Pin } from "lucide-react";
+import { ChevronDown, Filter, MessageSquarePlus, Pin } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
@@ -12,37 +12,36 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, getInitials } from "@/lib/utils";
 
 import { formatChatTime } from "./chat-time";
-import type { Conversation } from "./data";
 import { useChat } from "./use-chat";
 
 interface ChatConversationListProps {
-  conversations: Conversation[];
   onSelectConversation?: (id: number) => void;
   className?: string;
 }
 
-const groupLabelKeys: Record<Conversation["group"], string> = {
+const groupLabelKeys: Record<string, string> = {
   Pinned: "chat.groupPinned",
   Today: "chat.groupToday",
   Yesterday: "chat.groupYesterday",
 };
 
-export function ChatConversationList({ conversations, onSelectConversation, className }: ChatConversationListProps) {
+export function ChatConversationList({ onSelectConversation, className }: ChatConversationListProps) {
   const t = useTranslations();
   const locale = useLocale();
-  const { selected, setChat, messages, isLoading } = useChat();
+  const { conversations, selected, selectConversation, createConversation } = useChat();
 
-  const conversationGroups = conversations.reduce<
-    Array<{ group: Conversation["group"]; conversations: Conversation[] }>
-  >((groups, conversation) => {
-    const group = groups.find((item) => item.group === conversation.group);
-    if (group) {
-      group.conversations.push(conversation);
-    } else {
-      groups.push({ group: conversation.group, conversations: [conversation] });
-    }
-    return groups;
-  }, []);
+  const conversationGroups = conversations.reduce<Array<{ group: string; conversations: typeof conversations }>>(
+    (groups, conversation) => {
+      const group = groups.find((item) => item.group === conversation.group);
+      if (group) {
+        group.conversations.push(conversation);
+      } else {
+        groups.push({ group: conversation.group, conversations: [conversation] });
+      }
+      return groups;
+    },
+    [],
+  );
 
   return (
     <div className={cn("flex h-full flex-col gap-3 pt-3", className)}>
@@ -50,7 +49,10 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
         <div className="flex items-center gap-2">
           <h1 className="font-medium text-xl leading-none">{t("chat.inbox")}</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon-sm" aria-label={t("chat.newConversation")} onClick={createConversation}>
+            <MessageSquarePlus />
+          </Button>
           <Button variant="ghost" size="icon-sm">
             <Filter />
           </Button>
@@ -63,15 +65,15 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
         <TabsList variant="line" className="w-full border-b px-0 **:data-[slot=tabs-trigger]:border-x-0">
           <TabsTrigger value="all">
             {t("chat.tabAll")}
-            <span className="text-muted-foreground text-xs">(24)</span>
+            <span className="text-muted-foreground text-xs">({conversations.length})</span>
           </TabsTrigger>
           <TabsTrigger value="open">
             {t("chat.tabOpen")}
-            <span className="text-muted-foreground text-xs">(18)</span>
+            <span className="text-muted-foreground text-xs">({conversations.filter((c) => c.isUnread).length})</span>
           </TabsTrigger>
           <TabsTrigger value="snoozed">
             {t("chat.tabSnoozed")}
-            <span className="text-muted-foreground text-xs">(2)</span>
+            <span className="text-muted-foreground text-xs">(0)</span>
           </TabsTrigger>
           <TabsTrigger value="closed">{t("chat.tabClosed")}</TabsTrigger>
         </TabsList>
@@ -83,28 +85,28 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
           className="**:data-[slot=scroll-area-viewport]:scroll-fade h-full min-h-0 flex-1 overflow-hidden [&_[data-orientation=vertical][data-slot=scroll-area-scrollbar]]:w-1.5"
         >
           <div className="flex flex-col gap-3 pt-0">
-            {conversationGroups.map(({ group, conversations }) => (
+            {conversationGroups.map(({ group, conversations: groupConversations }) => (
               <Collapsible key={group} defaultOpen>
                 <CollapsibleTrigger className="flex w-full items-center justify-between gap-1 px-3 py-2 font-medium text-muted-foreground text-xs hover:text-foreground [&[data-state=open]>svg]:rotate-180">
-                  {t(groupLabelKeys[group])}
+                  {t(groupLabelKeys[group] ?? group)}
                   <ChevronDown className="size-3 transition-transform" />
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <div className="flex flex-col gap-1 px-2">
-                    {conversations.map((conversation) => {
+                    {groupConversations.map((conversation) => {
                       const isSelected = selected === conversation.id;
 
                       return (
                         <button
-                          key={conversation.id}
                           type="button"
+                          key={conversation.id}
                           className={cn(
                             "w-full overflow-hidden rounded-lg px-2.5 py-2.5 text-left ring-inset transition-colors",
                             isSelected ? "bg-muted ring-1 ring-border" : "hover:bg-muted/75",
                           )}
                           onClick={(event) => {
                             event.currentTarget.blur();
-                            setChat({ selected: conversation.id, messages, isLoading });
+                            selectConversation(conversation.id);
                             onSelectConversation?.(conversation.id);
                           }}
                         >
@@ -134,7 +136,7 @@ export function ChatConversationList({ conversations, onSelectConversation, clas
                                     {t(conversation.subjectKey)}
                                   </div>
                                   <div className="truncate text-muted-foreground text-xs leading-4">
-                                    {t(conversation.previewKey)}
+                                    {conversation.preview ? t(conversation.previewKey) : ""}
                                   </div>
                                 </div>
 

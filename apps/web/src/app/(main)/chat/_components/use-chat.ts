@@ -1,79 +1,123 @@
 import { create } from "zustand";
 
-import { type Conversation, conversations } from "./data";
+import { type Conversation, currentUser, conversations as seedConversations } from "./data";
 
-type ChatMessage = {
+export type ChatMessage = {
   id: number;
   role: "user" | "assistant";
   content: string;
 };
 
-type Config = {
-  selected: Conversation["id"] | null;
+type ChatStore = {
+  conversations: Conversation[];
+  selected: number | null;
   messages: ChatMessage[];
   isLoading: boolean;
-};
+  selectedModel: string;
 
-type ChatStore = {
-  chat: Config;
-  setChat: (chat: Config) => void;
+  selectConversation: (id: number) => void;
+  createConversation: () => void;
   addMessage: (message: ChatMessage) => void;
+  updateLastAssistantMessage: (content: string) => void;
   setLoading: (loading: boolean) => void;
-  clearMessages: () => void;
+  setSelectedModel: (model: string) => void;
+  sendMessage: (content: string) => Promise<void>;
 };
 
-const useChatStore = create<ChatStore>((set) => ({
-  chat: {
-    selected: conversations[0].id,
-    messages: [],
-    isLoading: false,
+let nextId = 10_000;
+
+const useChatStore = create<ChatStore>((set, get) => ({
+  conversations: seedConversations,
+  selected: seedConversations[0]?.id ?? null,
+  messages: [],
+  isLoading: false,
+  selectedModel: "openai/gpt-4o",
+
+  selectConversation: (id) => set({ selected: id, messages: [] }),
+
+  createConversation: () => {
+    const id = ++nextId;
+    const now = new Date().toISOString();
+    const newConv: Conversation = {
+      id,
+      group: "Today",
+      name: currentUser.name,
+      subject: "Nova conversa",
+      subjectKey: "chat.newConversation",
+      preview: "",
+      previewKey: "",
+      time: now,
+      isUnread: false,
+      isOnline: true,
+      unreadCount: 0,
+      contact: {
+        name: currentUser.name,
+        role: "Assistente AI",
+        roleKey: "",
+        company: "",
+        email: "",
+        phone: "",
+        website: "",
+        location: "",
+        timezone: "",
+        status: "Active",
+        statusKey: "",
+        qualifiedAt: now,
+        tags: [],
+        tagKeys: [],
+      },
+      messages: [],
+    };
+    set((state) => ({
+      conversations: [newConv, ...state.conversations],
+      selected: id,
+      messages: [],
+    }));
   },
-  setChat: (chat) => set({ chat }),
-  addMessage: (message) =>
-    set((state) => ({
-      chat: { ...state.chat, messages: [...state.chat.messages, message] },
-    })),
-  setLoading: (loading) =>
-    set((state) => ({
-      chat: { ...state.chat, isLoading: loading },
-    })),
-  clearMessages: () =>
-    set((state) => ({
-      chat: { ...state.chat, messages: [] },
-    })),
-}));
 
-export function useChat() {
-  const chat = useChatStore((state) => state.chat);
-  const setChat = useChatStore((state) => state.setChat);
-  const addMessage = useChatStore((state) => state.addMessage);
-  const setLoading = useChatStore((state) => state.setLoading);
-  const clearMessages = useChatStore((state) => state.clearMessages);
+  addMessage: (message) => set((state) => ({ messages: [...state.messages, message] })),
 
-  const sendMessage = async (content: string) => {
+  updateLastAssistantMessage: (content) =>
+    set((state) => {
+      const msgs = [...state.messages];
+      const last = msgs[msgs.length - 1];
+      if (last && last.role === "assistant") {
+        msgs[msgs.length - 1] = { ...last, content };
+      }
+      return { messages: msgs };
+    }),
+
+  setLoading: (isLoading) => set({ isLoading }),
+
+  setSelectedModel: (model) => set({ selectedModel: model }),
+
+  sendMessage: async (content) => {
+    const state = get();
+    if (!content.trim() || state.isLoading) return;
+
     const userMessage: ChatMessage = {
       id: Date.now(),
       role: "user",
       content,
     };
-    addMessage(userMessage);
-    setLoading(true);
+    set((s) => ({ messages: [...s.messages, userMessage], isLoading: true }));
 
     try {
+      const allMessages = [...get().messages, userMessage].map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [...chat.messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          messages: allMessages,
+          model: get().selectedModel,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to get response");
-      }
+      if (!response.ok) throw new Error("Failed to get response");
 
       const reader = response.body?.getReader();
       if (!reader) throw new Error("No reader");
@@ -85,60 +129,46 @@ export function useChat() {
         role: "assistant",
         content: "",
       };
-      addMessage(assistantMessage);
+      set((s) => ({ messages: [...s.messages, assistantMessage] }));
 
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            if (data === "[DONE]") break;
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.content) {
-                assistantContent += parsed.content;
-                // Update the last message in store
-                useChatStore.setState((state) => {
-                  const messages = [...state.chat.messages];
-                  const lastMsg = messages[messages.length - 1];
-                  if (lastMsg && lastMsg.role === "assistant") {
-                    messages[messages.length - 1] = {
-                      ...lastMsg,
-                      content: assistantContent,
-                    };
-                  }
-                  return { chat: { ...state.chat, messages } };
-                });
-              }
-            } catch {
-              // Skip
+        for (const line of chunk.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6);
+          if (data === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.content) {
+              assistantContent += parsed.content;
+              get().updateLastAssistantMessage(assistantContent);
             }
+          } catch {
+            /* skip */
           }
         }
       }
     } catch (error) {
       console.error("Chat error:", error);
-      addMessage({
-        id: Date.now() + 2,
-        role: "assistant",
-        content: "Desculpe, ocorreu um erro ao processar sua mensagem.",
-      });
+      set((s) => ({
+        messages: [
+          ...s.messages,
+          {
+            id: Date.now() + 2,
+            role: "assistant",
+            content: "Desculpe, ocorreu um erro ao processar sua mensagem.",
+          },
+        ],
+      }));
     } finally {
-      setLoading(false);
+      set({ isLoading: false });
     }
-  };
+  },
+}));
 
-  return {
-    ...chat,
-    setChat,
-    addMessage,
-    setLoading,
-    clearMessages,
-    sendMessage,
-  } as const;
+export function useChat() {
+  return useChatStore();
 }

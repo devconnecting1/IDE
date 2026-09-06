@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   AlarmClock,
   ArrowLeft,
+  Check,
   Copy,
   Flag,
   Link,
@@ -28,6 +29,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -48,12 +50,28 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn, getInitials } from "@/lib/utils";
 
 import { formatChatFullDate, formatChatTime } from "./chat-time";
-import { type Message as ChatMessage, type Contact, currentUser } from "./data";
+import { type Contact, currentUser } from "./data";
 import { useChat } from "./use-chat";
 
+const AI_MODELS = [
+  { id: "openai/gpt-4o", name: "GPT-4o", provider: "OpenAI" },
+  { id: "openai/gpt-4o-mini", name: "GPT-4o Mini", provider: "OpenAI" },
+  { id: "anthropic/claude-sonnet-4", name: "Claude Sonnet 4", provider: "Anthropic" },
+  { id: "anthropic/claude-3-5-haiku", name: "Claude 3.5 Haiku", provider: "Anthropic" },
+  { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "Google" },
+  { id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: "Google" },
+];
+
 interface ChatThreadProps {
-  contact: Contact;
-  messages: ChatMessage[];
+  contact?: Contact;
+  messages: Array<{
+    id: number;
+    align: "start" | "end";
+    text: string;
+    textKey: string;
+    time: string;
+    reaction?: string;
+  }>;
   onOpenContact?: () => void;
   onBack?: () => void;
   showBackButton?: boolean;
@@ -87,6 +105,11 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
     })),
   ];
 
+  const selectedModel = AI_MODELS.find((m) => m.id === chat.selectedModel) ?? AI_MODELS[0];
+
+  const contactName = contact?.name ?? currentUser.name;
+  const contactRole = contact?.role ?? "";
+
   return (
     <div className={cn("flex h-full flex-col py-3", className)}>
       <div className="flex flex-col gap-3">
@@ -104,12 +127,12 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
               </Button>
             )}
             <Avatar className="size-8">
-              <AvatarFallback className="bg-background text-foreground">{getInitials(contact.name)}</AvatarFallback>
+              <AvatarFallback className="bg-background text-foreground">{getInitials(contactName)}</AvatarFallback>
               <AvatarBadge className="bg-green-600 dark:bg-green-800" />
             </Avatar>
             <div>
-              <div className="font-medium text-sm">{contact.name}</div>
-              <div className="text-muted-foreground text-xs leading-3">{contact.role}</div>
+              <div className="font-medium text-sm">{contactName}</div>
+              <div className="text-muted-foreground text-xs leading-3">{contactRole}</div>
             </div>
           </div>
 
@@ -175,14 +198,16 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
         <MessageScroller className="min-h-0 flex-1">
           <MessageScrollerViewport>
             <MessageScrollerContent className="gap-6 px-2 py-8">
-              <Marker variant="separator">
-                <MarkerContent>{formatChatFullDate(messages[0].time, locale)}</MarkerContent>
-              </Marker>
+              {messages[0] && (
+                <Marker variant="separator">
+                  <MarkerContent>{formatChatFullDate(messages[0].time, locale)}</MarkerContent>
+                </Marker>
+              )}
 
               {allMessages.map((message) => {
                 const isOutbound = message.align === "end";
                 const reactionAlign = isOutbound ? "start" : "end";
-                const senderName = isOutbound ? currentUser.name : contact.name;
+                const senderName = isOutbound ? currentUser.name : contactName;
 
                 return (
                   <MessageScrollerItem
@@ -269,10 +294,35 @@ export function ChatThread({ contact, messages, onOpenContact, onBack, showBackB
 
           <TabsContent value="reply" className="m-0">
             <form onSubmit={handleSubmit}>
-              <InputGroup className="border-0 bg-background shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0">
+              <InputGroup className="border-0 bg-background shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0">
+                <div className="flex items-center gap-1 border-b px-2 py-1.5">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-6 gap-1 px-1.5 text-muted-foreground text-xs">
+                        <Sparkles className="size-3" />
+                        {selectedModel.name}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      <DropdownMenuLabel>Modelo AI</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {AI_MODELS.map((model) => (
+                        <DropdownMenuItem key={model.id} onSelect={() => chat.setSelectedModel(model.id)}>
+                          <Check
+                            className={cn("size-4", chat.selectedModel === model.id ? "opacity-100" : "opacity-0")}
+                          />
+                          <div className="flex flex-col">
+                            <span>{model.name}</span>
+                            <span className="text-muted-foreground text-xs">{model.provider}</span>
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
                 <InputGroupTextarea
                   placeholder={t("chat.typeMessage")}
-                  className="min-h-14 max-h-40 overflow-y-auto px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
+                  className="max-h-40 min-h-14 overflow-y-auto px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   disabled={chat.isLoading}
@@ -326,10 +376,10 @@ function MessageComposer({ placeholder }: { placeholder: string }) {
         event.preventDefault();
       }}
     >
-      <InputGroup className="border-0 bg-background shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0">
+      <InputGroup className="border-0 bg-background shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-0 has-[[data-slot][aria-invalid=true]]:border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot][aria-invalid=true]]:ring-0">
         <InputGroupTextarea
           placeholder={placeholder}
-          className="min-h-14 max-h-40 overflow-y-auto px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
+          className="max-h-40 min-h-14 overflow-y-auto px-3 py-2.5 text-sm ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:aria-invalid:ring-0"
         />
         <InputGroupAddon align="block-end">
           <InputGroupButton aria-label={t("chat.format")} type="button" size="icon-sm">

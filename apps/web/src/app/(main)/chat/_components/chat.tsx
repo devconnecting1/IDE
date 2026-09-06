@@ -12,16 +12,11 @@ import { cn } from "@/lib/utils";
 import { ChatConversationList } from "./chat-conversation-list";
 import { ChatProfileDetails } from "./chat-profile-details";
 import { ChatThread } from "./chat-thread";
-import type { Conversation } from "./data";
 import { useChat } from "./use-chat";
 
-interface ChatProps {
-  conversations: Conversation[];
-}
-
-export function Chat({ conversations }: ChatProps) {
+export function Chat() {
   const t = useTranslations();
-  const { selected, setChat, messages, isLoading } = useChat();
+  const { selected, conversations } = useChat();
   const [showContact, setShowContact] = useState(false);
   const [showThread, setShowThread] = useState(false);
   const isLg = useIsLg();
@@ -40,19 +35,17 @@ export function Chat({ conversations }: ChatProps) {
         }
       >
         <ChatConversationList
-          conversations={conversations}
           className={cn(
             "transition-transform duration-300 ease-out will-change-transform max-md:col-start-1 max-md:row-start-1",
             showThread && "max-md:pointer-events-none max-md:-translate-x-full",
           )}
-          onSelectConversation={(id) => {
-            setChat({ selected: id, messages, isLoading });
+          onSelectConversation={() => {
             setShowThread(true);
           }}
         />
         <ChatThread
-          contact={activeConversation.contact}
-          messages={activeConversation.messages}
+          contact={activeConversation?.contact}
+          messages={activeConversation?.messages ?? []}
           showBackButton={isMobile}
           onBack={() => setShowThread(false)}
           onOpenContact={() => setShowContact(true)}
@@ -74,18 +67,17 @@ export function Chat({ conversations }: ChatProps) {
               showContact ? "translate-x-0 opacity-100" : "translate-x-full opacity-0",
             )}
           >
-            <ChatProfileDetails contact={activeConversation.contact} onClose={() => setShowContact(false)} />
+            <ChatProfileDetails contact={activeConversation?.contact} onClose={() => setShowContact(false)} />
           </div>
         </div>
       </div>
 
-      {/* Tablet/Mobile: Sheet */}
       {!isLg && (
         <Sheet open={showContact} onOpenChange={setShowContact}>
           <SheetContent side="right" className="w-80 p-0" showCloseButton={false}>
             <SheetTitle className="sr-only">{t("chat.contactProfile")}</SheetTitle>
             <SheetDescription className="sr-only">{t("chat.viewContactDetails")}</SheetDescription>
-            <ChatProfileDetails contact={activeConversation.contact} onClose={() => setShowContact(false)} />
+            <ChatProfileDetails contact={activeConversation?.contact} onClose={() => setShowContact(false)} />
           </SheetContent>
         </Sheet>
       )}
